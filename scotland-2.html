@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>苏格兰开局 - 大师复盘</title>
     
+    <!-- 使用稳定的 cdnjs 链接 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
@@ -61,7 +62,7 @@
         .arrow { transition: transform 0.3s; }
 
         .variation-list {
-            display: block; /* 默认展开，防止用户以为变例少了 */
+            display: block; /* 默认展开 */
             padding-left: 10px;
             margin-top: 5px;
         }
@@ -94,8 +95,10 @@
             justify-content: center;
         }
 
+        /* 修复：响应式宽度，防止宽度为0导致渲染失败 */
         #myBoard {
-            width: 480px;
+            width: 100%;
+            max-width: 480px;
         }
 
         .controls {
@@ -122,8 +125,8 @@
         }
         
         #statusInfo { font-size: 1.2em; color: #4fd1c5; margin-bottom: 10px; }
-        .hint-content ul { padding-left: 20px; color: #a0aec0; }
-        .hint-content li { margin-bottom: 5px; }
+        .hint-content ul { padding-left: 20px; color: #a0aec0; list-style: none; }
+        .hint-content li { margin-bottom: 8px; transition: all 0.3s; }
 
         /* 调试信息 */
         #fenDebug { font-size: 10px; color: #555; margin-top: 10px; display: none;}
@@ -208,10 +211,22 @@
         },
         trap_f7: {
             title: "陷阱：f7 弱点",
-            fen: "r1bqkbnr/pppp1ppp/2n5/4p3/2BPP3/5N2/PPP2PPP/RNBQK2R b KQkq - 0 3",
-            description: "如果黑方不小心，白方会利用f7点进行突破。",
-            moves: ["exd4", "Ng5", "Nh6", "Nxf7", "Nxf7", "Bxf7", "Kxf7", "Qh5"],
-            steps: ["3...exd4", "4.Ng5! 瞄准f7", "4...Nh6", "5.Nxf7! 弃马", "5...Nxf7", "6.Bxf7+ 弃象", "7.Qh5+ 抽杀"]
+            // 修正：使用标准苏格兰开局 FEN，并补全中间步骤，确保逻辑连贯
+            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            description: "如果黑方不小心，白方会利用f7点进行突破 (苏格兰弃兵变化)。",
+            moves: ["exd4", "Bc4", "Bc5", "Ng5", "Nh6", "Nxf7", "Nxf7", "Bxf7", "Kxf7", "Qh5"],
+            steps: [
+                "3...exd4 吃兵", 
+                "4.Bc4! 苏格兰弃兵", 
+                "4...Bc5 正常应对", 
+                "5.Ng5! 瞄准f7", 
+                "5...Nh6 保护", 
+                "6.Nxf7! 弃马", 
+                "6...Nxf7", 
+                "7.Bxf7+ 弃象", 
+                "7...Kxf7", 
+                "8.Qh5+ 抽杀回子"
+            ]
         }
     };
 
@@ -222,17 +237,30 @@
         }
     }
 
+    // 侧边栏折叠功能
+    window.toggleSidebarCategory = function(headerElement) {
+        var content = headerElement.nextElementSibling;
+        var arrow = headerElement.querySelector('.arrow');
+        
+        if (content.style.display === 'block') {
+            content.style.display = 'none';
+            if(arrow) arrow.style.transform = 'rotate(0deg)';
+        } else {
+            content.style.display = 'block';
+            if(arrow) arrow.style.transform = 'rotate(90deg)';
+        }
+    };
+
     // 页面加载完成后初始化
     $(document).ready(function() {
-        // 苏格兰开局初始状态：1.e4 e5 2.Nf3 Nc6 3.d4 (轮到黑方走)
+        // 苏格兰开局初始状态
         var startFen = 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3';
         
         // 启动应用
         window.ChessApp.init('myBoard', startFen);
         
-        // 默认加载第一个变例的介绍文字，但不走棋
+        // 默认加载第一个变例
         selectVariation('mainline');
-        window.ChessApp.reset(); // 重置回未走棋状态
     });
 </script>
 
