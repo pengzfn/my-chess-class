@@ -183,36 +183,36 @@
     const VARIATIONS = {
         mainline: {
             title: "苏格兰开局主线",
-            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            fen: "r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
             description: "黑方接受交换是目前最主流的走法。",
             moves: ["exd4", "Nxd4", "Nf6", "Nc3", "Bb4"],
             steps: ["3...exd4 吃掉中心兵", "4.Nxd4 白方吃回", "4...Nf6 攻击e4兵", "5.Nc3 保护", "5...Bb4 牵制马"]
         },
         classical: {
             title: "经典变例 (Bc5)",
-            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            fen: "r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
             description: "黑方出象到c5，给白方中心马施加压力。",
             moves: ["exd4", "Nxd4", "Bc5", "Be3", "Qf6"],
             steps: ["3...exd4", "4.Nxd4", "4...Bc5 控制中心", "5.Be3 保护马", "5...Qf6 增加压力"]
         },
         mieses: {
             title: "Mieses 变例",
-            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            fen: "r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
             description: "这是卡斯帕罗夫钟爱的变例，导致非常尖锐的局面。",
             moves: ["exd4", "Nxd4", "Nf6", "Nxc6", "bxc6", "e5", "Qe7", "Qe2"],
             steps: ["3...exd4", "4.Nxd4", "4...Nf6", "5.Nxc6 交换", "5...bxc6", "6.e5! 赶马", "6...Qe7 牵制", "7.Qe2 解除牵制"]
         },
         trap_qh4: {
             title: "陷阱：过早出后",
-            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
-            description: "黑方试图快速攻击，但会因此丢先手。",
-            moves: ["Qh4", "Nc3", "Bb4", "Be2", "Qxe4", "Nb5"],
-            steps: ["3...Qh4? 坏棋", "4.Nc3", "4...Bb4", "5.Be2! 弃兵", "5...Qxe4 吃兵", "6.Nb5! 威胁c7"]
+            fen: "r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            description: "黑方过早出后，白方利用Nb5威胁c7。",
+            moves: ["exd4", "Nxd4", "Qh4", "Nb5", "Qxe4", "Be2", "Kd8", "Nxc7"],
+            steps: ["3...exd4", "4.Nxd4", "4...Qh4? 过早出后", "5.Nb5! 威胁c7", "5...Qxe4 吃兵", "6.Be2 象出", "6...Kd8 被迫", "7.Nxc7! 抓车"]
         },
         trap_f7: {
             title: "陷阱：f7 弱点",
             // 修正：使用标准苏格兰开局 FEN，并补全中间步骤，确保逻辑连贯
-            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            fen: "r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
             description: "如果黑方不小心，白方会利用f7点进行突破 (苏格兰弃兵变化)。",
             moves: ["exd4", "Bc4", "Bc5", "Ng5", "Nh6", "Nxf7", "Nxf7", "Bxf7", "Kxf7", "Qh5"],
             steps: [
