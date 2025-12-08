@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苏格兰开局 - 大师复盘课</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        /* --- 大师级紫色风格 --- */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 深紫色渐变 */
+            color: #2d3748;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row; /* 左右分栏 */
+            width: 100%;
+            max-width: 1100px;
+            height: 85vh;
+            gap: 20px;
+        }
+
+        /* 左侧侧边栏 */
+        .sidebar {
+            flex: 3;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar h2 {
+            margin: 0;
+            color: #553c9a; /* 深紫色标题 */
+            font-size: 1.5em;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .menu-group h3 {
+            font-size: 1em;
+            color: #718096;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 12px 15px;
+            margin: 5px 0;
+            background: #f7fafc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: #edf2f7;
+        }
+
+        .menu-item.active {
+            background: #e9d8fd; /* 浅紫色高亮 */
+            color: #553c9a;
+            border-left-color: #6b46c1;
+            font-weight: bold;
+        }
+
+        /* 右侧棋盘区 */
+        .board-area {
+            flex: 7;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #myBoard {
+            width: 100%;
+            max-width: 550px; /* 棋盘最大宽度 */
+        }
+
+        .controls {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #553c9a;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #f7fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: #6b46c1;
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #553c9a;
+        }
+
+        .status-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9d8fd;
+            border-radius: 10px;
+            color: #44337a;
+            font-weight: bold;
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+        }
+
+        /* 手机端适配：上下布局 */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column-reverse; /* 棋盘在上，目录在下 */
+                height: auto;
+            }
+            .sidebar {
+                flex: none;
+                height: auto;
+            }
+            .board-area {
+                flex: none;
+                padding: 15px;
+            }
+            #myBoard {
+                max-width: 100%; /* 手机全宽 */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="scotland-intro.html" class="back-btn">← 返回目录</a>
+                <h2>♟️ 大师复盘课</h2>
+            </div>
+            
+            <div class="menu-group">
+                <h3>开局理论</h3>
+                <div class="menu-item active">主线：苏格兰开局 (d4)</div>
+                <div class="menu-item">变例1：Nxc6 换子</div>
+            </div>
+
+            <div class="menu-group">
+                <h3>经典陷阱</h3>
+                <div class="menu-item" style="color: #c53030;">⚠️ 陷阱：Qh4 的致命错误</div>
+                <div class="menu-item">案例：Kasparov vs Karpov</div>
+            </div>
+
+            <div style="margin-top: auto; padding-top: 20px; font-size: 0.9em; color: #888;">
+                <p>💡 提示：<br>点击右侧棋盘可自由走子，系统会自动阻止违规步法。</p>
+            </div>
+        </aside>
+
+        <main class="board-area">
+            <div id="myBoard"></div>
+
+            <div id="status" class="status-box">准备就绪：白方先行</div>
+
+            <div class="controls">
+                <button class="btn" id="btnReset" title="重置"> |&lt; </button>
+                <button class="btn" id="btnUndo" title="上一步"> &lt; </button>
+                <button class="btn" id="btnRedo" title="下一步"> &gt; </button>
+                <button class="btn btn-primary" id="btnFlip"> 翻转棋盘 </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
+    <script>
+        // --- 核心逻辑开始 ---
+
+        // 初始化变量
+        var board = null;
+        var game = new Chess(); // 规则引擎
+        var undoStack = []; // 用于实现 Redo (下一步)
+        var $status = $('#status');
+        var $fen = $('#fen');
+
+        // 苏格兰开局的初始局面 (第3回合)
+        var scotlandFen = 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3';
+
+        // 拖拽开始：检查游戏是否结束，是否轮到该方走棋
+        function onDragStart (source, piece, position, orientation) {
+            if (game.game_over()) return false;
+
+            // 只有轮到的一方可以动 (白方动白子，黑方动黑子)
+            if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                return false;
+            }
+        }
+
+        // 放置棋子：验证走法是否合法
+        function onDrop (source, target) {
+            // 尝试走棋
+            var move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q' // 默认升变为后
+            });
+
+            // 如果是非法走法，让棋子弹回 ('snapback')
+            if (move === null) return 'snapback';
+
+            // 既然产生了这个新走法，之前的 Redo 历史就失效了
+            undoStack = []; 
+            updateStatus();
+        }
+
+        // 动画结束后同步棋盘位置 (处理吃子、易位等复杂情况)
+        function onSnapEnd () {
+            board.position(game.fen());
+        }
+
+        // 更新状态文字 (谁的回合 / 将死 / 和棋)
+        function updateStatus () {
+            var status = '';
+
+            var moveColor = '白方';
+            if (game.turn() === 'b') {
+                moveColor = '黑方';
+            }
+
+            // 检查将死?
+            if (game.in_checkmate()) {
+                status = '游戏结束，' + moveColor + ' 被将死！';
+            }
+            // 检查和棋?
+            else if (game.in_draw()) {
+                status = '游戏结束，和棋';
+            }
+            // 游戏继续
+            else {
+                status = moveColor + ' 思考中...';
+                // 检查将军?
+                if (game.in_check()) {
+                    status += ' (将军!)';
+                }
+            }
+
+            $status.html(status);
+        }
+
+        // --- 按钮功能实现 ---
+
+        // 1. 上一步 (Undo)
+        $('#btnUndo').on('click', function () {
+            var move = game.undo();
+            if (move) {
+                undoStack.push(move); // 存入重做栈
+                board.position(game.fen()); // 刷新棋盘
+                updateStatus();
+            }
+        });
+
+        // 2. 下一步 (Redo)
+        $('#btnRedo').on('click', function () {
+            if (undoStack.length > 0) {
+                var move = undoStack.pop(); // 取出最近的一步
+                game.move(move);
+                board.position(game.fen());
+                updateStatus();
+            }
+        });
+
+        // 3. 重置 (Reset)
+        $('#btnReset').on('click', function () {
+            game.load(scotlandFen); // 重新加载苏格兰开局
+            undoStack = []; // 清空历史
+            board.position(scotlandFen);
+            updateStatus();
+        });
+
+        // 4. 翻转棋盘 (Flip)
+        $('#btnFlip').on('click', function () {
+            board.flip();
+        });
+
+        // --- 初始化配置 ---
+        var config = {
+            draggable: true, // 允许拖拽
+            position: scotlandFen, // 初始位置
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onSnapEnd: onSnapEnd,
+            // 强制使用维基百科图片源 (解决本地无图问题)
+            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+        };
+
+        // 加载游戏
+        game.load(scotlandFen);
+        board = Chessboard('myBoard', config);
+        updateStatus(); // 初始化状态文字
+
+        // 窗口大小改变时自动调整棋盘
+        $(window).resize(board.resize);
+    </script>
+</body>
+</html>
