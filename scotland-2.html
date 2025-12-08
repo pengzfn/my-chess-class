@@ -3,538 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>苏格兰开局 - 大师复盘课</title>
+    <title>苏格兰开局 - 大师复盘</title>
     
-    <!-- 外部依赖 -->
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     
-    <!-- 我的逻辑库 -->
     <script src="chess-logic.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
+    <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); /* 深紫色大师风格 */
+            color: #fff;
+            margin: 0;
             padding: 20px;
-        }
-
-        .back-button {
-            display: inline-block;
-            background-color: rgba(255,255,255,0.2);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: bold;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .back-button:hover {
-            background-color: rgba(255,255,255,0.3);
-            transform: translateX(-5px);
+            height: 100vh;
+            overflow: hidden; /* 防止双滚动条 */
         }
 
         .container {
             display: flex;
             gap: 20px;
-            max-width: 1400px;
+            height: 90vh;
+            max-width: 1200px;
             margin: 0 auto;
+        }
+
+        /* 磨砂玻璃卡片通用样式 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
         /* 左侧边栏 */
         .sidebar {
-            flex: 0 0 320px;
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-height: 85vh;
+            flex: 0 0 300px;
             overflow-y: auto;
         }
 
-        .sidebar h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 2px solid #e9d8fd;
-            padding-bottom: 15px;
-        }
-
-        .category {
-            margin-bottom: 15px;
-        }
-
-        .category-title {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 15px;
-            border-radius: 10px;
-            font-weight: bold;
+        .category-header {
+            background: rgba(102, 126, 234, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s ease;
         }
-
-        .category-title:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .category-title .arrow {
-            transition: transform 0.3s ease;
-        }
-
-        .category-title.active .arrow {
-            transform: rotate(90deg);
-        }
+        
+        .arrow { transition: transform 0.3s; }
 
         .variation-list {
-            display: none;
-            padding-top: 10px;
+            display: block; /* 默认展开，防止用户以为变例少了 */
+            padding-left: 10px;
+            margin-top: 5px;
         }
 
-        .variation-list.show {
+        .variation-btn {
             display: block;
-        }
-
-        .variation-item {
-            padding: 12px 15px;
-            margin: 5px 0;
-            background: #f8f9fa;
-            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: none;
+            color: #ccc;
+            padding: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-            font-size: 0.95em;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .variation-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
+        .variation-btn:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+            padding-left: 12px;
         }
 
-        .variation-item.active {
-            background: #e9d8fd;
-            border-left-color: #764ba2;
-            font-weight: bold;
-            color: #553c9a;
-        }
-
-        .variation-item.trap {
-            color: #c53030;
-        }
-
-        .variation-item.trap:hover {
-            background: #fed7d7;
-        }
-
-        /* 右侧主区域 */
-        .main-area {
+        /* 中间棋盘区 */
+        .board-area {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-        }
-
-        .board-container {
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
             align-items: center;
-        }
-
-        #myBoard {
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .status-info {
-            text-align: center;
-            margin-top: 15px;
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #e9d8fd 0%, #f0e6ff 100%);
-            border-radius: 10px;
-            color: #553c9a;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-
-        .move-counter {
-            text-align: center;
-            color: #667eea;
-            font-weight: 500;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-
-        .controls {
-            margin-top: 25px;
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
             justify-content: center;
         }
 
-        .control-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        #myBoard {
+            width: 480px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #667eea;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 1em;
-            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-size: 16px;
         }
+        .btn:hover { background: #764ba2; }
 
-        .control-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        /* 右侧解说区 */
+        .info-area {
+            flex: 0 0 250px;
+            overflow-y: auto;
         }
+        
+        #statusInfo { font-size: 1.2em; color: #4fd1c5; margin-bottom: 10px; }
+        .hint-content ul { padding-left: 20px; color: #a0aec0; }
+        .hint-content li { margin-bottom: 5px; }
 
-        .control-btn:active {
-            transform: translateY(-1px);
-        }
-
-        .hint-area {
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        .hint-area h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        .hint-text {
-            color: #2c3e50;
-            line-height: 1.8;
-            font-size: 1.05em;
-        }
-
-        .hint-text ol {
-            margin-left: 20px;
-            margin-top: 10px;
-        }
-
-        .hint-text li {
-            margin-bottom: 8px;
-        }
-
-        /* 响应式 */
-        @media (max-width: 968px) {
-            .container {
-                flex-direction: column-reverse;
-            }
-            .sidebar {
-                flex: none;
-                width: 100%;
-                max-height: none;
-            }
-        }
-
-        /* 滚动条美化 */
-        .sidebar::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 10px;
-        }
+        /* 调试信息 */
+        #fenDebug { font-size: 10px; color: #555; margin-top: 10px; display: none;}
     </style>
 </head>
 <body>
 
-    <a href="scotland-intro.html" class="back-button">← 返回目录</a>
-
-    <div class="container">
-        <!-- 左侧边栏 -->
-        <div class="sidebar">
-            <h2>♟️ 苏格兰开局大师课</h2>
-            
-            <!-- 开局理论 -->
-            <div class="category">
-                <div class="category-title" onclick="toggleCategory(this)">
-                    <span>📚 开局理论</span>
-                    <span class="arrow">▶</span>
-                </div>
-                <div class="variation-list">
-                    <div class="variation-item" onclick="loadVariation(this, 'mainline')">
-                        主线：3...exd4 4.Nxd4
-                    </div>
-                    <div class="variation-item" onclick="loadVariation(this, 'classical')">
-                        经典变例：4...Bc5
-                    </div>
-                    <div class="variation-item" onclick="loadVariation(this, 'mieses')">
-                        Mieses 变例：4...Nf6
-                    </div>
-                    <div class="variation-item" onclick="loadVariation(this, 'declined')">
-                        苏格兰弃兑：3...Nf6
-                    </div>
-                </div>
-            </div>
-
-            <!-- 陷阱与战术 -->
-            <div class="category">
-                <div class="category-title" onclick="toggleCategory(this)">
-                    <span>⚠️ 陷阱与战术</span>
-                    <span class="arrow">▶</span>
-                </div>
-                <div class="variation-list">
-                    <div class="variation-item trap" onclick="loadVariation(this, 'trap1')">
-                        ⚡ 陷阱1：黑方贸然 Qh4
-                    </div>
-                    <div class="variation-item trap" onclick="loadVariation(this, 'trap2')">
-                        ⚡ 陷阱2：Nxc6 弃兵陷阱
-                    </div>
-                    <div class="variation-item trap" onclick="loadVariation(this, 'trap3')">
-                        ⚡ 陷阱3：f7 弱点突破
-                    </div>
-                </div>
-            </div>
-
-            <!-- 经典对局 -->
-            <div class="category">
-                <div class="category-title" onclick="toggleCategory(this)">
-                    <span>🏆 经典对局</span>
-                    <span class="arrow">▶</span>
-                </div>
-                <div class="variation-list">
-                    <div class="variation-item" onclick="loadVariation(this, 'kasparov')">
-                        卡斯帕罗夫 vs 卡尔波夫
-                    </div>
-                    <div class="variation-item" onclick="loadVariation(this, 'morphy')">
-                        莫菲经典速胜
-                    </div>
-                </div>
-            </div>
-
-            <div style="margin-top: 30px; padding: 15px; background: #f0e6ff; border-radius: 10px; font-size: 0.9em; color: #553c9a;">
-                💡 <strong>提示：</strong><br>
-                可以直接在棋盘上拖动走棋，或点击"下一步"查看标准走法。
-            </div>
+<div class="container">
+    <div class="sidebar glass-card">
+        <h3>♟️ 变例库</h3>
+        
+        <div class="category-header" onclick="toggleSidebarCategory(this)">
+            <span>主线理论</span>
+            <span class="arrow" style="transform: rotate(90deg)">▶</span>
+        </div>
+        <div class="variation-list">
+            <button class="variation-btn" onclick="selectVariation('mainline')">1. 主线 (3...exd4)</button>
+            <button class="variation-btn" onclick="selectVariation('classical')">2. 经典变例 (Bc5)</button>
+            <button class="variation-btn" onclick="selectVariation('mieses')">3. Mieses变例 (Nf6)</button>
         </div>
 
-        <!-- 右侧主区域 -->
-        <div class="main-area">
-            <!-- 棋盘区域 -->
-            <div class="board-container">
-                <div id="myBoard"></div>
-                <div class="status-info" id="statusInfo">轮到黑方走棋</div>
-                <div class="move-counter" id="moveCounter">已走步数：0</div>
-                
-                <div class="controls">
-                    <button class="control-btn" onclick="ChessApp.reset()">|&lt; 重置</button>
-                    <button class="control-btn" onclick="ChessApp.undo()">&lt; 上一步</button>
-                    <button class="control-btn" onclick="ChessApp.redo()">下一步 &gt;</button>
-                    <button class="control-btn" onclick="ChessApp.flip()">🔄 翻转</button>
-                </div>
-            </div>
-
-            <!-- 提示区域 -->
-            <div class="hint-area">
-                <h3>📝 局面解说</h3>
-                <p class="hint-text" id="hintText">
-                    <strong>苏格兰开局</strong>（1.e4 e5 2.Nf3 Nc6 3.d4）<br><br>
-                    这是一个古老而充满活力的开局，白方在第3步直接挑战黑方的中心兵。
-                    点击左侧的变例开始学习不同的应对方法！
-                </p>
-            </div>
+        <div class="category-header" onclick="toggleSidebarCategory(this)">
+            <span>⚠️ 常见陷阱</span>
+            <span class="arrow" style="transform: rotate(90deg)">▶</span>
+        </div>
+        <div class="variation-list">
+            <button class="variation-btn" style="color:#fc8181" onclick="selectVariation('trap_qh4')">1. 过早出后 (Qh4??)</button>
+            <button class="variation-btn" style="color:#fc8181" onclick="selectVariation('trap_f7')">2. f7 点突破</button>
         </div>
     </div>
 
-    <script>
-        // ========== 变例数据库 ==========
-        var variations = {
-            // 开局理论
-            mainline: {
-                fen: 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3',
-                moves: ['exd4', 'Nxd4', 'Nf6', 'Nc3', 'Bb4'],
-                title: '苏格兰开局主线',
-                description: '黑方接受中心兵交换，这是最常见的应对方式。白方用骑士吃回后占据强势中心位置。',
-                steps: [
-                    '3...exd4 - 黑方吃掉 d4 兵',
-                    '4.Nxd4 - 白马吃回，占据中心',
-                    '4...Nf6 - 黑方发展王翼骑士',
-                    '5.Nc3 - 白方发展后翼骑士',
-                    '5...Bb4 - 黑方出象施加压力'
-                ]
-            },
-            classical: {
-                fen: 'r1bqkbnr/pppp1ppp/2n5/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4',
-                moves: ['Bc5', 'Be3', 'Qf6', 'c3', 'Nge7'],
-                title: '经典变例 4...Bc5',
-                description: '黑方将象发展到 c5，瞄准白方的 d4 骑士。这是古典下法，要求双方精确应对。',
-                steps: [
-                    '4...Bc5 - 黑象攻击白马',
-                    '5.Be3 - 白方出象保护',
-                    '5...Qf6 - 黑后出动施压',
-                    '6.c3 - 白方巩固中心',
-                    '6...Nge7 - 黑方准备短易位'
-                ]
-            },
-            mieses: {
-                fen: 'r1bqkbnr/pppp1ppp/2n5/8/3NP3/8/PPP2PPP/RNBQKB1R b KQkq - 0 4',
-                moves: ['Nf6', 'Nc3', 'Bb4', 'Nxc6', 'bxc6'],
-                title: 'Mieses 变例 4...Nf6',
-                description: 'Mieses 变例以稳健著称，黑方先发展骑士再决定象的位置。',
-                steps: [
-                    '4...Nf6 - 发展骑士攻击 e4',
-                    '5.Nc3 - 保护中心兵',
-                    '5...Bb4 - 钉住白马',
-                    '6.Nxc6 - 白方先交换',
-                    '6...bxc6 - 开放 b 线'
-                ]
-            },
-            declined: {
-                fen: 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3',
-                moves: ['Nf6', 'dxe5', 'Nxe4', 'Bd3', 'Nc5'],
-                title: '苏格兰弃兑 3...Nf6',
-                description: '黑方不立即吃 d4 兵，而是发展骑士。这会导致不同类型的中心争夺。',
-                steps: [
-                    '3...Nf6 - 黑方暂不吃兵',
-                    '4.dxe5 - 白方吃掉 e5 兵',
-                    '4...Nxe4 - 黑马吃 e4',
-                    '5.Bd3 - 白方攻击黑马',
-                    '5...Nc5 - 黑马退避'
-                ]
-            },
+    <div class="board-area">
+        <div id="statusInfo">准备就绪</div>
+        <div id="myBoard"></div>
+        <div class="controls">
+            <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+            <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+            <button class="btn" onclick="ChessApp.nextMove()">下一步 ▶</button>
+            <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+        </div>
+        <div id="fenDebug"></div>
+    </div>
 
-            // 陷阱
-            trap1: {
-                fen: 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3',
-                moves: ['Qh4', 'Nc3', 'Bb4', 'Bd2', 'Bxc3'],
-                title: '⚠️ 陷阱：黑方贸然出后',
-                description: '<span style="color:#c53030;">警告！</span> 3...Qh4 是新手常犯的错误！皇后过早出动会成为攻击目标。',
-                steps: [
-                    '3...Qh4?? - 贸然出后，大错！',
-                    '4.Nc3 - 白方继续发展',
-                    '4...Bb4 - 黑方试图钉马',
-                    '5.Bd2 - 白方解除钉制',
-                    '黑后位置尴尬，白方发展领先'
-                ]
-            },
-            trap2: {
-                fen: 'r1bqkbnr/pppp1ppp/2n5/8/3NP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 4',
-                moves: ['Nxc6', 'bxc6', 'e5', 'Qe7', 'Qe2'],
-                title: '⚠️ Nxc6 弃兵陷阱',
-                description: '白方用 Nxc6 打开局面，然后推进 e5 控制中心。黑方如应对不当会陷入被动。',
-                steps: [
-                    '4.Nxc6 - 白方主动交换',
-                    '4...bxc6 - 黑方吃回',
-                    '5.e5! - 推进，限制黑马',
-                    '5...Qe7 - 黑方被迫防守',
-                    '6.Qe2 - 白方占据主动'
-                ]
-            },
-            trap3: {
-                fen: 'r1bqk1nr/pppp1ppp/2n5/2b5/3NP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 5',
-                moves: ['Nxc6', 'Qf6', 'Qf3', 'Qxf3', 'gxf3'],
-                title: '⚠️ f7 弱点突破',
-                description: 'f7 是黑方最薄弱的点（只有王保护）。白方常设法利用这个弱点。',
-                steps: [
-                    '5.Nxc6! - 引开黑马',
-                    '5...Qf6 - 黑后保护 f7',
-                    '6.Qf3! - 白后对攻',
-                    '兑后后白方兵型更好',
-                    '白方有长期优势'
-                ]
-            },
+    <div class="info-area glass-card">
+        <div id="hintText" class="hint-content">
+            <h3>欢迎来到大师复盘室</h3>
+            <p>请点击左侧的变例名称开始学习。你可以直接在棋盘上走棋，也可以点击“下一步”按钮演示标准走法。</p>
+        </div>
+    </div>
+</div>
 
-            // 经典对局
-            kasparov: {
-                fen: 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3',
-                moves: ['exd4', 'Nxd4', 'Nf6', 'Nxc6', 'bxc6', 'e5', 'Qe7', 'Qe2', 'Nd5'],
-                title: '卡斯帕罗夫 vs 卡尔波夫',
-                description: '1990年世界冠军赛中的经典对局。展示了苏格兰开局在最高水平比赛中的应用。',
-                steps: [
-                    '3...exd4 - 标准应对',
-                    '4.Nxd4 - 占据中心',
-                    '4...Nf6 - 发展骑士',
-                    '5.Nxc6 - 卡斯帕罗夫的选择',
-                    '5...bxc6 - 开放 b 线',
-                    '6.e5 - 推进中心兵',
-                    '6...Qe7 - 防守 e 兵',
-                    '7.Qe2 - 连接棋子',
-                    '7...Nd5 - 黑马跳到强点'
-                ]
-            },
-            morphy: {
-                fen: 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3',
-                moves: ['exd4', 'Bc4', 'd6', 'c3', 'dxc3', 'Nxc3'],
-                title: '莫菲风格：弃兵抢攻',
-                description: '以 Paul Morphy 风格展示的弃兵变例。白方牺牲一个兵换取快速发展和进攻机会。',
-                steps: [
-                    '3...exd4 - 接受弃兵',
-                    '4.Bc4!? - 不吃回，发展象！',
-                    '4...d6 - 黑方谨慎',
-                    '5.c3 - 继续弃兵！',
-                    '5...dxc3 - 黑方再吃',
-                    '6.Nxc3 - 快速发展完成'
-                ]
-            }
-        };
-
-        // ========== 侧边栏功能 ==========
-        function toggleCategory(element) {
-            element.classList.toggle('active');
-            var list = element.nextElementSibling;
-            list.classList.toggle('show');
+<script>
+    // 定义变例数据
+    const VARIATIONS = {
+        mainline: {
+            title: "苏格兰开局主线",
+            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            description: "黑方接受交换是目前最主流的走法。",
+            moves: ["exd4", "Nxd4", "Nf6", "Nc3", "Bb4"],
+            steps: ["3...exd4 吃掉中心兵", "4.Nxd4 白方吃回", "4...Nf6 攻击e4兵", "5.Nc3 保护", "5...Bb4 牵制马"]
+        },
+        classical: {
+            title: "经典变例 (Bc5)",
+            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            description: "黑方出象到c5，给白方中心马施加压力。",
+            moves: ["exd4", "Nxd4", "Bc5", "Be3", "Qf6"],
+            steps: ["3...exd4", "4.Nxd4", "4...Bc5 控制中心", "5.Be3 保护马", "5...Qf6 增加压力"]
+        },
+        mieses: {
+            title: "Mieses 变例",
+            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            description: "这是卡斯帕罗夫钟爱的变例，导致非常尖锐的局面。",
+            moves: ["exd4", "Nxd4", "Nf6", "Nxc6", "bxc6", "e5"],
+            steps: ["3...exd4", "4.Nxd4", "4...Nf6", "5.Nxc6 交换", "5...bxc6", "6.e5! 赶马"]
+        },
+        trap_qh4: {
+            title: "陷阱：过早出后",
+            fen: "rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
+            description: "黑方试图快速攻击，但会因此丢先手。",
+            moves: ["Qh4", "Nc3", "Bb4", "Be2", "Qxe4", "Nb5"],
+            steps: ["3...Qh4? 坏棋", "4.Nc3", "4...Bb4", "5.Be2! 弃兵", "5...Qxe4 吃兵", "6.Nb5! 威胁c7"]
+        },
+        trap_f7: {
+            title: "陷阱：f7 弱点",
+            fen: "r1bqkbnr/pppp1ppp/2n5/4p3/2BPP3/5N2/PPP2PPP/RNBQK2R b KQkq - 0 3",
+            description: "如果黑方不小心，白方会利用f7点进行突破。",
+            moves: ["exd4", "Ng5", "Nh6", "Nxf7", "Nxf7", "Bxf7", "Kxf7", "Qh5"],
+            steps: ["3...exd4", "4.Ng5! 瞄准f7", "4...Nh6", "5.Nxf7! 弃马", "5...Nxf7", "6.Bxf7+ 弃象", "7.Qh5+ 抽杀"]
         }
+    };
 
-        function loadVariation(element, id) {
-            // 移除所有激活状态
-            document.querySelectorAll('.variation-item').forEach(function(item) {
-                item.classList.remove('active');
-            });
-            // 添加当前激活状态
-            element.classList.add('active');
-
-            // 加载变例
-            var variation = variations[id];
-            if (variation) {
-                ChessApp.loadVariation(variation);
-            }
+    // 桥接函数：处理点击事件
+    function selectVariation(key) {
+        if (VARIATIONS[key]) {
+            window.ChessApp.loadVariation(VARIATIONS[key]);
         }
+    }
 
-        // ========== 页面加载初始化 ==========
-        window.addEventListener('load', function() {
-            // 苏格兰开局初始 FEN（第3回合，黑方走棋）
-            var scotlandFEN = 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3';
-            
-            // 初始化棋盘
-            ChessApp.init('myBoard', scotlandFEN);
-            
-            // 默认展开"开局理论"分类
-            document.querySelectorAll('.category-title')[0].click();
-        });
-    </script>
+    // 页面加载完成后初始化
+    $(document).ready(function() {
+        // 苏格兰开局初始状态：1.e4 e5 2.Nf3 Nc6 3.d4 (轮到黑方走)
+        var startFen = 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3';
+        
+        // 启动应用
+        window.ChessApp.init('myBoard', startFen);
+        
+        // 默认加载第一个变例的介绍文字，但不走棋
+        selectVariation('mainline');
+        window.ChessApp.reset(); // 重置回未走棋状态
+    });
+</script>
 
 </body>
 </html>
