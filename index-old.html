@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>国际象棋大师课</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<style>
+/* --- UI 样式 (Master Version) --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, system-ui, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100vh; overflow: hidden; display: flex; color: #333; }
+.sidebar { width: 320px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; flex-direction: column; z-index: 10; box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
+.sidebar-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center;}
+.sidebar-header h1 { font-size: 1.2rem; font-weight: 600; margin:0; }
+.reset-btn { background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.5); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+.sidebar-content { flex: 1; padding: 10px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.group-l1 { margin-bottom: 12px; border-radius: 10px; overflow: hidden; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.group-l1-header { background: #f8f9fa; padding: 12px 16px; font-weight: 600; color: #4a148c; cursor: pointer; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
+.group-l1-content { display: block; }
+.group-l2-header { padding: 10px 16px; background: #fff; font-size: 0.9rem; color: #666; cursor: pointer; display: flex; justify-content: space-between; padding-left: 24px; border-top: 1px solid #f9f9f9; }
+.group-l2-content { display: block; }
+.pgn-item { padding: 12px 16px 12px 36px; cursor: pointer; font-size: 0.95rem; border-left: 4px solid transparent; border-bottom: 1px solid #f9f9f9; color: #444; }
+.pgn-item.selected { background: #f3e5f5; border-left-color: #7b1fa2; color: #4a148c; font-weight: 600; }
+.main-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+.board-container { background: white; border-radius: 24px; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); width: 100%; max-width: 560px; display: flex; flex-direction: column; align-items: center; }
+.board-title { text-align: center; margin-bottom: 16px; color: #5a2e5a; font-size: 1.1rem; font-weight: 700; min-height: 1.4em; }
+#board { width: 100%; margin-bottom: 20px; border-radius: 4px; overflow: hidden; }
+.controls { display: flex; gap: 12px; margin-bottom: 20px; width: 100%; justify-content: center; }
+.btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 0; width: 80px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3); }
+.btn-flip { background: #ff758c; box-shadow: 0 4px 10px rgba(255, 117, 140, 0.3); }
+.commentary-area { width: 100%; padding: 16px; background: #f3e5f5; border-radius: 12px; min-height: 100px; display: flex; flex-direction: column; justify-content: center; }
+#commentText { color: #4a148c; line-height: 1.6; font-size: 1rem; font-weight: 500; }
+#moveInfo { margin-top: 8px; font-size: 0.85rem; color: #8e24aa; text-align: right; opacity: 0.8; }
+@media (max-width: 768px) { body { flex-direction: column; } .sidebar { width: 100%; height: 35vh; } .main-area { height: 65vh; padding: 10px; } #board { max-width: 360px; } .sidebar-header { flex-direction: row; justify-content: space-between; padding: 12px 20px; } }
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-header"><h1>♟️ 大师复盘课</h1><button class="reset-btn" onclick="resetSystem()">🔄 一键重置</button></div>
+  <div class="sidebar-content" id="sidebarContent"></div>
+</div>
+<div class="main-area">
+  <div class="board-container">
+    <div class="board-title" id="boardTitle">请选择课程</div>
+    <div id="board"></div>
+    <div class="controls"><button class="btn" onclick="goToStart()">|&lt;</button><button class="btn" onclick="goToPrevious()">&lt;</button><button class="btn" onclick="goToNext()">&gt;</button><button class="btn btn-flip" onclick="flipBoard()">翻转</button></div>
+    <div class="commentary-area"><div id="commentText">点击左侧列表，开始复盘...</div><div id="moveInfo"></div></div>
+  </div>
+</div>
+<script>
+// --- 注入的数据区 ---
+const CHESS_DATA = [
+  {
+    "groupL1": "开局理论",
+    "groupL2": "苏格兰开局 - 经典变例",
+    "name": "主线：Be3 + Qf6 理论阵型",
+    "moves": [
+      "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5",
+      "Be3", "Qf6", "c3", "Nge7"
+    ],
+    "comments": [
+      "白方占领中心",
+      "黑方对称应对",
+      "白马攻击e5兵",
+      "黑马保护",
+      "苏格兰开局标志性招法",
+      "黑方吃兵",
+      "白马进入中心，苏格兰开局主要起始位置",
+      "经典变例！黑象攻击d4马",
+      "Be3最自然，保护马并威胁Nxc6赢象",
+      "Qf6是最佳应对，保护象并施压d4",
+      "c3巩固d4控制权",
+      "主要起始位置，黑方需警惕Nb5威胁c7"
+    ]
+  },
+  {
+    "groupL1": "开局理论",
+    "groupL2": "苏格兰开局 - 经典变例",
+    "name": "变例1：Nxc6 换取更好兵型",
+    "moves": [
+      "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5",
+      "Nxc6", "bxc6", "Bd3"
+    ],
+    "comments": [
+      "白方占领中心",
+      "黑方对称应对",
+      "白马攻击e5兵",
+      "黑马保护",
+      "苏格兰开局标志性招法",
+      "黑方吃兵",
+      "白马进入中心",
+      "黑象攻击d4马",
+      "白方选择兑换！目的是获得更好兵型",
+      "黑方c线出现叠兵，兵型略差",
+      "白方Bd3发展，凭借更好兵型获得微小优势"
+    ]
+  },
+  {
+    "groupL1": "开局理论",
+    "groupL2": "苏格兰开局 - 经典变例",
+    "name": "变例2：Nb3 攻象路线",
+    "moves": [
+      "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5",
+      "Nb3", "Bb6", "Nc3", "Nf6", "Qe2"
+    ],
+    "comments": [
+      "白方占领中心",
+      "黑方对称应对",
+      "白马攻击e5兵",
+      "黑马保护",
+      "苏格兰开局标志性招法",
+      "黑方吃兵",
+      "白马进入中心",
+      "黑象攻击d4马",
+      "白马退到b3攻击象",
+      "黑象退到b6保持对角线",
+      "白方继续发展",
+      "黑方出马",
+      "Qe2准备Be3兑换黑格象，黑方可走a5-a4反击"
+    ]
+  },
+  {
+    "groupL1": "开局理论",
+    "groupL2": "苏格兰开局 - 经典变例",
+    "name": "⚠️ 陷阱：黑方d6的致命错误",
+    "moves": [
+      "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5",
+      "Be3", "d6", "Nxc6", "Bxe3", "Qxd8+", "Kxd8"
+    ],
+    "comments": [
+      "白方占领中心",
+      "黑方对称应对",
+      "白马攻击e5兵",
+      "黑马保护",
+      "苏格兰开局标志性招法",
+      "黑方吃兵",
+      "白马进入中心",
+      "黑象攻击d4马",
+      "白方Be3保护马",
+      "⚠️ d6看似合理，实际是严重错误！",
+      "Nxc6！简单兑换战术开始",
+      "黑方只能吃象",
+      "白方兑后将军",
+      "黑王被迫吃后，失去易位权，c线三叠兵极弱，白方几乎必胜"
+    ]
+  },
+  {
+    "groupL1": "开局理论",
+    "groupL2": "苏格兰开局 - 经典变例",
+    "name": "理想阵型：白方长易位进攻",
+    "moves": [
+      "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5",
+      "Be3", "Bb6", "Nc3", "Nf6", "Qd2", "O-O", "O-O-O"
+    ],
+    "comments": [
+      "白方占领中心",
+      "黑方对称应对",
+      "白马攻击e5兵",
+      "黑马保护",
+      "苏格兰开局标志性招法",
+      "黑方吃兵",
+      "白马进入中心",
+      "黑象攻击d4马",
+      "白方Be3保护",
+      "Bb6保护象，但白方赢得一个节拍",
+      "白方继续发展",
+      "黑方出马",
+      "Qd2准备长易位",
+      "黑方短易位",
+      "白方长易位！达成理想进攻阵型，准备g4-g5推进攻王"
+    ]
+  },
+  {
+    "groupL1": "经典对局",
+    "groupL2": "Yuneev vs Varavin 1991",
+    "name": "Bc4变例：精彩的攻王战术",
+    "moves": [
+      "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5",
+      "Be3", "Qf6", "c3", "Nge7", "Bc4", "Ne5", "Be2", "Qg6",
+      "O-O", "d5", "Bh5", "Qh6", "exd5", "Bd6", "Nc3", "O-O",
+      "Ne4"
+    ],
+    "comments": [
+      "白方占领中心",
+      "黑方对称应对",
+      "白马攻击e5兵",
+      "黑马保护",
+      "苏格兰开局标志性招法",
+      "黑方吃兵",
+      "白马进入中心",
+      "黑象攻击d4马",
+      "白方Be3保护",
+      "黑方Qf6施压",
+      "白方巩固中心",
+      "黑方发展骑士",
+      "Bc4！控制d5格，非常重要",
+      "Ne5驱逐白象，赢得节拍",
+      "象退到e2，控制g4格",
+      "Qg6攻击g2和e4两个兵",
+      "白方短易位",
+      "d5！激进的一步，争夺中心",
+      "Bh5！精彩新着",
+      "黑后躲避",
+      "白方吃兵",
+      "黑象发展",
+      "白方继续发展",
+      "黑方易位",
+      "白方马进入强位，局势复杂"
+    ]
+  },
+  {
+    "groupL1": "经典对局",
+    "groupL2": "陷阱与错误",
+    "name": "⚠️ Ivanchuk vs Gulko: Qg6的致命错误",
+    "moves": [
+      "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5",
+      "Be3", "Qf6", "c3", "Nge7", "Bc4", "Qg6", "Nxc6", "Qxc6",
+      "Bxf7+"
+    ],
+    "comments": [
+      "白方占领中心",
+      "黑方对称应对",
+      "白马攻击e5兵",
+      "黑马保护",
+      "苏格兰开局标志性招法",
+      "黑方吃兵",
+      "白马进入中心",
+      "黑象攻击d4马",
+      "白方Be3保护",
+      "黑方Qf6施压",
+      "白方巩固中心",
+      "黑方出马",
+      "Bc4控制d5",
+      "⚠️ Qg6？典型错误！正着是Ne5",
+      "Nxc6！精彩战术",
+      "黑方只能用后吃马",
+      "Bxf7+！致命一击！将军后白方赢得子力优势"
+    ]
+  }
+];
+
+// --- 核心逻辑 ---
+let board, game = new Chess(), currentLesson = null, stepIndex = -1;
+$(function() { board = Chessboard('board', { draggable: false, position: 'start', pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png' }); renderSidebar(); });
+function renderSidebar() {
+  const $con = $('#sidebarContent').empty(); const groups = {};
+  CHESS_DATA.forEach((d, i) => { if(!groups[d.groupL1]) groups[d.groupL1]={}; if(!groups[d.groupL1][d.groupL2]) groups[d.groupL1][d.groupL2]=[]; groups[d.groupL1][d.groupL2].push({...d, idx: i}); });
+  Object.keys(groups).forEach(l1 => {
+    const $l1 = $(`<div class="group-l1"><div class="group-l1-header">${l1}<span>▼</span></div><div class="group-l1-content"></div></div>`);
+    $l1.find('.group-l1-header').click(function(){ $(this).next().slideToggle(200); });
+    Object.keys(groups[l1]).forEach(l2 => {
+      const $l2 = $(`<div class="group-l2"><div class="group-l2-header">${l2}<span>▼</span></div><div class="group-l2-content"></div></div>`);
+      $l2.find('.group-l2-header').click(function(){ $(this).next().slideToggle(200); });
+      groups[l1][l2].forEach(item => { $l2.find('.group-l2-content').append(`<div class="pgn-item" onclick="loadGame(${item.idx}, this)">${item.name}</div>`); });
+      $l1.find('.group-l1-content').append($l2);
+    });
+    $con.append($l1);
+  });
+}
+window.loadGame = function(idx, el) { $('.pgn-item').removeClass('selected'); if(el) $(el).addClass('selected'); currentLesson = CHESS_DATA[idx]; $('#boardTitle').text(currentLesson.name); goToStart(); }
+window.resetSystem = function() { currentLesson = null; goToStart(); $('#boardTitle').text("请选择课程"); $('#commentText').text("点击左侧列表，开始复盘..."); $('.pgn-item').removeClass('selected'); $('.group-l1-content').show(); }
+window.goToStart = function() { stepIndex = -1; game.reset(); board.position('start'); updateUI(); }
+window.goToPrevious = function() { if(stepIndex >= 0) { game.undo(); board.position(game.fen()); stepIndex--; updateUI(); } }
+window.goToNext = function() { if(currentLesson && stepIndex < currentLesson.moves.length-1) { stepIndex++; game.move(currentLesson.moves[stepIndex]); board.position(game.fen()); updateUI(); } }
+window.flipBoard = function() { board.flip(); }
+function updateUI() {
+  let txt = "准备开始... 请点击 [ > ]", info = "";
+  if(stepIndex >= 0) { txt = currentLesson.comments[stepIndex] || "（此步无评注）"; info = `第 ${Math.floor(stepIndex/2)+1} 回合 · ${stepIndex%2===0?"白":"黑"}`; }
+  $('#commentText').text(txt); $('#moveInfo').text(info);
+}
+$(document).on('keydown', function(e) { if(e.key === "ArrowRight") goToNext(); if(e.key === "ArrowLeft") goToPrevious(); });
+</script>
+</body>
+</html>
