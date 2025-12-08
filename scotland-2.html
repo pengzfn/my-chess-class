@@ -148,6 +148,11 @@
         .control-btn:active {
             transform: translateY(-1px);
         }
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
         .hint-area {
             background: rgba(255,255,255,0.9);
             border-radius: 15px;
@@ -162,6 +167,13 @@
             color: #2c3e50;
             line-height: 1.8;
             font-size: 1.05em;
+        }
+        .move-counter {
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 0.9em;
         }
         /* 响应式布局 */
         @media (max-width: 968px) {
@@ -259,12 +271,13 @@
             <!-- 棋盘区域 -->
             <div class="board-container">
                 <div id="myBoard"></div>
+                <div class="move-counter" id="moveCounter">第 0 步 / 共 0 步</div>
                 
                 <!-- 控制按钮 -->
                 <div class="controls">
                     <button class="control-btn" onclick="resetBoard()">|&lt; 重置</button>
-                    <button class="control-btn" onclick="previousMove()">&lt; 上一步</button>
-                    <button class="control-btn" onclick="nextMove()">下一步 &gt;</button>
+                    <button class="control-btn" id="prevBtn" onclick="previousMove()">&lt; 上一步</button>
+                    <button class="control-btn" id="nextBtn" onclick="nextMove()">下一步 &gt;</button>
                     <button class="control-btn" onclick="flipBoard()">🔄 翻转棋盘</button>
                 </div>
             </div>
@@ -279,18 +292,25 @@
         </div>
     </div>
 
+    <!-- 引入必要的库 -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     <script>
-        // 初始化棋盘
+        // 全局变量
         var board = null;
-        var currentPosition = 'start';
-        
+        var game = new Chess();
+        var moveHistory = [];
+        var currentMoveIndex = -1;
+
+        // 棋盘配置
         var config = {
-            draggable: true,
-            position: 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3',
+            draggable: false,
+            position: 'start',
             pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
         };
+
+        // 初始化棋盘
         board = Chessboard('myBoard', config);
 
         // 折叠菜单功能
@@ -299,6 +319,46 @@
             var list = element.nextElementSibling;
             list.classList.toggle('show');
         }
+
+        // 变例数据库
+        var variations = {
+            1: {
+                moves: ['e4', 'e5', 'Nf3', 'Nc6', 'd4', 'exd4', 'Nxd4'],
+                title: '经典主线 3...exd4',
+                description: '白方走 1.e4 e5 2.Nf3 Nc6 3.d4，这是苏格兰开局的标志性走法。黑方最常见的应对是 3...exd4，接受中兵交换。白方用骑士吃回，占据中心要地。',
+                steps: [
+                    '开局：双方各走 e4 和 e5，抢占中心。',
+                    '白方出骑士 Nf3，攻击黑方的 e5 兵。',
+                    '黑方出骑士 Nc6 保护中兵。',
+                    '白方走 d4！这是苏格兰开局的关键一步，打开中心。',
+                    '黑方吃兵 exd4，接受交换。',
+                    '白方 Nxd4 吃回，骑士占据强势中心位置。'
+                ]
+            },
+            2: {
+                moves: ['e4', 'e5', 'Nf3', 'Nc6', 'd4', 'Nf6'],
+                title: '黑方拒兑 3...Nf6',
+                description: '黑方选择不立即吃兵，而是发展骑士到 f6。这是一种更加稳健的应对方式，避免早期的激烈对抗。',
+                steps: [
+                    '开局：1.e4 e5 2.Nf3 Nc6',
+                    '白方走 3.d4，打开中心',
+                    '黑方不吃兵，而是走 3...Nf6，发展子力',
+                    '这是一种稳健的选择，保持棋局的平衡'
+                ]
+            },
+            7: {
+                moves: ['e4', 'e5', 'Nf3', 'Nc6', 'd4', 'Qh4'],
+                title: '陷阱：黑方贸然出后',
+                description: '如果黑方过早出动皇后（如 3...Qh4），会被白方利用发展优势进行反击。记住：不要在开局阶段让皇后成为攻击目标！',
+                steps: [
+                    '开局：1.e4 e5 2.Nf3 Nc6',
+                    '白方走 3.d4',
+                    '黑方犯错：3...Qh4？？过早出后！',
+                    '白方可以继续发展，黑后将成为攻击目标',
+                    '教训：开局阶段，先发展轻子，不要过早动后'
+                ]
+            }
+        };
 
         // 加载变例
         function loadVariation(element, id) {
@@ -309,44 +369,85 @@
             // 添加当前激活状态
             element.classList.add('active');
 
-            // 根据不同变例加载不同局面和解说
-            var variations = {
-                1: {
-                    position: 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3',
-                    hint: '<strong>经典主线 3...exd4</strong><br>白方走 1.e4 e5 2.Nf3 Nc6 3.d4，这是苏格兰开局的标志性走法。黑方最常见的应对是 3...exd4，接受中兵交换。'
-                },
-                2: {
-                    position: 'rnbqkb1r/pppp1ppp/5n2/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4',
-                    hint: '<strong>黑方拒兑 3...Nf6</strong><br>黑方选择不立即吃兵，而是发展骑士。这是一种更加稳健的应对方式。'
-                },
-                7: {
-                    position: 'r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3',
-                    hint: '<strong>陷阱：黑方贸然出后</strong><br>如果黑方过早出动皇后（如 Qh4），会被白方利用发展优势进行反击。记住：不要在开局阶段让皇后成为攻击目标！'
-                }
-            };
+            // 获取变例数据
+            var variation = variations[id] || variations[7];
+            
+            // 重置游戏
+            game.reset();
+            moveHistory = variation.moves;
+            currentMoveIndex = -1;
 
-            var data = variations[id] || variations[7];
-            board.position(data.position);
-            document.getElementById('hintText').innerHTML = data.hint;
+            // 重置棋盘到起始位置
+            board.position('start');
+            
+            // 更新提示文本
+            updateHintText(variation);
+            updateMoveCounter();
+            updateButtons();
+        }
+
+        // 更新提示文本
+        function updateHintText(variation) {
+            var html = '<strong>' + variation.title + '</strong><br><br>';
+            html += variation.description + '<br><br>';
+            html += '<strong>步骤说明：</strong><ul>';
+            variation.steps.forEach(function(step) {
+                html += '<li>' + step + '</li>';
+            });
+            html += '</ul>';
+            document.getElementById('hintText').innerHTML = html;
+        }
+
+        // 更新步数计数器
+        function updateMoveCounter() {
+            var total = moveHistory.length;
+            var current = currentMoveIndex + 1;
+            document.getElementById('moveCounter').textContent = 
+                '第 ' + current + ' 步 / 共 ' + total + ' 步';
+        }
+
+        // 更新按钮状态
+        function updateButtons() {
+            document.getElementById('prevBtn').disabled = (currentMoveIndex < 0);
+            document.getElementById('nextBtn').disabled = (currentMoveIndex >= moveHistory.length - 1);
         }
 
         // 重置棋盘
         function resetBoard() {
             console.log('重置棋盘');
-            board.start();
-            document.getElementById('hintText').innerHTML = '棋盘已重置到初始位置。';
+            game.reset();
+            board.position('start');
+            currentMoveIndex = -1;
+            updateMoveCounter();
+            updateButtons();
+            document.getElementById('hintText').innerHTML = '棋盘已重置到初始位置。点击"下一步"开始复盘。';
         }
 
         // 上一步
         function previousMove() {
+            if (currentMoveIndex < 0) return;
+            
+            game.undo();
+            currentMoveIndex--;
+            board.position(game.fen());
+            updateMoveCounter();
+            updateButtons();
+            
             console.log('上一步');
-            document.getElementById('hintText').innerHTML = '上一步功能（开发中）...';
         }
 
         // 下一步
         function nextMove() {
-            console.log('下一步');
-            document.getElementById('hintText').innerHTML = '下一步功能（开发中）...';
+            if (currentMoveIndex >= moveHistory.length - 1) return;
+            
+            currentMoveIndex++;
+            var move = moveHistory[currentMoveIndex];
+            game.move(move);
+            board.position(game.fen());
+            updateMoveCounter();
+            updateButtons();
+            
+            console.log('下一步: ' + move);
         }
 
         // 翻转棋盘
@@ -359,9 +460,11 @@
         // 响应式调整
         $(window).resize(board.resize);
 
-        // 页面加载时默认展开第三个分类
+        // 页面加载时默认展开第三个分类并加载第一个变例
         window.addEventListener('load', function() {
             document.querySelectorAll('.category-title')[2].click();
+            // 加载默认变例
+            loadVariation(document.querySelector('.variation-item.active'), 7);
         });
     </script>
 
