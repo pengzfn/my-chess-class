@@ -1,4 +1,4 @@
-(function() {
+(function () {
     // 1. 依赖检查
     if (typeof Chess === 'undefined' || typeof Chessboard === 'undefined') {
         console.error('Critical Error: Chess.js or Chessboard.js not loaded.');
@@ -13,11 +13,11 @@
         stepIndex: 0,
 
         // 初始化
-        init: function(boardId, startFen) {
+        init: function (boardId, startFen) {
             console.log('Initializing ChessApp...');
             try {
                 this.game = new Chess(startFen || 'start');
-                
+
                 var config = {
                     draggable: true,
                     position: startFen || 'start',
@@ -29,7 +29,7 @@
                 };
 
                 this.board = Chessboard(boardId, config);
-                
+
                 // 响应式调整
                 window.addEventListener('resize', () => {
                     if (this.board) this.board.resize();
@@ -44,16 +44,17 @@
         },
 
         // 拖拽开始
-        onDragStart: function(source, piece, position, orientation) {
+        onDragStart: function (source, piece, position, orientation) {
             if (this.game.game_over()) return false;
             if ((this.game.turn() === 'w' && piece.search(/^b/) !== -1) ||
                 (this.game.turn() === 'b' && piece.search(/^w/) !== -1)) {
                 return false;
             }
+            return true; // 允许拖拽
         },
 
         // 放置棋子
-        onDrop: function(source, target) {
+        onDrop: function (source, target) {
             var move = this.game.move({
                 from: source,
                 to: target,
@@ -65,38 +66,38 @@
             this.undoStack = [];
             this.updateStatus();
             // 用户手动走棋后，更新提示（虽然可能偏离变例，但保持 UI 响应）
-            this.updateHint(this.currentVariation); 
+            this.updateHint(this.currentVariation);
         },
 
         // 动画结束
-        onSnapEnd: function() {
+        onSnapEnd: function () {
             this.board.position(this.game.fen());
         },
 
         // 加载变例
-        loadVariation: function(variation) {
+        loadVariation: function (variation) {
             if (!variation) return;
             console.log('Loading variation:', variation.title);
             this.currentVariation = variation;
             this.stepIndex = 0;
-            
+
             this.game.load(variation.fen);
             this.board.position(variation.fen);
             this.undoStack = [];
-            
+
             this.updateStatus();
             this.updateHint(variation);
         },
 
         // 下一步
-        nextMove: function() {
+        nextMove: function () {
             // 优先走变例
-            if (this.currentVariation && this.currentVariation.moves && 
+            if (this.currentVariation && this.currentVariation.moves &&
                 this.stepIndex < this.currentVariation.moves.length) {
-                
+
                 var moveStr = this.currentVariation.moves[this.stepIndex];
                 var move = this.game.move(moveStr);
-                
+
                 if (move) {
                     this.board.position(this.game.fen());
                     this.stepIndex++;
@@ -105,7 +106,7 @@
                 }
                 return;
             }
-            
+
             // 否则重做
             if (this.undoStack.length > 0) {
                 var move = this.undoStack.pop();
@@ -117,23 +118,23 @@
         },
 
         // 上一步
-        prevMove: function() {
+        prevMove: function () {
             var move = this.game.undo();
             if (move) {
                 this.undoStack.push(move);
                 this.board.position(this.game.fen());
-                
+
                 if (this.currentVariation && this.stepIndex > 0) {
                     this.stepIndex--;
                 }
-                
+
                 this.updateStatus();
                 this.updateHint(this.currentVariation);
             }
         },
 
         // 重置
-        reset: function() {
+        reset: function () {
             if (this.currentVariation) {
                 this.loadVariation(this.currentVariation);
             } else {
@@ -148,12 +149,12 @@
         },
 
         // 翻转
-        flipBoard: function() {
+        flipBoard: function () {
             this.board.flip();
         },
 
         // 更新状态文字
-        updateStatus: function() {
+        updateStatus: function () {
             var status = '';
             var moveColor = this.game.turn() === 'w' ? '白方' : '黑方';
 
@@ -167,16 +168,16 @@
                     status += ' (将军!)';
                 }
             }
-            
+
             var statusEl = document.getElementById('statusInfo');
             if (statusEl) statusEl.textContent = status;
-            
+
             var debugEl = document.getElementById('fenDebug');
             if (debugEl) debugEl.textContent = this.game.fen();
         },
 
         // 更新右侧提示
-        updateHint: function(variation) {
+        updateHint: function (variation) {
             var hintEl = document.getElementById('hintText');
             if (!hintEl) return;
 
@@ -187,7 +188,7 @@
 
             var html = '<h3>' + variation.title + '</h3>';
             html += '<p>' + variation.description + '</p>';
-            
+
             if (variation.steps) {
                 html += '<ul>';
                 variation.steps.forEach((step, index) => {
@@ -197,12 +198,12 @@
                     // 所以高亮 index === stepIndex 表示"请走这一步"。
                     var isCurrent = (index === this.stepIndex);
                     var style = isCurrent ? 'background: rgba(102, 126, 234, 0.2); font-weight: bold; color: #667eea; padding: 2px 5px; border-radius: 4px; border-left: 3px solid #667eea;' : 'padding: 2px 5px;';
-                    
+
                     html += '<li style="' + style + '">' + step + '</li>';
                 });
                 html += '</ul>';
             }
-            
+
             hintEl.innerHTML = html;
         }
     };
