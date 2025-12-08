@@ -332,7 +332,8 @@
                 <span class="arrow" style="transform: rotate(90deg)">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn" style="color:#fc8181" onclick="selectVariation('instructive_g6')">1. 教学局 4...g6</button>
+                <button class="variation-btn" style="color:#fc8181" onclick="selectVariation('instructive_g6')">1. 教学局
+                    4...g6</button>
             </div>
         </div>
 
@@ -405,13 +406,38 @@
                 title: "教学局：4...g6 及其陷阱",
                 fen: "r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 3",
                 description: "针对 4...g6，白方可以通过弃兵、弃子发动迅猛的攻势。",
-                moves: ["exd4", "Nxd4", "g6", "Nc3", "Bg7", "Be3", "Nf6", "Nxc6", "bxc6", "e5", "Ng8", "f4", "f6", "Bc4", "fxe5", "O-O", "d5", "Nxd5", "cxd5", "Bxd5", "Rb8", "Bf7+"],
+                moves: [
+                    "exd4",   // 3...exd4 黑
+                    "Nxd4",   // 4.Nxd4 白
+                    "g6",     // 4...g6 黑
+                    "Nc3",    // 5.Nc3 白
+                    "Bg7",    // 5...Bg7 黑
+                    "Be3",    // 6.Be3 白
+                    "Nf6",    // 6...Nf6 黑 (开局错误)
+                    "Nxc6",   // 7.Nxc6 白
+                    "bxc6",   // 7...bxc6 黑
+                    "e5",     // 8.e5 白
+                    "Ng8",    // 8...Ng8 黑
+                    "f4",     // 9.f4 白
+                    "f6",     // 9...f6 黑
+                    "Bc4",    // 10.Bc4 白
+                    "fxe5",   // 10...fxe5 黑
+                    "O-O",    // 11.O-O 白
+                    "d5",     // 11...d5 黑
+                    "Nxd5",   // 12.Nxd5 白
+                    "cxd5",   // 12...cxd5 黑
+                    "Bxd5",   // 13.Bxd5 白
+                    "Rb8",    // 13...Rb8 黑
+                    "Bf7+"    // 14.Bf7+ 白 绝杀
+                ],
                 steps: [
                     "3...exd4",
                     "4.Nxd4",
                     "4...g6 准备出侧翼象",
-                    "5.Nc3 Bg7",
-                    "6.Be3 Nf6 ?! 这是一个开局错误",
+                    "5.Nc3",
+                    "5...Bg7",
+                    "6.Be3",
+                    "6...Nf6 ?! 这是一个开局错误",
                     "7.Nxc6 ! 立即交换",
                     "7...bxc6",
                     "8.e5 ! 逼退黑马",
