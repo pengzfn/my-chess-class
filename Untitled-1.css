@@ -75,3 +75,23 @@ h1 {
 .back-button:hover {
     background-color: #229954;
 }
+/* 棋盘页面样式 */
+.chess-container {
+    max-width: 800px;
+    width: 100%;
+    margin-top: 60px;
+}
+.lesson-title {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.board-wrapper {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
