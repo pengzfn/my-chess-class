@@ -422,6 +422,31 @@ body.home-page h1 {
     color: #fff;
 }
 
+/* === Utility Classes (从内联样式迁移) === */
+
+/* 状态标签变体 */
+.status-tag-pending {
+    background: #ccc !important;
+}
+
+.status-tag-success {
+    background: #48bb78 !important;
+}
+
+/* 侧边栏箭头旋转状态 */
+.arrow-open {
+    transform: rotate(90deg);
+}
+
+.arrow-closed {
+    transform: rotate(0deg);
+}
+
+/* 危险/警告按钮文字颜色 */
+.text-danger {
+    color: #fc8181 !important;
+}
+
 /* Glass card utility class */
 .glass-card {
     background: rgba(255, 255, 255, 0.1);

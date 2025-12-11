@@ -279,9 +279,97 @@ const SCOTLAND_3_DATA = {
     }
 };
 
+// =====================================================
+// LESSON 4: Steinitz Variation (斯坦尼茨变例)
+// =====================================================
+const SCOTLAND_4_DATA = {
+    d5_trap: {
+        title: "冷门陷阱：4...d5 变例",
+        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        description: "这是讲师特别提到的一个书本上罕见但逻辑看似合理的走法。如果白方应对不当（如走看似自然的 Bb5），黑方可以轻松获得平先甚至反击的机会。正确的反击方案是保持简单的出子逻辑。",
+        moves: ["e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "d5", "exd5", "Qxd5", "Qe2+", "Be6", "Nb5", "O-O-O", "N1c3"],
+        steps: [
+            "1.e4 占领中心",
+            "1...e5",
+            "2.Nf3",
+            "2...Nc6",
+            "3.d4 苏格兰开局",
+            "3...exd4",
+            "4.Nxd4",
+            "4...d5 黑方试图一步解决中心问题，但在战术上有缺陷",
+            "5.exd5 白方最佳应对，直接吃掉",
+            "5...Qxd5",
+            "6.Qe2+! 关键着法！强迫黑方挡格，为后续战术做铺垫",
+            "6...Be6 黑方必须应将（若 Nge7 则 Nb5 威胁 c7 优势巨大）",
+            "7.Nb5 利用先手威胁 c7 格，马位置极佳",
+            "7...O-O-O 黑方为了解围不得不长易位",
+            "8.N1c3 白方简单出子，双象优势+更好兵型，白优"
+        ]
+    },
+    steinitz_main: {
+        title: "斯坦尼茨变例主线 (4...Qh4)",
+        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        description: "黑方第4步直接出后攻击 e4 兵，这是极具挑衅性的走法。白方的核心策略是不贪恋兵力，而是利用出子速度（Activity）来惩罚黑方过早出后。",
+        moves: ["e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Qh4", "Nc3", "Bb4", "Be2", "Qxe4", "Nb5", "Bxc3+", "bxc3", "Kd8", "O-O"],
+        steps: [
+            "1.e4",
+            "1...e5",
+            "2.Nf3",
+            "2...Nc6",
+            "3.d4",
+            "3...exd4",
+            "4.Nxd4",
+            "4...Qh4 斯坦尼茨变例！黑方威胁 e4 兵，意图混战",
+            "5.Nc3 保护 e4 并发展子力",
+            "5...Bb4 钳制白马，再次对 e4 施压",
+            "6.Be2! 弃掉 e4 兵！最关键的一步，临场很难找到",
+            "6...Qxe4 黑方接受弃兵",
+            "7.Ndb5 威胁 Nxc7 抽车或杀王，同时攻击黑后",
+            "7...Bxc3+ 黑方为了消除威胁，不得不交换",
+            "8.bxc3 兵型被打散，但获得双象+极快出子速度",
+            "8...Kd8 黑王失去易位权，白方拥有巨大补偿",
+            "9.O-O 白方安全易位，将通过 Re1 攻击滞留中心的黑后和黑王"
+        ]
+    },
+    mitkov_variation: {
+        title: "Mitkov 改进尝试 (6...Nf6)",
+        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        description: "这是马其顿特级大师 Mitkov 喜爱的变例，试图不直接吃 e4 兵而是先出马。但此走法被一位 2100 分棋手精彩驳倒。",
+        moves: ["e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Qh4", "Nc3", "Bb4", "Be2", "Nf6", "Nf5", "Qxe4", "Nxg7+", "Ke7", "O-O", "Bxc3", "bxc3", "Qg6", "Nh5", "d6", "Nf4", "Qg8", "Re1"],
+        steps: [
+            "1.e4",
+            "1...e5",
+            "2.Nf3",
+            "2...Nc6",
+            "3.d4",
+            "3...exd4",
+            "4.Nxd4",
+            "4...Qh4",
+            "5.Nc3",
+            "5...Bb4",
+            "6.Be2",
+            "6...Nf6 Mitkov 的改进着法，推迟吃兵",
+            "7.Nf5! 精彩！直接攻击黑后（原文误听为 Na5，实为 Nf5 配合 Nxg7+）",
+            "7...Qxe4 黑方被迫吃兵，否则无路可走",
+            "8.Nxg7+ 白方抽将！",
+            "8...Ke7 (若 Kf8 则 Bh6 配合后续进攻致命)",
+            "9.O-O 白方优先安全王位并准备出车",
+            "9...Bxc3",
+            "10.bxc3",
+            "10...Qg6 黑后试图逃离危险区域",
+            "11.Nh5 利用牵制和位置优势，白马极其活跃",
+            "11...d6",
+            "12.Nf4 再次攻击黑后，马调整到攻击位置",
+            "12...Qg8 黑后被逼退",
+            "13.Re1! 车占据 e 线直指黑王，通过 Ba3+ 拥有毁灭性攻势"
+        ]
+    }
+};
+
 // Export for use in other scripts (if using modules in future)
 if (typeof window !== 'undefined') {
     window.SCOTLAND_1_DATA = SCOTLAND_1_DATA;
     window.SCOTLAND_2_DATA = SCOTLAND_2_DATA;
     window.SCOTLAND_3_DATA = SCOTLAND_3_DATA;
+    window.SCOTLAND_4_DATA = SCOTLAND_4_DATA;
 }

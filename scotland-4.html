@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>苏格兰开局 - 第一讲：开局原理</title>
+    <title>苏格兰开局 - 第四讲：斯坦尼茨变例</title>
 
     <!-- External Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
@@ -30,31 +30,37 @@
                 </svg>
                 返回目录
             </a>
-            <span class="nav-title">第一讲：开局原理</span>
+            <span class="nav-title">第四讲：斯坦尼茨变例</span>
         </div>
     </nav>
 
     <div class="container">
         <div class="sidebar">
-            <h3>♟️ 变例库</h3>
+            <h3>⚔️ 斯坦尼茨变例</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>冷门陷阱</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('d5_trap')">1. 冷门：4...d5 变例</button>
+            </div>
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
                 <span>主线理论</span>
                 <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn" onclick="selectVariation('intro')">1. 核心思想 (intro)</button>
-                <button class="variation-btn" onclick="selectVariation('variation_d6')">2. 变例 4... d6</button>
-                <button class="variation-btn" onclick="selectVariation('variation_nxd4')">3. 变例 4... Nxd4 (不推荐)</button>
+                <button class="variation-btn" onclick="selectVariation('steinitz_main')">2. 主线：4...Qh4</button>
             </div>
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
-                <span>⚠️ 常见陷阱</span>
+                <span>实战变例</span>
                 <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn text-danger" onclick="selectVariation('instructive_g6')">1. 教学局
-                    4...g6</button>
+                <button class="variation-btn" onclick="selectVariation('mitkov_variation')">3. Mitkov 改进
+                    (6...Nf6)</button>
             </div>
         </div>
 
@@ -72,15 +78,16 @@
 
         <div class="info-area">
             <div id="hintText" class="hint-content">
-                <h3>欢迎来到大师复盘室</h3>
-                <p>请点击左侧的变例名称开始学习。你可以直接在棋盘上走棋，也可以点击"下一步"按钮演示标准走法。</p>
+                <h3>斯坦尼茨变例 (4...Qh4)</h3>
+                <p>这是苏格兰开局中一个非常古老且激进的变例，得名于首位世界冠军威廉·斯坦尼茨。</p>
+                <p><strong>核心思想：</strong>黑方早早出后试图掠夺 e4 兵并制造混乱。白方应弃兵换取出子速度优势。</p>
             </div>
         </div>
     </div>
 
     <script>
         // 使用外部数据文件
-        const VARIATIONS = window.SCOTLAND_1_DATA;
+        const VARIATIONS = window.SCOTLAND_4_DATA;
 
         // 桥接函数：处理点击事件
         function selectVariation(key) {
@@ -93,14 +100,14 @@
 
         // 页面加载完成后初始化
         $(document).ready(function () {
-            // 苏格兰开局初始状态
-            var startFen = 'r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3';
+            // 从标准开局位置开始（FEN: 初始棋盘）
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
             // 启动应用
             window.ChessApp.init('myBoard', startFen);
 
             // 默认加载第一个变例
-            selectVariation('intro');
+            selectVariation('d5_trap');
         });
     </script>
 

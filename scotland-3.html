@@ -40,7 +40,7 @@
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
                 <span>核心理论</span>
-                <span class="arrow" style="transform: rotate(90deg)">▶</span>
+                <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
                 <button class="variation-btn" onclick="selectVariation('mieses_intro')">1. 为什么选择 Mieses？</button>
@@ -49,18 +49,18 @@
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
                 <span>常见陷阱与错误</span>
-                <span class="arrow" style="transform: rotate(90deg)">▶</span>
+                <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn" style="color:#fc8181" onclick="selectVariation('mistake_nd5')">3.
+                <button class="variation-btn text-danger" onclick="selectVariation('mistake_nd5')">3.
                     错误：6...Nd5?</button>
-                <button class="variation-btn" style="color:#fc8181" onclick="selectVariation('mistake_g6')">4.
+                <button class="variation-btn text-danger" onclick="selectVariation('mistake_g6')">4.
                     错误：9...g6?</button>
             </div>
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
                 <span>实战演示</span>
-                <span class="arrow" style="transform: rotate(90deg)">▶</span>
+                <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
                 <button class="variation-btn" onclick="selectVariation('game_demo')">5. 精彩对局：惩罚 g6</button>
@@ -96,22 +96,10 @@
         function selectVariation(key) {
             if (VARIATIONS && VARIATIONS[key]) {
                 window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
             }
         }
-
-        // 侧边栏折叠功能
-        window.toggleSidebarCategory = function (headerElement) {
-            var content = headerElement.nextElementSibling;
-            var arrow = headerElement.querySelector('.arrow');
-
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(90deg)';
-            } else {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            }
-        };
 
         // 页面加载完成后初始化
         $(document).ready(function () {

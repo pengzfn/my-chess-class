@@ -116,10 +116,13 @@
                 return;
             }
 
-            // 验证 moves 和 steps 长度匹配
+            // 验证 moves 和 steps 长度匹配 - 阻断性检查
             if (variation.moves.length !== variation.steps.length) {
-                console.warn('Warning: moves.length !== steps.length',
-                    variation.moves.length, variation.steps.length);
+                console.error('Critical Error: moves.length (' + variation.moves.length + 
+                    ') !== steps.length (' + variation.steps.length + ')');
+                this.showError('数据严重错误：Moves(' + variation.moves.length + 
+                    ') 与 Steps(' + variation.steps.length + ') 数量不匹配！');
+                return; // 阻止加载，防止棋盘错乱
             }
 
             console.log('Loading variation:', variation.title);
@@ -330,6 +333,33 @@
             var div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+    };
+
+    // =====================================================
+    // 公共 UI 函数（从各 HTML 页面提取）
+    // =====================================================
+
+    /**
+     * 侧边栏折叠/展开功能
+     * @param {HTMLElement} headerElement - 被点击的分类标题元素
+     */
+    window.toggleSidebarCategory = function (headerElement) {
+        var content = headerElement.nextElementSibling;
+        var arrow = headerElement.querySelector('.arrow');
+
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            if (arrow) {
+                arrow.classList.add('arrow-open');
+                arrow.classList.remove('arrow-closed');
+            }
+        } else {
+            content.style.display = 'none';
+            if (arrow) {
+                arrow.classList.remove('arrow-open');
+                arrow.classList.add('arrow-closed');
+            }
         }
     };
 })();

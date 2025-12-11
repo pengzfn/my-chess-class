@@ -40,7 +40,7 @@
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
                 <span>主线理论</span>
-                <span class="arrow" style="transform: rotate(90deg)">▶</span>
+                <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
                 <button class="variation-btn" onclick="selectVariation('mainline')">1. 主线 (3...exd4)</button>
@@ -50,12 +50,12 @@
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
                 <span>⚠️ 常见陷阱</span>
-                <span class="arrow" style="transform: rotate(90deg)">▶</span>
+                <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn" style="color:#fc8181" onclick="selectVariation('trap_qh4')">1. 过早出后
+                <button class="variation-btn text-danger" onclick="selectVariation('trap_qh4')">1. 过早出后
                     (Qh4??)</button>
-                <button class="variation-btn" style="color:#fc8181" onclick="selectVariation('trap_f7')">2. f7
+                <button class="variation-btn text-danger" onclick="selectVariation('trap_f7')">2. f7
                     点突破</button>
             </div>
         </div>
@@ -88,22 +88,10 @@
         function selectVariation(key) {
             if (VARIATIONS && VARIATIONS[key]) {
                 window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
             }
         }
-
-        // 侧边栏折叠功能
-        window.toggleSidebarCategory = function (headerElement) {
-            var content = headerElement.nextElementSibling;
-            var arrow = headerElement.querySelector('.arrow');
-
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(90deg)';
-            } else {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            }
-        };
 
         // 页面加载完成后初始化
         $(document).ready(function () {
