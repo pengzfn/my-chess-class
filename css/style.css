@@ -1,63 +1,128 @@
 /* =====================================================
-   Chess Class - Unified Stylesheet
-   =====================================================
-   This file contains all common styles for lesson pages.
-   Individual pages can override with page-specific <style> blocks.
+   Chess Class - Midnight Slate Theme (iPad Optimized)
    ===================================================== */
 
-/* === CSS Variables for Theming === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* === CSS Variables: Midnight Slate Palette === */
 :root {
-    --bg-primary: #111318;
-    --bg-secondary: #1e2235;
-    --bg-card: #1a1d2e;
-    --border-color: #2f344a;
-    --text-primary: #e0e0e0;
-    --text-secondary: #9ca3af;
-    --text-muted: #a0aec0;
-    --accent-primary: #4f46e5;
-    --accent-hover: #4338ca;
-    --accent-light: rgba(79, 70, 229, 0.15);
-    --status-color: #4fd1c5;
-    --warning-color: #fc8181;
-    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-mono: 'SF Mono', 'Roboto Mono', monospace;
+    /* Backgrounds - The "Not Black" Deep Blue-Grey */
+    --bg-page: #0f172a;
+    /* Slate 900 */
+    --bg-panel: #1e293b;
+    /* Slate 800 */
+    --bg-panel-hover: #334155;
+    /* Slate 700 */
+    --bg-subtle: #1e293b;
+
+    /* Borders - Soft & Integrated */
+    --border-color: #334155;
+    /* Slate 700 */
+    --border-light: #475569;
+    /* Slate 600 */
+
+    /* Text - High Legibility on Dark */
+    --text-primary: #f1f5f9;
+    /* Slate 100 */
+    --text-secondary: #cbd5e1;
+    /* Slate 300 */
+    --text-muted: #94a3b8;
+    /* Slate 400 */
+
+    /* Accents - "Sky & Indigo" */
+    --accent: #38bdf8;
+    /* Sky 400 */
+    --accent-hover: #7dd3fc;
+    /* Sky 300 */
+    --accent-dim: rgba(56, 189, 248, 0.15);
+
+    /* Secondary Accent (for navigation active states) */
+    --accent-secondary: #818cf8;
+    /* Indigo 400 */
+
+    /* Status */
+    --success: #4ade80;
+    /* Green 400 */
+    --warning: #fbbf24;
+    /* Amber 400 */
+    --error: #f87171;
+    /* Red 400 */
+
+    /* Layout Variables (Golden Ratio inspired) */
+    --sidebar-width: 280px;
+    /* Narrower for better iPad Fit */
+    --header-height: 64px;
+    --radius: 12px;
+    /* Softer corners */
+    --gap-size: 20px;
+
+    /* Typography */
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
 }
 
-/* === Global Reset & Base === */
+/* === Global Reset === */
 * {
     box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+    -webkit-tap-highlight-color: transparent;
+    /* Remove tap highlight on iPad */
+}
+
+/* Custom Scrollbar - Blends better with Slate */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
 }
 
 body {
-    background-color: var(--bg-primary);
-    background-image: url('../images/glass-bg.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    font-family: var(--font-stack);
+    background-color: var(--bg-page);
+    /* Very subtle noise texture for premium feel, optional */
+    background-image: radial-gradient(circle at top center, #1e293b 0%, #0f172a 60%);
+    font-family: var(--font-main);
     color: var(--text-primary);
     margin: 0;
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* === Top Navigation Bar === */
 .navbar {
-    height: 60px;
-    background-color: var(--bg-card);
+    height: var(--header-height);
+    background: rgba(15, 23, 42, 0.9);
+    /* Slate 900 with opacity */
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     padding: 0 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     flex-shrink: 0;
+    z-index: 50;
+    justify-content: space-between;
 }
 
 .nav-left {
     display: flex;
     align-items: center;
+    gap: 16px;
 }
 
 .nav-btn {
@@ -65,126 +130,145 @@ body {
     color: var(--text-muted);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     font-weight: 500;
-    transition: color 0.2s, background 0.2s;
     font-size: 14px;
-    padding: 8px 16px;
+    padding: 10px 16px;
+    /* Larger touch target */
     border-radius: 8px;
     background: transparent;
-    border: none;
-    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
 .nav-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    background: var(--bg-panel);
+    border-color: var(--border-color);
 }
 
 .nav-title {
-    margin-left: 20px;
     font-size: 18px;
     font-weight: 600;
-    color: #fff;
-    border-left: 1px solid #3f445a;
-    padding-left: 20px;
+    color: var(--text-primary);
+    padding: 4px 0;
+    letter-spacing: -0.01em;
 }
 
-/* === Main Container Layout === */
+/* === Main Container === */
 .container {
     display: flex;
     flex-direction: row;
-    /* 桌面端必须横向排列！ */
-    gap: 20px;
-    padding: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-    height: calc(100vh - 60px);
-    /* 减去导航栏高度，填满屏幕 */
-    overflow: hidden;
-    /* 防止整个页面出现滚动条 */
+    gap: var(--gap-size);
+    padding: var(--gap-size);
     width: 100%;
-    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: 1440px;
+    /* Constrain max width for large screens */
+    height: calc(100vh - var(--header-height));
 }
 
-/* === Sidebar & Info Area (Glass Cards) === */
-.sidebar,
-.info-area {
-    background-color: rgba(30, 34, 53, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
+/* === Common Panel Styles === */
+/* Returning to "floating panels" look but with solid slate colors */
+.panel-base {
+    background: var(--bg-panel);
     border: 1px solid var(--border-color);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-    padding: 20px;
-    overflow-y: auto;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* === Left Sidebar (Vertical Navigation) === */
 .sidebar {
-    width: 300px;
+    width: var(--sidebar-width);
     flex-shrink: 0;
-    /* 不允许压缩 */
+    overflow-y: auto;
+    /* Apply panel base styles */
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar h3 {
-    font-size: 16px;
-    color: #fff;
-    margin: 0 0 16px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    padding: 20px 20px 10px;
+    margin: 0;
+    font-weight: 700;
 }
 
 .category-header {
-    background: var(--accent-light);
-    padding: 12px 14px;
-    border-radius: 10px;
-    margin-top: 8px;
+    padding: 14px 20px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.2s;
-    border: 1px solid transparent;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-panel);
+    transition: background 0.2s;
 }
 
 .category-header:hover {
-    background: rgba(79, 70, 229, 0.25);
-    border-color: rgba(79, 70, 229, 0.3);
+    background: var(--bg-panel-hover);
+}
+
+.category-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .arrow {
-    transition: transform 0.3s;
-    color: #6366f1;
+    color: var(--accent);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .variation-list {
-    display: block;
-    padding-left: 8px;
-    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    gap: 4px;
+    background: rgba(15, 23, 42, 0.3);
+    /* Slightly darker inner bg */
 }
 
 .variation-btn {
-    display: block;
+    display: flex;
+    align-items: center;
     width: 100%;
     text-align: left;
     background: transparent;
     border: none;
     color: var(--text-secondary);
-    padding: 10px 12px;
+    padding: 12px 14px;
+    /* Generous touch target */
     cursor: pointer;
-    transition: all 0.2s;
     border-radius: 8px;
     font-size: 14px;
-    margin-bottom: 2px;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-family: var(--font-main);
 }
 
 .variation-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.08);
-    padding-left: 16px;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
 }
 
-/* === Board Area === */
+.variation-btn.active {
+    color: #fff;
+    background: var(--accent-secondary);
+    /* Indigo for active state */
+    box-shadow: 0 4px 12px rgba(129, 140, 248, 0.3);
+}
+
+/* === Center Board Area === */
 .board-area {
     flex: 1;
     display: flex;
@@ -192,282 +276,293 @@ body {
     align-items: center;
     justify-content: center;
     min-width: 0;
+    /* Important for flex */
+    position: relative;
+    /* Soft spotlight via gradient */
+    background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 70%);
+    border-radius: var(--radius);
+    /* Removed border for cleaner 'stage' look */
 }
 
 #myBoard {
     width: 100%;
-    max-width: 480px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    max-width: 65vh;
+    /* Responsive to height on landscape iPad */
+    aspect-ratio: 1/1;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
 }
 
-/* === Control Buttons (Capsule Style) === */
+/* Controls - Clean Capsule */
 .controls {
     margin-top: 24px;
     display: flex;
-    justify-content: center;
-    gap: 8px;
-    background: var(--bg-secondary);
-    padding: 10px 16px;
-    border-radius: 30px;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--bg-panel);
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-radius: 100px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .btn {
     background: transparent;
-    border: 1px solid transparent;
-    color: var(--text-muted);
-    padding: 10px 18px;
-    border-radius: 20px;
+    border: none;
+    color: var(--text-secondary);
+    width: 44px;
+    height: 44px;
+    /* Good touch target */
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s;
 }
 
 .btn:hover {
-    background-color: #2f344a;
-    color: white;
+    background: var(--bg-panel-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
 }
 
 .btn-primary {
-    background-color: var(--accent-primary);
-    color: white;
+    background: var(--accent-secondary);
+    color: #fff;
+    box-shadow: 0 4px 6px -1px rgba(129, 140, 248, 0.4);
 }
 
 .btn-primary:hover {
-    background-color: var(--accent-hover);
+    background: #6366f1;
+    /* Indigo 500 */
+    box-shadow: 0 10px 15px -3px rgba(129, 140, 248, 0.5);
 }
 
-/* === Right Side Info Area === */
+/* === Right Info Area === */
 .info-area {
-    width: 300px;
+    width: var(--sidebar-width);
     flex-shrink: 0;
-    /* 不允许压缩 */
+    overflow-y: auto;
+    /* Apply panel base styles */
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
 }
 
 #statusInfo {
-    font-size: 1.1em;
-    color: var(--status-color);
-    margin-bottom: 16px;
-    padding: 10px 14px;
-    background: rgba(79, 209, 197, 0.1);
-    border-radius: 8px;
-    border-left: 3px solid var(--status-color);
+    padding: 20px;
+    background: rgba(56, 189, 248, 0.1);
+    /* Sky blue tint */
+    border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    /* Sky Blue */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#statusInfo::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+}
+
+.hint-content {
+    padding: 20px;
 }
 
 .hint-content h3 {
     font-size: 18px;
-    color: #fff;
-    margin: 0 0 12px 0;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--accent-primary);
-    display: inline-block;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 16px 0;
 }
 
 .hint-content p {
     color: var(--text-secondary);
-    line-height: 1.6;
-    margin: 0 0 16px 0;
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 24px;
 }
 
 .hint-content ul {
-    padding-left: 0;
-    color: var(--text-muted);
     list-style: none;
+    padding: 0;
     margin: 0;
+    position: relative;
+    margin-left: 10px;
+    border-left: 2px solid var(--border-color);
 }
 
 .hint-content li {
-    margin-bottom: 6px;
-    transition: all 0.3s;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-family: var(--font-mono);
+    padding: 0 0 24px 20px;
+    position: relative;
+    color: var(--text-muted);
     font-size: 14px;
+    font-family: var(--font-mono);
+    line-height: 1.5;
 }
 
-/* Current step highlight */
+/* Timeline dots */
+.hint-content li::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    /* Center on 2px border */
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg-page);
+    border: 2px solid var(--border-color);
+    transition: all 0.3s;
+}
+
 .hint-content li.current-step {
-    background: var(--accent-light) !important;
-    color: #818cf8 !important;
-    border-left: 3px solid #6366f1;
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
-/* Debug info */
+.hint-content li.current-step::before {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-dim);
+}
+
+/* Debug */
 #fenDebug {
-    font-size: 10px;
-    color: #4a5568;
-    margin-top: 12px;
-    font-family: monospace;
-    display: none;
+    padding: 20px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--border-light);
+    opacity: 0.5;
 }
 
-/* === Responsive - 仅在小于 850px 时切换为垂直布局 === */
-@media (max-width: 850px) {
+/* === Responsive === */
+
+/* iPad Landscape Specific (approx 1024px to 1100px) */
+/* The layout naturally fits: 280+280+464 = 1024. 20px gaps -> 1064px needed?
+   Let's check: 1024 - (280*2) - (20*3) = 1024 - 560 - 60 = 404px for board.
+   This is acceptable. The Flex 1 will handle it.
+*/
+
+/* Mobile / Portrait Tablet Breakpoint */
+@media (max-width: 950px) {
     .container {
         flex-direction: column;
-        /* 小屏幕垂直堆叠 */
         height: auto;
         overflow-y: auto;
+        padding-bottom: 80px;
+        /* Space for bottom interaction */
     }
 
     .sidebar,
     .info-area {
         width: 100%;
-        flex-shrink: 1;
+        max-height: none;
+        flex: none;
+        margin-bottom: 20px;
     }
 
     .board-area {
         order: -1;
-        /* 棋盘放在最上面 */
+        /* Board first */
+        padding: 20px 0;
+        min-height: auto;
+    }
+
+    #myBoard {
+        max-width: 100%;
+        max-height: 50vh;
     }
 }
 
-/* =====================================================
-   Home Page & Intro Page Styles (from original style.css)
-   ===================================================== */
-
-/* Override body for home/intro pages */
-body.home-page {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #f4f9f4;
-    background-image: none;
-    /* Override dark glassmorphism background */
-    color: #2c3e50;
-    height: auto;
-    overflow: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* Utility Classes */
+.text-danger {
+    color: var(--error) !important;
 }
 
-body.home-page h1 {
-    color: #27ae60;
-    margin-bottom: 30px;
-    text-align: center;
+.text-success {
+    color: var(--success) !important;
 }
 
-.card-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    max-width: 1000px;
-    width: 100%;
-}
-
-.card {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.2);
-}
-
-.card-header {
-    background-color: #e8f5e9;
-    padding: 20px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #2e7d32;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.card-body {
-    padding: 20px;
-    line-height: 1.6;
-}
-
-.status-tag {
-    background: #27ae60;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 10px;
-    font-size: 0.8em;
-}
-
-.back-button {
-    align-self: flex-start;
-    margin-bottom: 20px;
-    background-color: #27ae60;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: bold;
-    display: inline-block;
-}
-
-.back-button:hover {
-    background-color: #219653;
-}
-
-/* Back link for lesson pages (positioned) */
-.back-link {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
-    font-weight: bold;
-    z-index: 100;
-    padding: 8px 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    transition: all 0.3s;
-}
-
-.back-link:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-}
-
-/* === Utility Classes (从内联样式迁移) === */
-
-/* 状态标签变体 */
-.status-tag-pending {
-    background: #ccc !important;
-}
-
-.status-tag-success {
-    background: #48bb78 !important;
-}
-
-/* 侧边栏箭头旋转状态 */
 .arrow-open {
-    transform: rotate(90deg);
+    transform: rotate(180deg);
 }
 
 .arrow-closed {
     transform: rotate(0deg);
 }
 
-/* 危险/警告按钮文字颜色 */
-.text-danger {
-    color: #fc8181 !important;
+/* Home Page */
+body.home-page {
+    background-image: none;
+    overflow-y: auto;
+    display: block;
 }
 
-/* Glass card utility class */
-.glass-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
+body.home-page>h1 {
+    text-align: center;
+    margin: 60px 0 40px;
+    font-size: 32px;
+    color: var(--text-primary);
+}
+
+.home-page .card-container {
+    padding: 0 20px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.home-page .card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-page .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-secondary);
+    box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.3);
+}
+
+.home-page .card-header {
+    background: var(--bg-panel-hover);
     padding: 20px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.home-page .card-body {
+    padding: 20px;
+    color: var(--text-secondary);
+}
+
+.home-page .status-tag {
+    background: rgba(74, 222, 128, 0.1);
+    color: var(--success);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    float: right;
 }
