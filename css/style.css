@@ -92,13 +92,17 @@ body {
 
 /* === Main Container Layout === */
 .container {
-    flex: 1;
     display: flex;
+    flex-direction: row;
+    /* 桌面端必须横向排列！ */
     gap: 20px;
     padding: 20px;
-    max-width: 1280px;
+    max-width: 1400px;
     margin: 0 auto;
+    height: calc(100vh - 60px);
+    /* 减去导航栏高度，填满屏幕 */
     overflow: hidden;
+    /* 防止整个页面出现滚动条 */
     width: 100%;
     box-sizing: border-box;
 }
@@ -116,7 +120,9 @@ body {
 }
 
 .sidebar {
-    flex: 0 0 280px;
+    width: 300px;
+    flex-shrink: 0;
+    /* 不允许压缩 */
 }
 
 .sidebar h3 {
@@ -237,7 +243,9 @@ body {
 
 /* === Right Side Info Area === */
 .info-area {
-    flex: 0 0 280px;
+    width: 300px;
+    flex-shrink: 0;
+    /* 不允许压缩 */
 }
 
 #statusInfo {
@@ -297,17 +305,24 @@ body {
     display: none;
 }
 
-/* === Responsive === */
-@media (max-width: 1024px) {
+/* === Responsive - 仅在小于 850px 时切换为垂直布局 === */
+@media (max-width: 850px) {
     .container {
         flex-direction: column;
+        /* 小屏幕垂直堆叠 */
+        height: auto;
         overflow-y: auto;
     }
 
     .sidebar,
     .info-area {
-        flex: none;
         width: 100%;
+        flex-shrink: 1;
+    }
+
+    .board-area {
+        order: -1;
+        /* 棋盘放在最上面 */
     }
 }
 
