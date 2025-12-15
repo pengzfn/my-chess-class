@@ -366,10 +366,131 @@ const SCOTLAND_4_DATA = {
     }
 };
 
+// =====================================================
+// LESSON 5: Mieses Variation Traps (Mieses 变例开局陷阱)
+// =====================================================
+const SCOTLAND_5_DATA = {
+    mieses_intro: {
+        title: "Mieses 变例起始局面",
+        // 从标准开局开始演示
+        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        description: "Mieses 变例 (4...Nf6 5.Nxc6 bxc6 6.e5) 是苏格兰开局中最尖锐的分支。本视频专注于复杂的开局陷阱。",
+        moves: ["e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Nf6", "Nxc6", "bxc6", "e5", "Qe7", "Qe2", "Nd5", "c4", "Ba6", "b3"],
+        steps: [
+            "1.e4",
+            "1...e5",
+            "2.Nf3",
+            "2...Nc6",
+            "3.d4 苏格兰开局标志性走法",
+            "3...exd4",
+            "4.Nxd4",
+            "4...Nf6 Mieses 变例开始",
+            "5.Nxc6",
+            "5...bxc6",
+            "6.e5! 驱逐黑马，争取空间",
+            "6...Qe7 牵制 e5 兵",
+            "7.Qe2 解除牵制",
+            "7...Nd5",
+            "8.c4 驱逐黑马",
+            "8...Ba6 牵制 c4 兵",
+            "9.b3 保护 c4，这就是陷阱的起始局面"
+        ]
+    },
+    trap_qh4: {
+        title: "陷阱：激进的 Qh4",
+        // 局面: 1.e4 e5 2.Nf3 Nc6 3.d4 exd4 4.Nxd4 Nf6 5.Nxc6 bxc6 6.e5 Qe7 7.Qe2 Nd5 8.c4 Ba6 9.b3
+        fen: "r3kb1r/p1ppqppp/b1p5/3nP3/2P5/1P6/P3QPPP/RNB1KB1R b KQkq - 0 9",
+        description: "黑方走 9...Qh4 试图制造混乱 (威胁 Bb4+)。白方精确应对后，黑后会被困死在 h1！",
+        moves: ["Qh4", "a3", "Bc5", "g3", "Bxf2+", "Qxf2", "Qe4+", "Kd1", "Qxh1", "Nd2", "O-O", "Kc2"],
+        steps: [
+            "9...Qh4 看似凶狠，威胁 Bb4+",
+            "10.a3! 最佳应对，阻止 Bb4",
+            "10...Bc5 瞄准 f2 弱点",
+            "11.g3! 好棋！（看似送车）",
+            "11...Bxf2+ 黑方以为得子",
+            "12.Qxf2! 关键！不能 Kxf2 (否则 Qd4+ 丢 a1 车)",
+            "12...Qe4+ 吃兵将军",
+            "13.Kd1! 躲避",
+            "13...Qxh1 黑后吃掉 h1 车，但已落入陷阱",
+            "14.Nd2! 困住黑后",
+            "14...O-O 黑方只能易位",
+            "15.Kc2! 准备 Bb2 + Bg2/Bh3 捉死黑后"
+        ]
+    },
+    trap_castle: {
+        title: "陷阱：短易位的惩罚",
+        // 局面: 9.b3 后黑方走 g6
+        fen: "r3kb1r/p1ppqppp/b1p5/3nP3/2P5/1P6/P3QPPP/RNB1KB1R b KQkq - 0 9",
+        description: "黑方走 9...g6 准备 Bg7 短易位，看似自然，实则落入精心设计的陷阱。",
+        moves: ["g6", "f4", "Bg7", "Qf2", "O-O", "cxd5", "Bxe5", "fxe5", "Qxe5+", "Kd2", "Qxa1", "Nc3"],
+        steps: [
+            "9...g6 准备侧翼象",
+            "10.f4! 巩固中心",
+            "10...Bg7 自然出象",
+            "11.Qf2! 准备战术打击",
+            "11...O-O?? 极其危险的自然着法！",
+            "12.cxd5! 陷阱开启！威胁吃掉 a6 象",
+            "12...Bxe5 试图反击",
+            "13.fxe5! 果断吃象",
+            "13...Qxe5+ 将军吃 e5 兵",
+            "14.Kd2! 国王亲征，却是计算精确",
+            "14...Qxa1 贪吃 a1 车",
+            "15.Nc3! 关门！黑后无路可走"
+        ]
+    },
+    trap_nb4: {
+        title: "陷阱：Nb4 的反击",
+        // 局面: 从 9.b3 开始，和 trap_castle 相同
+        fen: "r3kb1r/p1ppqppp/b1p5/3nP3/2P5/1P6/P3QPPP/RNB1KB1R b KQkq - 0 9",
+        description: "黑方不走短易位，而是走 Nb4 制造复杂局面。白方需要精确计算。",
+        moves: ["g6", "f4", "Bg7", "Qf2", "Nb4", "a3", "Bxe5", "fxe5", "Qxe5+", "Kd1", "Qxa1", "axb4", "Qxb1", "Qe3+", "Kd8", "Bd3", "Qa2", "Bb2"],
+        steps: [
+            "9...g6 准备出象",
+            "10.f4! 巩固中心",
+            "10...Bg7 出象",
+            "11.Qf2! 准备战术打击",
+            "11...Nb4! 不易位，改走马威胁 e5 和 Nc2",
+            "12.a3! 简单驱逐",
+            "12...Bxe5 孤注一掷",
+            "13.fxe5! 接受挑战",
+            "13...Qxe5+ 将军",
+            "14.Kd1! 再次弃车陷阱",
+            "14...Qxa1 黑后得车，陷入绝境",
+            "15.axb4! 吃回马",
+            "15...Qxb1 黑后继续贪吃",
+            "16.Qe3+! 关键将军 (原误听为 Qc3)，迫使黑王移动",
+            "16...Kd8",
+            "17.Bd3! 关门 (听起来像 Bishop B3)",
+            "17...Qa2 试图逃窜",
+            "18.Bb2! 彻底封死黑后"
+        ]
+    },
+    game_ba3: {
+        title: "实战警示：Ba3 陷阱",
+        // 局面: 9.b3 后 g6 f4 Bg7 Qf2 Nf6
+        fen: "r3kb1r/p1ppqppp/b1p5/3nP3/2P5/1P6/P3QPPP/RNB1KB1R b KQkq - 0 9",
+        description: "讲师自己的实战经历！对手是 2450 分国际大师，讲师走错 Ba3 后陷入绝境。",
+        moves: ["g6", "f4", "Bg7", "Qf2", "Nf6", "Bb2", "Ng4", "Qe3", "Nf6", "Ba3"],
+        steps: [
+            "9...g6",
+            "10.f4",
+            "10...Bg7",
+            "11.Qf2",
+            "11...Nf6 黑方最佳应对 (不急于易位)",
+            "12.Bb2 发展象",
+            "12...Ng4 骚扰白后",
+            "13.Qe3 后退",
+            "13...Nf6 回跳",
+            "14.Ba3?? 致命错误！正着应走 Qf3。之后黑 Nxf4! 如果 Bxf7+ 则 Bxf5 赢子。讲师虽然最后靠运气赢了，但局面已经输定。"
+        ]
+    }
+};
+
 // Export for use in other scripts (if using modules in future)
 if (typeof window !== 'undefined') {
     window.SCOTLAND_1_DATA = SCOTLAND_1_DATA;
     window.SCOTLAND_2_DATA = SCOTLAND_2_DATA;
     window.SCOTLAND_3_DATA = SCOTLAND_3_DATA;
     window.SCOTLAND_4_DATA = SCOTLAND_4_DATA;
+    window.SCOTLAND_5_DATA = SCOTLAND_5_DATA;
 }
