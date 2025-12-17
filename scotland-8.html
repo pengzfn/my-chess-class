@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苏格兰开局 - 第八讲：米泽斯变例 (Caruana vs Bacrot 2013)</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <span class="nav-title">第八讲：米泽斯变例 (Caruana vs Bacrot 2013)</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>⚔️ 米泽斯变例实战</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_game')">Caruana vs Bacrot (2013)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>理论变例</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('delchev_recommendation')">Delchev 推荐的变化</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('tactical_trap')">第 15 回合的战术陷阱</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>苏格兰开局 - 米泽斯变例 (Scotch Game, Mieses Variation)</h3>
+                <p>GM Aleksander Delchev 讲解了 2013 年塞萨洛尼基大奖赛中 Fabiano Caruana 执白对阵 Etienne Bacrot 的精彩对局。Caruana 在米泽斯变例中祭出强力新手 g3，通过深远的兵形弃子和以 e6 为核心的突破，展示了对白格的主宰能力。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 经过 Phase 2 校验
+        const VARIATIONS = {
+            main_game: {
+                title: "Caruana vs Bacrot (2013)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "2013 年塞萨洛尼基大奖赛中 Fabiano Caruana 执白对阵 Etienne Bacrot 的精彩对局。Caruana 在米泽斯变例中祭出强力新手 g3，通过深远的兵形弃子和以 e6 为核心的突破，展示了对白格的主宰能力。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Nf6",
+                    "Nxc6", "bxc6", "e5", "Qe7", "Qe2", "Nd5", "c4", "Nb6",
+                    "Nc3", "Qe6", "Qe4", "Bb4", "Bd2", "Ba6", "b3", "Bxc3",
+                    "Bxc3", "d5", "Qh4", "dxc4", "Rc1", "Qg6", "g3", "O-O",
+                    "Be2", "Rad8", "O-O", "c5", "Rfe1", "Bb7", "Bg4", "Qc6",
+                    "f3", "Bc8", "e6", "fxe6", "Qe7"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nxc6",
+                    "5...bxc6",
+                    "6.e5",
+                    "6...Qe7",
+                    "7.Qe2",
+                    "7...Nd5",
+                    "8.c4",
+                    "8...Nb6 Bacrot 选择了局面性的后续，避免了 b3 线更不平衡的局面。",
+                    "9.Nc3",
+                    "9...Qe6 黑方这一步是关键，为象让出出路。",
+                    "10.Qe4 Caruana 将后中心化，准备 Bd3。",
+                    "10...Bb4 黑方牵制马，准备后续的 d5 突破。",
+                    "11.Bd2 化解牵制。",
+                    "11...Ba6 向 c4 兵施压。",
+                    "12.b3 Caruana 的回应，稳固兵形。",
+                    "12...Bxc3 黑方放弃黑格象，试图利用白方剩下的象。",
+                    "13.Bxc3",
+                    "13...d5 黑方必须的中心反击。",
+                    "14.Qh4",
+                    "14...dxc4",
+                    "15.Rc1 关键着法！保护象并针对黑方 c 线叠兵施压。",
+                    "15...Qg6 Bacrot 再次走出理论着法，也是为了防守 g2。",
+                    "16.g3 Caruana 带来的重要新手（Novelty）。这着法虽看似简单，但为后续的攻击埋下伏笔。",
+                    "16...O-O",
+                    "17.Be2",
+                    "17...Rad8",
+                    "18.O-O 白方短易位，虽然看起来国王在开放线有危险，但实战证明是安全的。",
+                    "18...c5 限制白方 c3 象的活动。",
+                    "19.Rfe1",
+                    "19...Bb7 准备构建长斜线杀棋攻势。",
+                    "20.Bg4 至关重要的一步，切断 e6 格的控制，准备 e6 突破。",
+                    "20...Qc6 威胁底线杀棋。",
+                    "21.f3 简单的防守。",
+                    "21...Bc8 黑方试图以此封锁 e6 兵的推进。",
+                    "22.e6 决定性的一击！摧毁黑方的防线。",
+                    "22...fxe6 若黑方不吃，局面也已崩溃。",
+                    "23.Qe7 白方胜势，黑方无力回天。"
+                ]
+            },
+            delchev_recommendation: {
+                title: "Delchev 推荐的变化 (针对 11...Ba6)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "这是讲师推荐的白方另一种应对方案，选择长易位而不是实战中的 b3。通过精确的战术获得优势。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Nf6",
+                    "Nxc6", "bxc6", "e5", "Qe7", "Qe2", "Nd5", "c4", "Nb6",
+                    "Nc3", "Qe6", "Qe4", "Bb4", "Bd2", "Ba6", "O-O-O", "Bxc3",
+                    "Bxc3", "O-O-O", "f4", "Qe7", "Qxc6", "Bb7", "Qa4"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nxc6",
+                    "5...bxc6",
+                    "6.e5",
+                    "6...Qe7",
+                    "7.Qe2",
+                    "7...Nd5",
+                    "8.c4",
+                    "8...Nb6",
+                    "9.Nc3",
+                    "9...Qe6",
+                    "10.Qe4",
+                    "10...Bb4",
+                    "11.Bd2",
+                    "11...Ba6",
+                    "12.O-O-O 讲师推荐的长易位变化。",
+                    "12...Bxc3 黑方先交换。",
+                    "13.Bxc3 白方吃回。",
+                    "13...O-O-O 双方异向易位。",
+                    "14.f4 加强中心控制。",
+                    "14...Qe7 黑后撤退。",
+                    "15.Qxc6 白方吃掉弱兵。",
+                    "15...Bb7 黑方攻击后。",
+                    "16.Qa4 白后逃离，白方获得优势。"
+                ]
+            },
+            tactical_trap: {
+                title: "第 15 回合的战术陷阱 (针对 15...Qe7?)",
+                fen: "r3k2r/p1p2ppp/bnp1q3/4P3/2p4Q/1PB5/P4PPP/2R1KB1R b Kkq - 1 15",
+                description: "在主线 15. Rc1 之后，黑方应该走理论着法 15...Qg6 保护 g2。如果黑方错误地走 15...Qe7，白方可以吃掉 c4 兵并获得优势。",
+                moves: [
+                    "Qe7", "Qxc4"
+                ],
+                steps: [
+                    "15...Qe7? 黑方试图保持后的灵活性，但忽略了 c4 兵的重要性（正确是 15...Qg6）",
+                    "16.Qxc4 白方吃掉前进的兵，获得物质优势和更好的局面。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始（FEN: 初始棋盘）
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('main_game');
+        });
+    </script>
+
+</body>
+
+</html>

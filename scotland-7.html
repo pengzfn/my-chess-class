@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苏格兰开局 - 第七讲：经典变例（卡尔森 vs 列科）</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="scotland-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">第七讲：经典变例（卡尔森 vs 列科）</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>♟️ 经典变例</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主线：卡尔森的弃兵计划</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line')">主线：卡尔森的弃兵计划</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>变例分析</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('variation_a')">变例 A：黑方第 5
+                    步的错误应对</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('variation_b')">变例 B：黑方第 7
+                    步的贪吃陷阱</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('variation_c')">变例 C：黑方第 8
+                    步过早冲击中心</button>
+                <button class="variation-btn" onclick="selectVariation('variation_d')">变例 D：黑方拒绝弃兵的稳健选择</button>
+                <button class="variation-btn" onclick="selectVariation('variation_e')">变例 E：黑方第 13 步的关键改进</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>苏格兰开局 - 经典变例 (Carlsen vs Leko)</h3>
+                <p>GM Aleksander Delchev 解析了马格努斯·卡尔森（白方）对阵彼得·列科（黑方）的一局精彩对局。卡尔森采用了激进的 10. f4
+                    弃兵计划，通过牺牲中心兵换取双象优势、巨大的空间以及对黑方的一系列战术打击，最终惩罚了黑方在关键时刻的消极防守。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 内嵌在HTML中
+        const VARIATIONS = {
+            main_line: {
+                title: "主线：卡尔森的弃兵计划",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "GM Aleksander Delchev 解析了马格努斯·卡尔森（白方）对阵彼得·列科（黑方）的一局精彩对局。卡尔森采用了激进的 10. f4 弃兵计划，通过牺牲中心兵换取双象优势、巨大的空间以及对黑方的一系列战术打击，最终惩罚了黑方在关键时刻的消极防守。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5", "Be3", "Qf6",
+                    "c3", "Nge7", "Bc4", "Ne5", "Be2", "Qg6", "O-O", "d6", "f4", "Qxe4",
+                    "Bf2", "Bxd4", "cxd4", "N5g6", "g3", "O-O", "Nc3", "Qf5", "d5"
+                ],
+                steps: [
+                    "1.e4 占领中心",
+                    "1...e5",
+                    "2.Nf3 出子并攻击 e5 兵",
+                    "2...Nc6",
+                    "3.d4 苏格兰开局的标志性着法，挑战中心",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Bc5 经典变例，给 d4 马施压",
+                    "5.Be3 白方防御并制造威胁（准备 Nxc6 闪击黑方象）",
+                    "5...Qf6 黑方必须应对 Nxc6 的威胁，这是最积极的着法",
+                    "6.c3 稳固 d4 马",
+                    "6...Nge7 正常出子",
+                    "7.Bc4 积极出子，瞄准 f7",
+                    "7...Ne5 攻击白格象，占据中心据点",
+                    "8.Be2 保留白格象",
+                    "8...Qg6 攻击 e4 和 g2，这是最精确的着法",
+                    "9.O-O 弃掉 g2 兵（通常黑方不会吃），加快出子",
+                    "9...d6 巩固 e5 马，准备出白格象",
+                    "10.f4 卡尔森的新招！弃掉中心 e4 兵，意图打开 f 线并利用空间优势",
+                    "10...Qxe4 黑方接受弃兵",
+                    "11.Bf2 撤退象以保护并准备后续攻击",
+                    "11...Bxd4 黑方被迫消除 d4 马的威胁",
+                    "12.cxd4 白方利用 d 兵控制中心，同时打开 c 线",
+                    "12...Ng6 马撤退并攻击 f4",
+                    "13.g3 稳固 f4 兵，限制黑方活动",
+                    "13...O-O 疑问手！列科为了求稳错过了最佳防守机会，导致白方获得持久优势",
+                    "14.Nc3 出马驱赶后",
+                    "14...Qf5",
+                    "15.d5 占据更多空间，彻底限制黑方出子"
+                ]
+            },
+            variation_a: {
+                title: "变例 A：黑方第 5 步的错误应对",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "如果黑方没有正确应对白方 Nxc6 闪击赢子的威胁。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5", "Be3", "d6",
+                    "Nxc6", "bxc6", "Bxc5", "dxc5", "Qxd8+", "Kxd8"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Bc5",
+                    "5.Be3",
+                    "5...d6 错误：这会导致黑方兵型结构损坏且丢兵",
+                    "6.Nxc6",
+                    "6...bxc6",
+                    "7.Bxc5",
+                    "7...dxc5",
+                    "8.Qxd8+",
+                    "8...Kxd8 白方明显优势"
+                ]
+            },
+            variation_b: {
+                title: "变例 B：黑方第 7 步的贪吃陷阱",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方若过早出后攻击 g2，将遭到白方的战术打击。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5", "Be3", "Qf6",
+                    "c3", "Nge7", "Bc4", "Qg6", "Nxc6", "Qxg2", "Bxf7+", "Kxf7", "Qh5+", "g6", "Qxc5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Bc5",
+                    "5.Be3",
+                    "5...Qf6",
+                    "6.c3",
+                    "6...Nge7",
+                    "7.Bc4",
+                    "7...Qg6 疑问手：此时过早",
+                    "8.Nxc6 精彩的弃子战术",
+                    "8...Qxg2 如果黑方贪吃 g2 兵",
+                    "9.Bxf7+ 利用杀棋威胁抽后",
+                    "9...Kxf7",
+                    "10.Qh5+",
+                    "10...g6",
+                    "11.Qxc5 白方多子胜势"
+                ]
+            },
+            variation_c: {
+                title: "变例 C：黑方第 8 步过早冲击中心",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "如果黑方试图通过 d5 反击中心，白方有精确应对。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5", "Be3", "Qf6",
+                    "c3", "Nge7", "Bc4", "Ne5", "Be2", "d5", "O-O", "dxe4", "Nb5", "Bb6",
+                    "Bxb6", "Qxb6", "Qd4"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Bc5",
+                    "5.Be3",
+                    "5...Qf6",
+                    "6.c3",
+                    "6...Nge7",
+                    "7.Bc4",
+                    "7...Ne5",
+                    "8.Be2",
+                    "8...d5 过早打开中心",
+                    "9.O-O",
+                    "9...dxe4",
+                    "10.Nb5 关键手！攻击 c7 兵和 c5 象",
+                    "10...Bb6 如果撤退防守",
+                    "11.Bxb6",
+                    "11...Qxb6",
+                    "12.Qd4 双重攻击，黑方必丢兵或位置崩溃"
+                ]
+            },
+            variation_d: {
+                title: "变例 D：黑方拒绝弃兵的稳健选择",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "面对 10. f4，黑方可以选择不吃兵，保持局面稳固。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5", "Be3", "Qf6",
+                    "c3", "Nge7", "Bc4", "Ne5", "Be2", "Qg6", "O-O", "d6", "f4", "Ng4",
+                    "Bxg4", "Qxg4", "Qd3"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Bc5",
+                    "5.Be3",
+                    "5...Qf6",
+                    "6.c3",
+                    "6...Nge7",
+                    "7.Bc4",
+                    "7...Ne5",
+                    "8.Be2",
+                    "8...Qg6",
+                    "9.O-O",
+                    "9...d6",
+                    "10.f4",
+                    "10...Ng4 安全的选择，避开复杂战术",
+                    "11.Bxg4",
+                    "11...Qxg4",
+                    "12.Qd3 白方控制局面，但黑方也能从容应对"
+                ]
+            },
+            variation_e: {
+                title: "变例 E：黑方第 13 步的关键改进",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方在关键局面应选择 Bh3 制造反击，而不是简单的 O-O。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bc5", "Be3", "Qf6",
+                    "c3", "Nge7", "Bc4", "Ne5", "Be2", "Qg6", "O-O", "d6", "f4", "Qxe4",
+                    "Bf2", "Bxd4", "cxd4", "N5g6", "g3", "Bh3", "Bf3", "Qf5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Bc5",
+                    "5.Be3",
+                    "5...Qf6",
+                    "6.c3",
+                    "6...Nge7",
+                    "7.Bc4",
+                    "7...Ne5",
+                    "8.Be2",
+                    "8...Qg6",
+                    "9.O-O",
+                    "9...d6",
+                    "10.f4",
+                    "10...Qxe4",
+                    "11.Bf2",
+                    "11...Bxd4",
+                    "12.cxd4",
+                    "12...Ng6",
+                    "13.g3",
+                    "13...Bh3 最佳防守！制造威胁",
+                    "14.Bf3",
+                    "14...Qf5 这样黑方局面虽然仍有压力，但比实战好得多"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始（FEN: 初始棋盘）
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('main_line');
+        });
+    </script>
+
+</body>
+
+</html>
