@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苏格兰开局 - 第九讲：黑方第4回合次要变例 (4...Nxd4 & 4...Bb4+)</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="scotland-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">第九讲：黑方第4回合次要变例 (4...Nxd4 & 4...Bb4+)</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>⚔️ 次要变例解析</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>变例分析</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('variation_a')">变例 A：中心放弃型 (4...Nxd4 5.Qxd4 d6)</button>
+                <button class="variation-btn" onclick="selectVariation('variation_b')">变例 B：提和型 (4...Nxd4 5.Qxd4 Qf6)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主线：将军变例</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line')">主线：将军变例与 Zelcic 新招 (4...Bb4+)</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>苏格兰开局：黑方第4回合次要变例 (4...Nxd4 & 4...Bb4+)</h3>
+                <p>GM Aleksander Delchev 讲解苏格兰开局中黑方除了主流的 4...Bc5 和 4...Nf6 之外的非常规选择。视频重点分析了黑方过早释放中心压力的 4...Nxd4 体系（包括后续的 ...d6 和 ...Qf6），以及 4...Bb4+ 将军变例，并引用 Zelcic vs Godena 的对局展示了白方如何利用空间优势和战术新招（Na3!）确立胜势。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 经过 Phase 2 校验
+        const VARIATIONS = {
+            variation_a: {
+                title: "变例 A：中心放弃型 (4...Nxd4 5.Qxd4 d6)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方主动交换马并走 d6，完全让出了中心控制权。白方的计划是长易位并直接在王翼发动兵风暴。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Nxd4",
+                    "Qxd4", "d6", "Nc3", "Nf6", "Bg5", "Be7", "O-O-O", "O-O",
+                    "f3"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Nxd4 黑方非常规着法，过早释放了中心压力。",
+                    "5.Qxd4 白方皇后在中心站位极佳，控制重要格点。",
+                    "5...d6 如果黑方走 5...Nf6，白方可以直接走 6.e5 压制。",
+                    "6.Nc3",
+                    "6...Nf6",
+                    "7.Bg5 白方准备长易位。",
+                    "7...Be7",
+                    "8.O-O-O",
+                    "8...O-O",
+                    "9.f3 或 Be2，巩固中心。白方后续计划是直接在王翼发起兵势进攻（h4, g4），配合 h5 打开局面，利用空间优势和活跃的子力向黑方王翼施压。"
+                ]
+            },
+            variation_b: {
+                title: "变例 B：提和型 (4...Nxd4 5.Qxd4 Qf6)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方试图通过 ...Qf6 强行兑换皇后。白方应拒绝兑子，利用空间优势保持进攻潜力。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Nxd4",
+                    "Qxd4", "Qf6", "Qe3", "Bb4+", "c3", "Ba5", "Bd3", "Bb6",
+                    "Qe2"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Nxd4",
+                    "5.Qxd4",
+                    "5...Qf6 黑方请求兑子。",
+                    "6.Qe3 最佳应对。白方避开兑换，将皇后保留在棋盘上，同时控制 c5 格。",
+                    "6...Bb4+ 黑方试图干扰白方。",
+                    "7.c3",
+                    "7...Ba5 黑方准备将象回撤到 b6。",
+                    "8.Bd3",
+                    "8...Bb6",
+                    "9.Qe2 白方稍占优，后续计划包括 Nd2, Nc4 或 a4 追击黑象，利用更好的中心控制权主导局面。"
+                ]
+            },
+            main_line: {
+                title: "主线：将军变例与 Zelcic 新招 (4...Bb4+)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "基于 2001 年 Zelcic 对阵 Godena 的实战分析。重点在于白方的 Nf5! 以及随后的强力新招 Na3!。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "d4", "exd4", "Nxd4", "Bb4+",
+                    "c3", "Bc5", "Be3", "Bb6", "Nf5", "Qf6", "Na3", "Bxe3",
+                    "Nxe3", "Qe5", "Bd3", "Nf6", "O-O", "O-O", "Nd5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.d4",
+                    "3...exd4",
+                    "4.Nxd4",
+                    "4...Bb4+ 非常规着法。",
+                    "5.c3 简单有效，逼退黑象且不失先手。",
+                    "5...Bc5 黑方此时局面类似经典苏格兰开局，但白方多走了一步 c3。",
+                    "6.Be3 威胁闪击（如 Nxc6）。",
+                    "6...Bb6",
+                    "7.Nf5 关键着法！攻击 g7，同时为马转移到 e3 做准备。",
+                    "7...Qf6",
+                    "8.Na3 强力新招（Novelty）！准备 Nb5 进攻 c7 或 d6。",
+                    "8...Bxe3 实战中 Godena 的疑问手。白方此时应关注 8...d5! 这一现代反击手段。",
+                    "9.Nxe3",
+                    "9...Qe5",
+                    "10.Bd3",
+                    "10...Nf6",
+                    "11.O-O",
+                    "11...O-O",
+                    "12.Nd5 白方位置优势巨大，黑方若吃马将面临 d 线兵的强力压制。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始（FEN: 初始棋盘）
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('variation_a');
+        });
+    </script>
+
+</body>
+
+</html>
