@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>苏格兰开局 - 第一讲：开局原理</title>
+    <title>苏格兰开局 - 第二讲：经典陷阱</title>
 
     <!-- External Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
@@ -13,9 +13,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
 
     <!-- Local CSS & JS -->
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/scotland-data.js"></script>
-    <script src="chess-logic.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/scotland-data.js"></script>
+    <script src="../assets/js/chess-logic.js"></script>
 </head>
 
 <body>
@@ -30,7 +30,7 @@
                 </svg>
                 返回目录
             </a>
-            <span class="nav-title">第一讲：开局原理</span>
+            <span class="nav-title">第二讲：经典陷阱</span>
         </div>
     </nav>
 
@@ -43,9 +43,9 @@
                 <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn" onclick="selectVariation('intro')">1. 核心思想 (intro)</button>
-                <button class="variation-btn" onclick="selectVariation('variation_d6')">2. 变例 4... d6</button>
-                <button class="variation-btn" onclick="selectVariation('variation_nxd4')">3. 变例 4... Nxd4 (不推荐)</button>
+                <button class="variation-btn" onclick="selectVariation('mainline')">1. 主线 (3...exd4)</button>
+                <button class="variation-btn" onclick="selectVariation('classical')">2. 经典变例 (Bc5)</button>
+                <button class="variation-btn" onclick="selectVariation('mieses')">3. Mieses变例 (Nf6)</button>
             </div>
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
@@ -53,8 +53,10 @@
                 <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn text-danger" onclick="selectVariation('instructive_g6')">1. 教学局
-                    4...g6</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('trap_qh4')">1. 过早出后
+                    (Qh4??)</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('trap_f7')">2. f7
+                    点突破</button>
             </div>
         </div>
 
@@ -80,7 +82,7 @@
 
     <script>
         // 使用外部数据文件
-        const VARIATIONS = window.SCOTLAND_1_DATA;
+        const VARIATIONS = window.SCOTLAND_2_DATA;
 
         // 桥接函数：处理点击事件
         function selectVariation(key) {
@@ -100,7 +102,7 @@
             window.ChessApp.init('myBoard', startFen);
 
             // 默认加载第一个变例
-            selectVariation('intro');
+            selectVariation('mainline');
         });
     </script>
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>苏格兰开局 - 第五讲：Mieses 变例开局陷阱</title>
+    <title>苏格兰开局 - 第四讲：斯坦尼茨变例</title>
 
     <!-- External Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
@@ -13,9 +13,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
 
     <!-- Local CSS & JS -->
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/scotland-data.js"></script>
-    <script src="chess-logic.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/scotland-data.js"></script>
+    <script src="../assets/js/chess-logic.js"></script>
 </head>
 
 <body>
@@ -30,38 +30,37 @@
                 </svg>
                 返回目录
             </a>
-            <span class="nav-title">第五讲：Mieses 变例开局陷阱</span>
+            <span class="nav-title">第四讲：斯坦尼茨变例</span>
         </div>
     </nav>
 
     <div class="container">
         <div class="sidebar">
-            <h3>⚔️ Mieses 变例陷阱</h3>
+            <h3>⚔️ 斯坦尼茨变例</h3>
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
-                <span>基础知识</span>
+                <span>冷门陷阱</span>
                 <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn" onclick="selectVariation('mieses_intro')">1. Mieses 变例起始局面</button>
+                <button class="variation-btn" onclick="selectVariation('d5_trap')">1. 冷门：4...d5 变例</button>
             </div>
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
-                <span>恐怖陷阱 (捉后专题)</span>
+                <span>主线理论</span>
                 <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn text-danger" onclick="selectVariation('trap_qh4')">2. 激进 Qh4 的惩罚</button>
-                <button class="variation-btn text-danger" onclick="selectVariation('trap_castle')">3. 短易位陷阱</button>
-                <button class="variation-btn text-danger" onclick="selectVariation('trap_nb4')">4. Nb4 的反击</button>
+                <button class="variation-btn" onclick="selectVariation('steinitz_main')">2. 主线：4...Qh4</button>
             </div>
 
             <div class="category-header" onclick="toggleSidebarCategory(this)">
-                <span>实战警示</span>
+                <span>实战变例</span>
                 <span class="arrow arrow-open">▶</span>
             </div>
             <div class="variation-list">
-                <button class="variation-btn" onclick="selectVariation('game_ba3')">5. Ba3 陷阱 (讲师实战)</button>
+                <button class="variation-btn" onclick="selectVariation('mitkov_variation')">3. Mitkov 改进
+                    (6...Nf6)</button>
             </div>
         </div>
 
@@ -79,16 +78,16 @@
 
         <div class="info-area">
             <div id="hintText" class="hint-content">
-                <h3>Alexander Delchev 大师讲座：Mieses 变例陷阱</h3>
-                <p>本节课专注于 Mieses 变例中最难以计算的开局陷阱。</p>
-                <p><strong>核心警告：</strong>这些陷阱极其复杂，即使是国际大师也可能中招！</p>
+                <h3>斯坦尼茨变例 (4...Qh4)</h3>
+                <p>这是苏格兰开局中一个非常古老且激进的变例，得名于首位世界冠军威廉·斯坦尼茨。</p>
+                <p><strong>核心思想：</strong>黑方早早出后试图掠夺 e4 兵并制造混乱。白方应弃兵换取出子速度优势。</p>
             </div>
         </div>
     </div>
 
     <script>
         // 使用外部数据文件
-        const VARIATIONS = window.SCOTLAND_5_DATA;
+        const VARIATIONS = window.SCOTLAND_4_DATA;
 
         // 桥接函数：处理点击事件
         function selectVariation(key) {
@@ -108,7 +107,7 @@
             window.ChessApp.init('myBoard', startFen);
 
             // 默认加载第一个变例
-            selectVariation('mieses_intro');
+            selectVariation('d5_trap');
         });
     </script>
 
