@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西西里防御 - e6 体系 (Sicilian Defense - e6 Complex)</title>
+    <link rel="icon" href="data:,">
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="xixili-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">西西里防御 - e6 体系</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>⚔️ e6 体系变例</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>基础主线</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line')">基础主线 (The e6 Setup)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主要变例</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('pin_variation')">牵制变例 (The Pin Variation via c4)</button>
+                <button class="variation-btn" onclick="selectVariation('scheveningen_keres')">舍维宁根结构 - 凯列斯攻击</button>
+                <button class="variation-btn" onclick="selectVariation('taimanov')">泰曼诺夫变例 (Taimanov Variation)</button>
+                <button class="variation-btn" onclick="selectVariation('sveshnikov_transposition')">泰曼诺夫变例 - 斯维什尼科夫转折</button>
+                <button class="variation-btn" onclick="selectVariation('kan')">坎恩变例 (Kan Variation)</button>
+                <button class="variation-btn" onclick="selectVariation('kan_english_attack')">坎恩变例 - 对英式攻击的打击</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>西西里防御 - e6 体系 (Sicilian Defense - e6 Complex)</h3>
+                <p>e6 西西里防御是一种融合了灵活阵地战与反击潜力的开局体系。它比 d6 体系（如纳杰尔多夫）更稳健，控制中心的同时保留了 d5 冲兵的可能性，并可根据白方的选择转变为泰曼诺夫、坎恩或舍维宁根等变例。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 经过 Phase 1 校验
+        const VARIATIONS = {
+            main_line: {
+                title: "基础主线 (The e6 Setup)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "e6 体系的基础设置，展示了从初始局面到 4...e6 后的典型结构。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4"
+                ],
+                steps: [
+                    "1.e4 占据中心。",
+                    "1...c5 西西里防御，侧翼反击中心，阻止白方建立 d4 的理想中心。",
+                    "2.Nf3 出子并控制中心。",
+                    "2...e6 e6 体系的核心。支撑中心，准备 d5 冲兵，同时为黑格象打开线路。",
+                    "3.d4 开放性西西里的标志，白方通过弃兵换取中心开放线和出子速度。",
+                    "3...cxd4 交换侧翼兵以消除白方中心兵。",
+                    "4.Nxd4 白方马占据中心优势位置。"
+                ]
+            },
+            pin_variation: {
+                title: "牵制变例 (The Pin Variation via c4)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方选择 5. c4 建立马洛齐绑定（Maroczy Bind）结构，黑方通过快速出子和牵制进行对抗。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "a6",
+                    "c4", "Nf6", "Nc3", "Bb4", "Bd3", "Nc6"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...a6 坎恩式的灵活处理：先控 b5，推迟出子，观察白方布局。",
+                    "5.c4 典型马洛齐绑定（Maróczy Bind），抑制 ...d5，并争取空间。",
+                    "5...Nf6 黑马出动，直接攻击 e4。",
+                    "6.Nc3 补强中心并发展轻子。",
+                    "6...Bb4 经典“牵制/压制”手段：给白方发展制造不适，并争夺关键格。",
+                    "7.Bd3 稳健发展，准备易位并支撑中心。",
+                    "7...Nc6 黑方出子完成度提升，后续可转入更明确的计划。"
+                ]
+            },
+            scheveningen_keres: {
+                title: "舍维宁根结构 - 凯列斯攻击 (Scheveningen Setup - Keres Attack)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "如果黑方保留黑格象并走 d6，则转入舍维宁根结构，需提防白方凶猛的 g4 进攻。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "d6",
+                    "g4", "Nf6", "h4", "h6", "Nc3", "Nc6", "Rg1", "h5",
+                    "gxh5", "Nxh5", "Bg5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...d6 转入舍维宁根结构，建立坚固的中心小兵群。",
+                    "5.g4 凯列斯攻击 (Keres Attack)。白方不急于出子，直接在王翼发起猛攻。",
+                    "5...Nf6 关键：先出马控中心与王翼，确保后续 ...Nxh5 等资源存在。",
+                    "6.h4 白方继续推进，准备 g5。",
+                    "6...h6 先限制 g5 直冲，制造“是否交换”的决策点。",
+                    "7.Nc3 白方补发展，避免纯推兵导致后续子力跟不上。",
+                    "7...Nc6 黑方反击中心并提升子力协调。",
+                    "8.Rg1 准备 g5 突破（g 线压力）。",
+                    "8...h5 反击：用 h 兵顶回去，迫使白方明确交换结构。",
+                    "9.gxh5 打开局面，但也会留下结构弱点需要处理。",
+                    "9...Nxh5 黑马吃回，子力活跃且兼顾防守。",
+                    "10.Bg5 白方出子并制造牵制/战术可能，局面复杂。"
+                ]
+            },
+            taimanov: {
+                title: "泰曼诺夫变例 (Taimanov Variation)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "4... Nc6 是泰曼诺夫变例的特征，黑方保留兵形灵活性，可转为舍维宁根或坚守 e6/d6 阵地。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nc6",
+                    "Nc3", "Qc7", "Be3", "a6", "Qd2", "Nf6", "O-O-O", "Bb4", "f3"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nc6 主要分支点。挑战白方中心马。",
+                    "5.Nc3 白方正常出子。",
+                    "5...Qc7 泰曼诺夫的标志性着法。控制 e5 格，为后续 Nf6 做准备，且保留了变招余地。",
+                    "6.Be3 白方准备长易位并发起英式攻击 (English Attack)。",
+                    "6...a6 控制 b5 格，防止骑士跳入，同时准备 b5 扩张。",
+                    "7.Qd2 关键补充：先挪后，腾出长易位通道。",
+                    "7...Nf6 黑方正常出子，打击 e4。",
+                    "8.O-O-O 白方长易位，战斗升级。",
+                    "8...Bb4 积极反击，牵制 c3 马并争夺节奏。",
+                    "9.f3 巩固中心，防止 ...Ng4 干扰，并为后续 g4/攻王做准备。"
+                ]
+            },
+            sveshnikov_transposition: {
+                title: "泰曼诺夫变例 - 斯维什尼科夫转折 (Sveshnikov Transposition)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "在 4... Nc6 后，如果白方试图利用 d6 格的弱点。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nc6",
+                    "Nb5", "d6", "Bf4", "e5", "Bg5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nc6",
+                    "5.Nb5 白方利用 e6 变例中 d6 格较弱的特点。",
+                    "5...d6 被迫防守。",
+                    "6.Bf4 继续施压 d6 兵。",
+                    "6...e5 反击象，但造成了 d5 落后兵和弱格。",
+                    "7.Bg5 此时局面转变为斯维什尼科夫变例 (Sveshnikov Variation)。"
+                ]
+            },
+            kan: {
+                title: "坎恩变例 (Kan Variation)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "4... a6 是坎恩变例，特点是极其灵活，黑方推迟出马，保留兵形变化的可能。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "a6",
+                    "Bd3", "Nf6", "O-O", "Bc5", "Nb3", "Be7", "Qg4", "O-O"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...a6 控制 b5，限制白方轻子，为 b5 和 Bb7 做准备。",
+                    "5.Bd3 针对坎恩变例最常见的应对，控制 e4 并准备王翼进攻。",
+                    "5...Nf6 黑方关键补充：先出马保证王翼易位与中心控制。",
+                    "6.O-O 白方先安全易位，再决定后续进攻方式。",
+                    "6...Bc5 黑方积极出象，直接对准 d4 并争取节奏。",
+                    "7.Nb3 白方回撤并问象，同时避免被反复骚扰。",
+                    "7...Be7 黑方稳健回撤，为王翼易位清路。",
+                    "8.Qg4 白方试图攻击 g7，制造迫使性问题。",
+                    "8...O-O 黑方完成易位：此时 g8 已空、f8 已清，易位合法且常见。"
+                ]
+            },
+            kan_english_attack: {
+                title: "坎恩变例 - 对英式攻击的打击",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "如果白方在坎恩变例中盲目套用英式攻击（Be3/Qd2/f3），会遭到黑方的强烈反击。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "a6",
+                    "Nc3", "b5", "Be3", "Bb7", "Qd2", "Nf6", "f3", "Bb4",
+                    "O-O-O", "d5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...a6",
+                    "5.Nc3",
+                    "5...b5 黑方立刻扩张后翼。",
+                    "6.Be3 白方试图走英式攻击布局。",
+                    "6...Bb7 黑方出象控制长斜线。",
+                    "7.Qd2",
+                    "7...Nf6 攻击 e4。",
+                    "8.f3 白方构筑防线，但在坎恩变例中这可能太慢。",
+                    "8...Bb4 黑方牵制马。",
+                    "9.O-O-O 若白方强行长易位。",
+                    "9...d5 黑方直接冲击中心！如果白方 exd5，黑方 Nxd5 将对被牵制的 c3 马造成毁灭性打击。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+                // 侧边栏高亮：与 style.css 的 .variation-btn.active 对齐
+                document.querySelectorAll('.variation-btn').forEach(btn => btn.classList.remove('active'));
+                const selector = `.variation-btn[onclick*="selectVariation('${key}')"]`;
+                const activeBtn = document.querySelector(selector);
+                if (activeBtn) activeBtn.classList.add('active');
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始（FEN: 初始棋盘）
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('main_line');
+        });
+    </script>
+
+</body>
+
+</html>
+

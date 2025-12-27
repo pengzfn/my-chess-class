@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西西里防御 - 阿拉平变例 (Sicilian Defense - Alapin Variation)</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="xixili-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">第一讲：阿拉平变例 (2. c3)</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>🛡️ 阿拉平变例</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主线变化</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line')">中心反击 (2... d5)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>重要变例</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('iqp_trap')">孤后兵陷阱 (IQP Trap)</button>
+                <button class="variation-btn" onclick="selectVariation('knight_attack')">马方反击 (2... Nf6)</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>西西里防御 - 阿拉平变例 (Sicilian Defense - Alapin Variation)</h3>
+                <p>这是针对西西里防御的一种稳健"反西西里"策略。白方通过 2. c3 意图在 d4 建立强大的兵中心。虽然这牺牲了马跳至 c3 的自然发展，但换来了坚实的中心控制，并避开了开放西西里防御中复杂的理论定式，适合注重理解兵形结构的棋手。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 西西里防御阿拉平变例
+        const VARIATIONS = {
+            main_line: {
+                title: "主线：中心反击 (2... d5)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方最激烈的反击之一。由于白方无法立即用 Nc3 驱赶皇后，黑后在 d5 位置相对安全。",
+                moves: [
+                    "e4", "c5", "c3", "d5", "exd5", "Qxd5", "d4", "Nf6",
+                    "Nf3", "e6"
+                ],
+                steps: [
+                    "1.e4 占据中心。",
+                    "1...c5 西西里防御，侧翼反击。",
+                    "2.c3 阿拉平变例特征，准备构建 d4 中心。",
+                    "2...d5 黑方利用白方马不在 c3 的时机，直接挑战中心。",
+                    "3.exd5 白方必须交换，否则中心失守。",
+                    "3...Qxd5 黑后吃回。因白方无法立即走 Nc3，黑后站位稳固。",
+                    "4.d4 白方坚持计划，建立兵中心。",
+                    "4...Nf6 黑方发展马，控制中心。",
+                    "5.Nf3 白方正常出子。",
+                    "5...e6 黑方巩固 d5 控制，准备出象，局面平稳。"
+                ]
+            },
+            iqp_trap: {
+                title: "孤后兵与陷阱 (IQP Trap)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方过早交换 d4 兵，送给白方孤后兵 (IQP)，但这反而激活了白方 Nc3 的出子机会。视频重点讲解了黑方贪图战术牵制而导致的严重失误。",
+                moves: [
+                    "e4", "c5", "c3", "d5", "exd5", "Qxd5", "d4", "cxd4",
+                    "cxd4", "Nc6", "Nf3", "Bg4", "Nc3"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.c3",
+                    "2...d5",
+                    "3.exd5",
+                    "3...Qxd5",
+                    "4.d4",
+                    "4...cxd4 黑方过早释放中心压力。",
+                    "5.cxd4 白方形成孤后兵，但换取了活跃的子力位置。",
+                    "5...Nc6 黑方施压 d4。",
+                    "6.Nf3 白方保护 d4。",
+                    "6...Bg4 疑问手！黑方试图牵制 f3 马，但忽视了战术缺陷。",
+                    "7.Nc3 妙手！白方无视牵制，利用先手捉后。若 ...Bxf3 则 Nxd5 获得巨大优势。"
+                ]
+            },
+            knight_attack: {
+                title: "马方反击 (2... Nf6)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方利用 c3 兵阻挡马路的特点，直接攻击 e4 兵，引诱白方推兵 e5，形成更封闭的局面。",
+                moves: [
+                    "e4", "c5", "c3", "Nf6", "e5", "Nd5", "d4", "cxd4",
+                    "Nf3", "Nc6", "cxd4", "d6"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.c3",
+                    "2...Nf6 直接攻击 e4 兵，迫使白方表态。",
+                    "3.e5 白方利用空间优势驱赶黑马。",
+                    "3...Nd5 黑马跳入中心活跃位置。",
+                    "4.d4 白方继续建立中心。",
+                    "4...cxd4 黑方交换兵。",
+                    "5.Nf3 白方灵活发展（也可选择 5. cxd4）。",
+                    "5...Nc6 黑方出子施压。",
+                    "6.cxd4 白方维持强大的双兵中心。",
+                    "6...d6 黑方挑战 e5 兵，争夺空间。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('main_line');
+        });
+    </script>
+
+</body>
+
+</html>

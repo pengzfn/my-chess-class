@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西西里防御 - 龙式变例 (Sicilian Defense: Dragon Variation)</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <span class="nav-title">西西里防御 - 龙式变例</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>🐉 龙式变例导航</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>基础主线</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('setup')">龙式开局主干</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('ng4_trap')">Ng4陷阱 (黑方失误)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>南斯拉夫攻击</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('yugoslav_bc4')">9.Bc4 主线 (索尔蒂斯)</button>
+                <button class="variation-btn" onclick="selectVariation('yugoslav_ooo')">9.O-O-O 变例 (d5反击)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>其他体系</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('classical')">古典变例 (6.Be2)</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>西西里防御 - 龙式变例 (Sicilian Defense: Dragon Variation)</h3>
+                <p>这是西西里防御中最锐利、最具攻击性的变例之一。双方通常进行异向易位(白方长易位,黑方短易位),进而展开激烈的对攻,局面充满战术陷阱和计算。龙的名字来源于黑方兵型像一条飞龙,g7象就是龙的火焰。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 西西里防御龙式变例
+        const VARIATIONS = {
+            setup: {
+                title: "龙式开局主干 (The Setup)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "龙式变例的基础走法。黑方通过g6和Bg7建立强大的侧翼防御,控制长斜线。这是所有龙式变化的起点。",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6"
+                ],
+                steps: [
+                    "1.e4 占据中心,为白格象打开通路。",
+                    "1...c5 西西里防御。黑方通过侧翼兵反击中心d4格,制造不平衡的局面。",
+                    "2.Nf3 发展马,控制中心,准备d4。",
+                    "2...d6 控制e5格,解放白格象。如果白方想进入开放西西里,下一步通常是d4。",
+                    "3.d4 开放西西里。白方打开中心,用中心兵交换黑方的侧翼兵。",
+                    "3...cxd4 黑方不希望白方在中心保留两个兵,因此进行交换,并获得半开放的c线用于反击。",
+                    "4.Nxd4 白方吃回兵,将马占据在中心活跃位置。",
+                    "4...Nf6 出子并攻击e4兵,迫使白方应对。",
+                    "5.Nc3 保护e4兵,同时发展马。",
+                    "5...g6 龙式变例的关键着法。准备将黑格象侧翼出动到g7(Fianchetto),控制长斜线。"
+                ]
+            },
+            ng4_trap: {
+                title: "早期陷阱：黑方过早走 Ng4 (The Ng4 Trap)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "许多初学者会尝试用Ng4骚扰白方e3的象,但这在此时是个严重的战术错误。白方可以利用Bb5+抽将战术惩罚黑方。",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Ng4", "Bb5+", "Bd7", "Qxg4"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...d6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...g6",
+                    "6.Be3 白方最常见的发展步,加固中心d4格。",
+                    "6...Ng4? 疑问手！黑方试图骚扰象,但在此时是错误的。",
+                    "7.Bb5+! 白方的反击。利用抽将战术惩罚黑方。",
+                    "7...Bd7 如果黑方用象挡。注意:如果7...Nc6,则8.Nxc6 bxc6 9.Bxc6+ 双击王和车,白方得子。",
+                    "8.Qxg4 白方直接吃掉g4的马。因为d7的象被白方Bb5牵制住,无法吃回王后,白方得子获胜。"
+                ]
+            },
+            yugoslav_bc4: {
+                title: "南斯拉夫攻击 - 9.Bc4 主线 (Yugoslav Attack: 9.Bc4)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "这是龙式中最尖锐的对抗。白方建立Be3/Qd2炮台,准备长易位后发动h4/h5兵风暴。黑方则在王翼短易位,双方展开异向易位攻杀。",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Bg7", "f3", "Nc6", "Qd2", "O-O",
+                    "Bc4", "Bd7", "O-O-O", "Rc8", "Bb3", "Ne5", "h4", "h5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...d6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...g6",
+                    "6.Be3 稳固中心。",
+                    "6...Bg7 黑格象就位,龙的火焰开始喷射长斜线。",
+                    "7.f3 南斯拉夫攻击的特征。巩固e4,防止Ng4,并为g4兵冲锋做准备。",
+                    "7...Nc6 黑方出子,对d4施压。",
+                    "8.Qd2 建立后象炮台,准备长易位,并由此支援Bh6换掉黑方防守核心g7象。",
+                    "8...O-O 黑方短易位,国王暂时安全,但在异向易位战中将成为靶子。",
+                    "9.Bc4 白方先出象到积极位置,阻止黑方过早走d5。",
+                    "9...Bd7 黑方发展白格象,连接车到c8。",
+                    "10.O-O-O 白方长易位,国王安全转移,车投入战斗,准备发动王翼兵风暴。",
+                    "10...Rc8 黑方将车移至c线,瞄准白方c4象(X射线攻击)和c2的王。",
+                    "11.Bb3 白方预防性撤退,防止黑方利用战术手段攻击悬空的c4象。",
+                    "11...Ne5 黑方马跳至中心,准备跳至c4捉双(后和象)。",
+                    "12.h4 白方开始王翼兵风暴,利用g6兵作为钩子打开h线。",
+                    "12...h5 索尔蒂斯变例(Soltis Variation)。黑方阻止白方直接挺兵h5,封锁局面。若黑方不走h5,继续Nc4进攻,白方通常会走Bxc4 Rxc4,然后坚持推g4/h5弃兵强攻。"
+                ]
+            },
+            yugoslav_ooo: {
+                title: "南斯拉夫攻击 - 9.O-O-O 变例 (9.O-O-O without Bc4)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方选择不走Bc4直接易位,目的是省一步棋加速进攻,但缺点是放松了对d5格的控制。黑方可以利用这个机会发动d5反击。",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Bg7", "f3", "Nc6", "Qd2", "O-O",
+                    "O-O-O", "d5", "exd5", "Nxd5", "Nxc6", "bxc6", "Bd4", "e5",
+                    "Bc5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...d6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...g6",
+                    "6.Be3",
+                    "6...Bg7",
+                    "7.f3",
+                    "7...Nc6",
+                    "8.Qd2",
+                    "8...O-O",
+                    "9.O-O-O 省去Bc4,直接长易位。",
+                    "9...d5! 黑方利用d5格控制减弱的机会,果断反击中心(Pawn Break)。",
+                    "10.exd5 白方主线。若白方走Nxc6 bxc6 e5?!,黑方可走Ne8!,随后f4 Rb8组织反击,白方通常避免此路线。",
+                    "10...Nxd5 黑方吃回,激活g7象。",
+                    "11.Nxc6 白方交换马。注意:如果白方贪吃11.Nxd5? cxd5 12.Qxd5 Qc7!,黑方准备在c2杀王,白方将被迫丢子求和。",
+                    "11...bxc6",
+                    "12.Bd4 白方稳健的选择。利用兵型优势,并寻求兑换黑方重要的g7象。",
+                    "12...e5 黑方积极反击,虽然削弱了d5/f5格,但获得了空间。",
+                    "13.Bc5 白方控制黑格。"
+                ]
+            },
+            classical: {
+                title: "古典变例 (Classical Variation)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "如果白方不想进入疯狂的对攻,可以选择更温和的Be2发展体系。双方都在王翼短易位,局面更加位置性。",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be2", "Bg7", "O-O", "Nc6", "Nb3", "Be6",
+                    "f4", "Qc8"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...d6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...g6",
+                    "6.Be2 温和的发展,不急于发动h4攻击。",
+                    "6...Bg7 黑方照常出象。",
+                    "7.O-O 白方也选择短易位,双方都在王翼。",
+                    "7...Nc6 黑方对中心施压。",
+                    "8.Nb3 预防d5,并准备后续推f4。",
+                    "8...Be6 黑方出子。",
+                    "9.f4 白方抓紧空间。",
+                    "9...Qc8 针对白方f5的意图进行预防,同时准备Bh3换象。黑方另一计划是Na5,瞄准c4格。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('setup');
+        });
+    </script>
+
+</body>
+
+</html>
