@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反西西里防御 - 莫斯科变例与罗索利莫变例</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="xixili-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">反西西里防御 - 莫斯科与罗索利莫</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>🛡️ 反西西里导航</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>开局引入</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('intro')">基础起手：1.e4 c5 2.Nf3</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>莫斯科变例 (3.Bb5+)</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('moscow_bd7_c4')">3...Bd7 主线：5.c4 思路</button>
+                <button class="variation-btn" onclick="selectVariation('moscow_bd7_c3')">3...Bd7 主线：c3-d4 强中心</button>
+                <button class="variation-btn" onclick="selectVariation('moscow_nd7')">3...Nd7 变例：后早进中心</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>罗索利莫变例 (3.Bb5)</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('rossolimo_g6_dxc6')">3...g6：dxc6 结构（主线）</button>
+                <button class="variation-btn" onclick="selectVariation('rossolimo_wc2018_game1')">名局示例：世锦赛 2018 第1局（Caruana–Carlsen）</button>
+                <button class="variation-btn" onclick="selectVariation('rossolimo_bxc6_nh6')">bxc6 结构：Nh6 计划</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>反西西里防御 (Anti-Sicilian) - 莫斯科变例与罗索利莫变例</h3>
+                <p>针对黑方西西里防御 (1.e4 c5) 的两套稳健体系：莫斯科变例 (3.Bb5+) 和罗索利莫变例 (3.Bb5)。这两种开局旨在避开开放西西里的复杂理论，通过快速出子、控制中心或破坏黑方兵形来寻求战略优势。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 内联注入（不外链）
+        const VARIATIONS = {
+            intro: {
+                title: "开局引入：反西西里 (Anti-Sicilian) 基础起手",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "反西西里体系的共同起点：1.e4 c5 2.Nf3。白方先发展子力，暂不立刻用 3.d4 进入开放西西里，而是根据黑方布局选择更稳健的体系。",
+                moves: [
+                    "e4", "c5", "Nf3"
+                ],
+                steps: [
+                    "1.e4 占据中心，为白格象和后打开线路。",
+                    "1...c5 西西里防御：黑方从侧翼争夺 d4 格，制造不平衡。",
+                    "2.Nf3 白方正常出子，控制中心，为后续选择做准备。"
+                ]
+            },
+
+            moscow_bd7_c4: {
+                title: "莫斯科变例：3...Bd7 4.Bxd7+ Qxd7 5.c4 思路",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "在莫斯科变例中，3...Bd7 是黑方最稳健的应对之一。白方通过交换并选择 5.c4 的结构性思路，争取限制 ...d5，并在后续用 d4 及时冲击中心。",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "Bb5+",
+                    "Bd7", "Bxd7+", "Qxd7",
+                    "c4", "Nc6", "Nc3", "g6",
+                    "d4", "cxd4", "Nxd4",
+                    "Bg7", "Be3", "Nf6", "f3"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...d6 黑方控制 e5 格，并为后续 ...Nf6/...Nc6 做准备。",
+                    "3.Bb5+ 莫斯科变例标志性将军：用发展换取结构性让步或简化。",
+                    "3...Bd7 最稳健的应着之一：用象挡将，保持结构完整。",
+                    "4.Bxd7+ 白方选择交换，减少对手防守资源。",
+                    "4...Qxd7 常见回吃方式：后提前出动，但结构稳固。",
+                    "5.c4 结构性思路：争取限制 ...d5，并给 d5/ b5 施加长期控制。",
+                    "5...Nc6 黑方正常出子。",
+                    "6.Nc3 白方加强中心控制，并为 d4 做准备。",
+                    "6...g6 黑方准备侧翼出象（fianchetto），在长斜线对抗白方中心。",
+                    "7.d4 白方必须及时冲击中心，避免进入被动慢局。",
+                    "7...cxd4 黑方交换以消解白方中心。",
+                    "8.Nxd4 白马回吃，获得活跃中心据点。",
+                    "8...Bg7 黑格象上线，开始对白方中心施压。",
+                    "9.Be3 巩固 d4 马，并争取快速协调子力。",
+                    "9...Nf6 黑方继续出子，常见意图是 ...Ng4 干扰白方象。",
+                    "10.f3 典型反西西里手段：防止 ...Ng4，并加固 e4。"
+                ]
+            },
+
+            moscow_bd7_c3: {
+                title: "莫斯科变例：3...Bd7 4.Bxd7+ Qxd7 走 c3-d4 强中心",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "与 5.c4 的结构性思路不同，这里白方采用更直接的计划：先确保安全与协调（O-O、Re1），再用 c3-d4 建立经典兵中心。",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "Bb5+",
+                    "Bd7", "Bxd7+", "Qxd7",
+                    "O-O", "Nc6", "Re1", "Nf6",
+                    "c3", "e6", "d4"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...d6",
+                    "3.Bb5+",
+                    "3...Bd7",
+                    "4.Bxd7+",
+                    "4...Qxd7",
+                    "5.O-O 先确保国王安全，避免在中心尚未明朗时冒险。",
+                    "5...Nc6 黑方发展并控制中心格。",
+                    "6.Re1 保护 e4，并为后续 c3-d4 的中心推进做准备。",
+                    "6...Nf6 出子并攻击 e4。",
+                    "7.c3 支撑 d4 冲锋，构建经典中心。",
+                    "7...e6 黑方补强中心，并为 ...d5 或 ...Be7/...Be7 做准备。",
+                    "8.d4 白方建立强大的兵中心：这是此体系的战略核心。"
+                ]
+            },
+
+            moscow_nd7: {
+                title: "莫斯科变例：3...Nd7（避免交换）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方用 3...Nd7 挡将，避免 3...Bd7 后的双象交换，但代价是发展略慢、子力较拥挤。白方常用 d4 直接冲击中心，并可选择后早进中心的计划。",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "Bb5+",
+                    "Nd7", "d4", "cxd4", "Qxd4",
+                    "a6", "Be2"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...d6",
+                    "3.Bb5+ 莫斯科将军。",
+                    "3...Nd7 黑方以马挡将：避免后续在 d7 的象被交换，但子力略显拥挤。",
+                    "4.d4 白方直接冲击中心，争取用结构换空间。",
+                    "4...cxd4 黑方交换以削弱白方中心。",
+                    "5.Qxd4 白后早进中心：拿空间、盯住 c5/d6，并准备协调出子。",
+                    "5...a6 黑方驱赶白象，争取节奏。",
+                    "6.Be2 白象回撤，保持结构与安全。"
+                ]
+            },
+
+            rossolimo_g6_dxc6: {
+                title: "罗索利莫变例：3...g6 4.Bxc6 dxc6（dxc6 结构）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "罗索利莫（3.Bb5）是针对 2...Nc6 的重要反西西里体系。白方可用 Bxc6 破坏黑方兵形；黑方获得双象潜力，但 c 线与兵形会留下长期课题。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "Bb5",
+                    "g6", "Bxc6", "dxc6",
+                    "d3", "Bg7", "h3", "Nf6",
+                    "Nc3", "Nd7", "Be3", "e5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...Nc6 黑方常见布局：为 ...e5 或 ...d5 的反击留下选择。",
+                    "3.Bb5 罗索利莫变例：避免开放西西里，争取结构性优点。",
+                    "3...g6 黑方准备侧翼出象，走向“g6 罗索利莫”。",
+                    "4.Bxc6 白方主动交换，破坏黑方兵形。",
+                    "4...dxc6 黑方用 d 兵回吃：打开后翼与白格象线路，但形成 c 线结构问题。",
+                    "5.d3 稳固中心，并限制黑方黑格象的爆发力。",
+                    "5...Bg7 黑格象入位，开始在长斜线对抗白方中心。",
+                    "6.h3 关键小兵：防止 ...Ng4 干扰，并为将来 g4 留下可能。",
+                    "6...Nf6 黑方出子并打击 e4。",
+                    "7.Nc3 白方补发展并控制中心格。",
+                    "7...Nd7 典型调度：为 ...Nf8-e6 或 ...f5 等计划服务。",
+                    "8.Be3 白方自然发展，并对 c5/中心弱点施压。",
+                    "8...e5 黑方占据中心并限制白方 d4 的推进。"
+                ]
+            },
+
+            rossolimo_wc2018_game1: {
+                title: "名局示例：世锦赛 2018 第 1 局（Caruana–Carlsen）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "2018 年世界冠军赛第 1 局采用了 g6 罗索利莫（B31）。本变例展示 dxc6 结构下的典型计划：...b6 加固 c5，并为 ...Nf8-e6 调度服务；白方以 Nh2 与 f4 组织王翼扩张。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "Bb5",
+                    "g6", "Bxc6", "dxc6",
+                    "d3", "Bg7", "h3", "Nf6",
+                    "Nc3", "Nd7", "Be3", "e5",
+                    "O-O", "b6", "Nh2", "Nf8",
+                    "f4", "exf4", "Rxf4", "Be6",
+                    "Rf2", "h6", "Qd2", "g5"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bb5",
+                    "3...g6",
+                    "4.Bxc6",
+                    "4...dxc6",
+                    "5.d3",
+                    "5...Bg7",
+                    "6.h3",
+                    "6...Nf6",
+                    "7.Nc3",
+                    "7...Nd7",
+                    "8.Be3",
+                    "8...e5",
+                    "9.O-O 白方先短易位，保持布局稳健。",
+                    "9...b6 加固 c5 并为后续子力调度腾出空间。",
+                    "10.Nh2 白方典型计划：为 f4 推进做准备，并让马可转入 g4/e4。",
+                    "10...Nf8 黑马调度：常见意图是 ...Ne6 加固并反击中心/王翼。",
+                    "11.f4 白方启动王翼计划，争取打开 f 线。",
+                    "11...exf4 黑方接受挑战，改变结构。",
+                    "12.Rxf4 白方用车回吃，快速把重子带入战斗。",
+                    "12...Be6 黑方发展并稳固关键格，兼顾防守。",
+                    "13.Rf2 车回撤整形：为后续 Qd2/ Raf1 等做准备。",
+                    "13...h6 预防 Ng4，并稳住王翼结构。",
+                    "14.Qd2 建立后象电池与协调。",
+                    "14...g5 黑方反击：夺空间并限制白方轻子的落点。"
+                ]
+            },
+
+            rossolimo_bxc6_nh6: {
+                title: "罗索利莫：4...bxc6 结构与 Nh6 计划",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "当黑方选择 4...bxc6 回吃，兵形更“向中心靠拢”，但也会带来长期结构课题。这里展示一个较有趣的早期 ...Nh6 调度思路，并通过 ...f6 反击白方 e5 兵链。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "Bb5",
+                    "g6", "Bxc6", "bxc6",
+                    "d3", "Bg7", "c3", "Nh6",
+                    "O-O", "O-O", "d4", "cxd4",
+                    "cxd4", "d5", "e5", "f6",
+                    "h3", "Nf7"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bb5",
+                    "3...g6 黑方继续走向 g6 罗索利莫结构。",
+                    "4.Bxc6 白方交换以破坏兵形。",
+                    "4...bxc6 黑方用 b 兵回吃：更贴近中心，但也会形成结构弱点与开放线课题。",
+                    "5.d3 白方稳固中心，并准备用 c3-d4 争取空间。",
+                    "5...Bg7 黑格象出动，准备短易位并对中心施压。",
+                    "6.c3 典型计划：为 d4 冲锋做铺垫。",
+                    "6...Nh6 看似怪，但思路是后续 ...Nf7 或 ...f6 等资源，兼顾中心反击。",
+                    "7.O-O 白方先安全易位。",
+                    "7...O-O 黑方完成易位，准备在中心展开对抗。",
+                    "8.d4 白方冲击中心。",
+                    "8...cxd4 黑方交换以削弱白方中心。",
+                    "9.cxd4 白方用 c 兵回吃，获得更强的中心控制。",
+                    "9...d5 黑方反击中心（从 d7 两步冲到 d5）。",
+                    "10.e5 白方锁住中心，争取空间优势。",
+                    "10...f6 黑方典型反击：直接攻击 e5 兵链，寻求解放。",
+                    "11.h3 预防 ...Bg4 干扰，并给王翼结构留缓冲。",
+                    "11...Nf7 黑马回到理想位置，对 e5 施压并准备后续调度。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+
+                // 侧边栏高亮：不改变模板 DOM，仅基于 onclick 匹配 key
+                try {
+                    var buttons = document.querySelectorAll('.variation-btn');
+                    buttons.forEach(function (btn) {
+                        btn.classList.remove('active');
+                    });
+
+                    var target = null;
+                    buttons.forEach(function (btn) {
+                        var handler = btn.getAttribute('onclick') || '';
+                        if (handler.indexOf("'" + key + "'") !== -1) {
+                            target = btn;
+                        }
+                    });
+
+                    if (target) target.classList.add('active');
+                } catch (e) {
+                    console.warn('Sidebar highlight failed:', e);
+                }
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始（FEN: 初始棋盘）
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('intro');
+        });
+    </script>
+
+</body>
+
+</html>

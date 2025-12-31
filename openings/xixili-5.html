@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西西里防御 - 第五讲：斯维什尼科夫变例</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="xixili-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">第五讲：斯维什尼科夫变例 (Sveshnikov Variation)</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>🐉 斯维什尼科夫变例</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>基础理论</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_setup')">基础定式 (The Setup)</button>
+                <button class="variation-btn text-danger"
+                    onclick="selectVariation('positional_mistake')">错误尝试：过早交换</button>
+                <button class="variation-btn" onclick="selectVariation('passive_play')">次要变例：白方消极应对</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('trap_nf5')">陷阱变例：冒进的 Nf5</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主线理论</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('critical_test')">主线剧情：关键交锋</button>
+                <button class="variation-btn" onclick="selectVariation('bg5_line')">分支 A：传统主线 (Bg5)</button>
+                <button class="variation-btn" onclick="selectVariation('nd5_line')">分支 B：现代主线 (Nd5)</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>西西里防御 - 斯维什尼科夫变例 (Sveshnikov Variation)</h3>
+                <p>这是西西里防御中极其激进且富有战略深度的一个变例。黑方通过 5...e5 主动在该局面中制造不平衡，接受落后的 d6 兵和弱点 d5 格，以换取极具活力的子力活跃度、中心控制权以及潜在的双象优势。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 经过 GM 逻辑校验
+        const VARIATIONS = {
+            main_setup: {
+                title: "基础定式 (The Setup)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "双方进入斯维什尼科夫变例前的标准行棋。这是所有后续变例的基础。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "e5"
+                ],
+                steps: [
+                    "1.e4 占据中心，为子力出动做准备。",
+                    "1...c5 西西里防御！黑方从侧翼反击，控制 d4 格，制造不平衡局面。",
+                    "2.Nf3 白方出子并控制中心。",
+                    "2...Nc6 黑方出子，加强对 d4 格的控制。",
+                    "3.d4 白方挑起中心争夺，进入开放西西里。",
+                    "3...cxd4 黑方交换兵，不让白方在中心维持双兵优势。",
+                    "4.Nxd4 白方吃回，马占据中心位置。",
+                    "4...Nf6 黑方出马攻击 e4 兵。",
+                    "5.Nc3 白方出马防守 e4。",
+                    "5...e5 关键着法！斯维什尼科夫变例的标志。黑方主动出击，虽然制造了 d5 的弱点和落后的 d6 兵，但获得了极佳的子力活跃度。"
+                ]
+            },
+            positional_mistake: {
+                title: "错误尝试：过早交换 (Positional Mistake)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "解释为什么白方不能简单地通过 Nxc6 试图获利。黑方获得强大的中心兵优势。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "e5",
+                    "Nxc6", "bxc6", "Bc4", "d5"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...Nc6", "3.d4", "3...cxd4", "4.Nxd4", "4...Nf6", "5.Nc3",
+                    "5...e5 进入斯维什尼科夫变例。",
+                    "6.Nxc6? 白方试图简化局面，但这是个错误！",
+                    "6...bxc6 黑方用 b 兵吃回，向中心靠拢。现在黑方有强大的 c6-d7-e5 兵链。",
+                    "7.Bc4 白方试图发展子力。",
+                    "7...d5! 黑方立即在中心反击！利用兵力优势，黑方获得主动权。"
+                ]
+            },
+            passive_play: {
+                title: "次要变例：白方消极应对 (Passive Play)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "如果白方不走 Ndb5 这一关键着法，黑方将轻松获得平先甚至优势。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "e5",
+                    "Nxc6", "bxc6", "Bd3", "Bb4"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...Nc6", "3.d4", "3...cxd4", "4.Nxd4", "4...Nf6", "5.Nc3",
+                    "5...e5 进入斯维什尼科夫变例。",
+                    "6.Nxc6 若白方执意交换。",
+                    "6...bxc6",
+                    "7.Bd3 或类似的非 Ndb5 消极着法。",
+                    "7...Bb4! 黑方积极出象牵制，准备挺进 d5，完全没有问题。"
+                ]
+            },
+            trap_nf5: {
+                title: "陷阱变例：冒进的 Nf5 (The Aggressive Try)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方试图利用 d6 格，但忽略了黑方的战术反击。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "e5",
+                    "Nf5", "d5", "exd5", "Bxf5", "dxc6", "Qxd1"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...Nc6", "3.d4", "3...cxd4", "4.Nxd4", "4...Nf6", "5.Nc3",
+                    "5...e5 进入斯维什尼科夫变例。",
+                    "6.Nf5? 白方直接跳马，意图利用弱点，但这是冒进之举！",
+                    "6...d5! 强力反击！阻止了 Nd6+，同时攻击 e4。",
+                    "7.exd5 白方若吃兵。",
+                    "7...Bxf5 黑方消除白马的威胁。",
+                    "8.dxc6 白方吃兵。",
+                    "8...Qxd1+! 黑方强制交换后，利用开放线反击，补偿充足。"
+                ]
+            },
+            critical_test: {
+                title: "主线剧情：关键交锋 (Critical Test)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方唯有走 Ndb5 才是对斯维什尼科夫变例的真正考验。这是所有主线变例的起点。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "e5",
+                    "Ndb5", "d6"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...Nc6", "3.d4", "3...cxd4", "4.Nxd4", "4...Nf6", "5.Nc3",
+                    "5...e5 进入斯维什尼科夫变例。",
+                    "6.Ndb5! 主要着法！威胁 Nd6+ 抽将。这是对黑方的真正考验。",
+                    "6...d6 黑方被迫应对，防止 Nd6+。此举同时也限制了黑格象，并确认了 d 兵的长期弱点。"
+                ]
+            },
+            bg5_line: {
+                title: "分支 A：传统主线 (Traditional Main Line - Bg5)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "几十年来最流行的下法，局面极其尖锐。白方用 Bg5 牵制黑马，争夺 d5 控制权。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "e5",
+                    "Ndb5", "d6", "Bg5", "a6", "Na3", "b5", "Bxf6", "gxf6", "Nd5", "f5", "Bd3", "Be6"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...Nc6", "3.d4", "3...cxd4", "4.Nxd4", "4...Nf6", "5.Nc3",
+                    "5...e5", "6.Ndb5", "6...d6",
+                    "7.Bg5 白方牵制黑马，直接争夺 d5 格的控制权，威胁 Nd5。",
+                    "7...a6 黑方反击，驱赶白马。",
+                    "8.Na3 白马被迫去边路，这给了黑方时间。",
+                    "8...b5! 黑方继续在后翼扩张，威胁走 b4 捉双，并阻止 Nc4。",
+                    "9.Bxf6 白方弃掉双象优势，以此破坏黑方兵形并加强对 d5 的控制。",
+                    "9...gxf6 黑方只能如此吃回。注意：若 Qxf6? 会招致 Nd5! 导致黑方丢先手。",
+                    "10.Nd5 白马占据完美的 d5 前哨点。",
+                    "10...f5! 黑方经典反击。虽然王翼兵形破碎，但利用双象和半开放的 g 线寻求战机。",
+                    "11.Bd3 白方稳固 e4 格。",
+                    "11...Be6 黑方出象施压 d5。注意：此处绝不能走 Ne7??，否则 Nf6# (闷杀)!"
+                ]
+            },
+            nd5_line: {
+                title: "分支 B：现代主线 (Modern/Caruana Line - Nd5)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "2018年世界冠军赛中卡鲁阿纳采用的下法，更注重位置性控制。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "e5",
+                    "Ndb5", "d6", "Nd5", "Nxd5", "exd5", "Nb8", "c4", "Be7"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...Nc6", "3.d4", "3...cxd4", "4.Nxd4", "4...Nf6", "5.Nc3",
+                    "5...e5", "6.Ndb5", "6...d6",
+                    "7.Nd5 白方不经过 Bg5，直接占据 d5 格。现代主流下法。",
+                    "7...Nxd5 黑方必须处理这匹马。",
+                    "8.exd5 白方形成后翼 4打3 的兵力优势。",
+                    "8...Nb8 或者 Ne7。黑马重组，准备去 d7，然后走 f5 反击。",
+                    "9.c4 白方稳固空间，封锁后翼。",
+                    "9...Be7 黑方调整阵型，准备未来的 f5 突破。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始（FEN: 初始棋盘）
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('main_setup');
+
+            // ========== 自动验证脚本 ==========
+            // 在页面加载时自动检查所有变例的每一步走法
+            console.log('========== 开始自动验证所有变例 ==========');
+            var allPassed = true;
+            var variationKeys = Object.keys(VARIATIONS);
+
+            variationKeys.forEach(function (key) {
+                var variation = VARIATIONS[key];
+                var testGame = new Chess(variation.fen);
+                var errors = [];
+
+                for (var i = 0; i < variation.moves.length; i++) {
+                    var move = testGame.move(variation.moves[i]);
+                    if (!move) {
+                        errors.push({
+                            step: i,
+                            move: variation.moves[i],
+                            fen: testGame.fen()
+                        });
+                        allPassed = false;
+                        break; // 遇到错误就停止
+                    }
+                }
+
+                if (errors.length > 0) {
+                    console.error('❌ 变例 [' + key + '] 失败:');
+                    errors.forEach(function (e) {
+                        console.error('   第 ' + e.step + ' 步: "' + e.move + '" 无效');
+                        console.error('   当前 FEN: ' + e.fen);
+                    });
+                } else {
+                    console.log('✓ 变例 [' + key + '] 通过 (' + variation.moves.length + ' 步)');
+                }
+            });
+
+            if (allPassed) {
+                console.log('========== ✓ 所有变例验证通过！ ==========');
+            } else {
+                console.error('========== ❌ 部分变例验证失败，请检查！ ==========');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
