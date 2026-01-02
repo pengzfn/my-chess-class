@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>意大利开局 - 全应对覆盖教学版</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="Italy-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">第一讲：意大利开局全应对覆盖</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>🎯 意大利开局体系</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>基础框架</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line_basic')">标准意大利骨架</button>
+                <button class="variation-btn" onclick="selectVariation('main_line_c3')">中心铺垫 c3</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>黑方应对选择</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('var_a_mistake')">变例A：贪兵错误（Nxe4?）</button>
+                <button class="variation-btn" onclick="selectVariation('var_b_correct')">变例B：正确兑换（exd4）</button>
+                <button class="variation-btn" onclick="selectVariation('var_c_check')">变例C：象将军（Bb4+）</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>白方应将方案</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('var_d_wrong')">变例D：错误用马垫（Nc3?）</button>
+                <button class="variation-btn" onclick="selectVariation('var_e_correct')">变例E：正确用象垫（Bd2）</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>核心战术</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('var_f_sacrifice')">变例F：先弃后取战术（Bxf7+）</button>
+                <button class="variation-btn" onclick="selectVariation('var_g_defense')">变例G：黑方防守与平衡</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>意大利开局（Italian Game）— 全应对覆盖教学版</h3>
+                <p>本教学完整覆盖意大利开局中白方可能遇到的所有关键应对，包括中心兵争夺、黑方将军、吃兵与不吃兵、先弃后取战术以及叠加进攻下的防守方式，适合系统训练孩子的判断与应变能力。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 意大利开局完整教学体系
+        const VARIATIONS = {
+            main_line_basic: {
+                title: "标准意大利开局骨架",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "意大利开局的基础框架：双方对称出子，白方象指向f7弱点。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5"],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称反击中心。",
+                    "2.Nf3 攻击e5兵，出子。",
+                    "2...Nc6 保护e5兵。",
+                    "3.Bc4 意大利开局成型，瞄准f7。",
+                    "3...Bc5 黑方对称出象。"
+                ]
+            },
+            main_line_c3: {
+                title: "中心铺垫（防止贸然冲兵）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方用 c3 为 d4 推进做准备，这是意大利开局的关键铺垫着法。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3"],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bc4",
+                    "3...Bc5",
+                    "4.c3 关键铺垫，为d4做准备。"
+                ]
+            },
+            var_a_mistake: {
+                title: "变例A：黑马吃中心兵（错误示范）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "⚠️ 这是黑方不该下的棋，因为会吃亏。白方在中心获得强大优势。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3", "Nf6", "d4", "Nxe4"],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bc4",
+                    "3...Bc5",
+                    "4.c3",
+                    "4...Nf6",
+                    "5.d4 白方冲击中心。",
+                    "5...Nxe4? 黑马贪吃中心兵（这是错误！）白方可用多种方式获得优势。"
+                ]
+            },
+            var_b_correct: {
+                title: "变例B：黑方正确选择——兵交换",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方避免吃亏，选择理性交换中心兵。这是最稳健的应对方式。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3", "Nf6", "d4", "exd4", "cxd4"],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bc4",
+                    "3...Bc5",
+                    "4.c3",
+                    "4...Nf6",
+                    "5.d4",
+                    "5...exd4 黑方用兵换兵。",
+                    "6.cxd4 白方保持中心。"
+                ]
+            },
+            var_c_check: {
+                title: "变例C：黑方象将军",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方最积极的应对——将军！白方必须小心应对，否则中心兵会崩溃。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3", "Nf6", "d4", "exd4", "cxd4", "Bb4"],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bc4",
+                    "3...Bc5",
+                    "4.c3",
+                    "4...Nf6",
+                    "5.d4",
+                    "5...exd4",
+                    "6.cxd4",
+                    "6...Bb4+ 黑方最积极的应对——将军！"
+                ]
+            },
+            var_d_wrong: {
+                title: "变例D：错误应将——用马垫",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "⚠️ 新手常犯错误！马会被牵制，导致中心兵崩溃。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3", "Nf6", "d4", "exd4", "cxd4", "Bb4", "Nc3"],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bc4",
+                    "3...Bc5",
+                    "4.c3",
+                    "4...Nf6",
+                    "5.d4",
+                    "5...exd4",
+                    "6.cxd4",
+                    "6...Bb4+",
+                    "7.Nc3? 马会被牵制，导致中心兵崩溃。黑方可以用...Nxe4获得优势。"
+                ]
+            },
+            var_e_correct: {
+                title: "变例E：正确应将——用象垫",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "✓ 唯一正确答案！解除将军的同时保持中心稳固。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3", "Nf6", "d4", "exd4", "cxd4", "Bb4", "Bd2"],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bc4",
+                    "3...Bc5",
+                    "4.c3",
+                    "4...Nf6",
+                    "5.d4",
+                    "5...exd4",
+                    "6.cxd4",
+                    "6...Bb4+",
+                    "7.Bd2 解除将军，保持中心稳固。这是正确的应对方式！"
+                ]
+            },
+            var_f_sacrifice: {
+                title: "变例F：先弃后取战术",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "🔥 本视频的核心精华！白方用暂时弃子破坏黑方王翼结构。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3", "Nf6", "d4", "exd4", "cxd4", "Bb4", "Bd2", "Nxe4", "Bxf7"],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bc4",
+                    "3...Bc5",
+                    "4.c3",
+                    "4...Nf6",
+                    "5.d4",
+                    "5...exd4",
+                    "6.cxd4",
+                    "6...Bb4+",
+                    "7.Bd2",
+                    "7...Nxe4 黑方以为得兵。",
+                    "8.Bxf7+! 白方先弃后取，破坏王翼！黑王必须吃象，然后白方会吃回b4的象，获得良好局面。"
+                ]
+            },
+            var_g_defense: {
+                title: "变例G：黑方防守与平衡",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方通过精确防守，可以保持局面相对平衡。这是实战中常见的复杂中局。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "c3", "Nf6", "d4", "exd4", "cxd4", "Bb4", "Bd2", "Nxe4", "Bxf7", "Kxf7", "Bxb4", "Nxb4"],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bc4",
+                    "3...Bc5",
+                    "4.c3",
+                    "4...Nf6",
+                    "5.d4",
+                    "5...exd4",
+                    "6.cxd4",
+                    "6...Bb4+",
+                    "7.Bd2",
+                    "7...Nxe4",
+                    "8.Bxf7+ 白方弃象。",
+                    "9...Kxf7 黑王吃象。",
+                    "10.Bxb4 白方吃回象。",
+                    "10...Nxb4 黑方c6马吃b4的白象。局面复杂，双方机会均等。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+            window.ChessApp.init('myBoard', startFen);
+            
+            // 默认加载第一个变例
+            selectVariation('main_line_basic');
+
+            // ========== 自动验证脚本 ==========
+            console.log('🔍 开始验证所有变例的走法合法性...\n');
+            var totalVariations = Object.keys(VARIATIONS).length;
+            var passedCount = 0;
+            var failedCount = 0;
+
+            Object.keys(VARIATIONS).forEach(function(key) {
+                var v = VARIATIONS[key];
+                var g = new Chess(v.fen);
+                var allValid = true;
+                
+                for (var i = 0; i < v.moves.length; i++) {
+                    var moveResult = g.move(v.moves[i]);
+                    if (!moveResult) {
+                        console.error('❌ [' + key + '] 第' + (i+1) + '步无效: ' + v.moves[i]);
+                        console.error('   当前FEN: ' + g.fen());
+                        allValid = false;
+                        failedCount++;
+                        return;
+                    }
+                }
+                
+                if (allValid) {
+                    console.log('✓ [' + key + '] 验证通过 (' + v.moves.length + '步)');
+                    passedCount++;
+                }
+            });
+
+            console.log('\n========== 验证报告 ==========');
+            console.log('总变例数: ' + totalVariations);
+            console.log('通过: ' + passedCount);
+            console.log('失败: ' + failedCount);
+            console.log('==============================\n');
+        });
+    </script>
+
+</body>
+
+</html>
+

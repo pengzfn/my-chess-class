@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西班牙开局 - 基础主线与关键应对全集</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="Spain-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">第一讲：西班牙开局全1</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>♜ 西班牙开局体系</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主线骨架</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line')">主线：象退a4的稳健布局</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>白方常见误区</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('var_a_bxc6')">变例 A：错误选择 Bxc6</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('var_b_nxe5')">变例 B：贪吃 e5 兵</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>黑方应对要点</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('var_c_nxe4')">变例 C：黑方直接 Nxe4</button>
+                <button class="variation-btn" onclick="selectVariation('var_d_b5')">变例 D：b5 抢节奏赶象</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>西班牙开局（Ruy López）- 基础主线与关键应对全集</h3>
+                <p>西班牙开局是最重要的王兵开局之一。本讲解重点在于黑方 a6 后，白方是否吃马、是否敢吃 e5 兵，以及围绕中心兵的所有关键应对逻辑，适合系统训练儿童对“每一步都有答案”的理解。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 西班牙开局基础主线与关键应对
+        const VARIATIONS = {
+            main_line: {
+                title: "主线：象退a4的稳健布局",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "保持双象优势、稳健展开，是西班牙开局最经典的主线方向。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3"
+                ],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称反击中心。",
+                    "2.Nf3 攻击 e5 兵。",
+                    "2...Nc6 保护 e5 兵并出子。",
+                    "3.Bb5 对 c6 马施压，形成西班牙开局。",
+                    "3...a6 逼象表态，是核心分支点。",
+                    "4.Ba4 保持双象优势，继续施压。",
+                    "4...Nf6 快速出子，准备攻击中心。",
+                    "5.O-O 白方优先王安全。",
+                    "5...Be7 黑方准备王车易位。",
+                    "6.Re1 间接防守 e4，抑制 Nxe4。",
+                    "6...b5 冲兵赶象，争取空间。",
+                    "7.Bb3 安全退象，西班牙初级阶段完成。"
+                ]
+            },
+            var_a_bxc6: {
+                title: "变例 A：白方错误选择 Bxc6",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "教学重点：象换马导致双象优势丧失，白方战略层面吃亏。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bb5",
+                    "3...a6",
+                    "4.Bxc6? 白方主动交换，理论上不推荐。",
+                    "4...dxc6 黑方用 d 兵吃回，打开中心空间。"
+                ]
+            },
+            var_b_nxe5: {
+                title: "变例 B：Bxc6 后白马试图吃 e5 兵（失败示范）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "教学重点：看似能吃兵，实则因后出动产生捉双，白方被迫退马。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6", "dxc6", "Nxe5", "Qd4", "Nf3"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bb5",
+                    "3...a6",
+                    "4.Bxc6",
+                    "4...dxc6",
+                    "5.Nxe5? 白方贪兵。",
+                    "5...Qd4 黑后出动，捉双马与王。",
+                    "6.Nf3 白方被迫退马，兵白吃不了。"
+                ]
+            },
+            var_c_nxe4: {
+                title: "变例 C：Ba4 后黑方直接 Nxe4（不可行）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "教学重点：Re1 的战术防守，使黑马无法安全吃兵。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Nxe4", "Re1"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bb5",
+                    "3...a6",
+                    "4.Ba4",
+                    "4...Nf6",
+                    "5.O-O",
+                    "5...Nxe4? 黑方企图吃中心兵。",
+                    "6.Re1 车钉马，黑方无法守住马。"
+                ]
+            },
+            var_d_b5: {
+                title: "变例 D：黑方冲兵抓象阻止白方计划",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "教学重点：b5 是阻断白方吃马+吃兵连招的关键防守。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "b5", "Bb3"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...e5",
+                    "2.Nf3",
+                    "2...Nc6",
+                    "3.Bb5",
+                    "3...a6",
+                    "4.Ba4",
+                    "4...Nf6",
+                    "5.O-O",
+                    "5...b5 抢节奏，破坏白方结构。",
+                    "6.Bb3 唯一安全格。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('main_line');
+
+            // ========== 自动验证脚本 ==========
+            console.log('🔍 开始验证所有变例的走法合法性...\n');
+            var totalVariations = Object.keys(VARIATIONS).length;
+            var passedCount = 0;
+            var failedCount = 0;
+
+            Object.keys(VARIATIONS).forEach(function (key) {
+                var v = VARIATIONS[key];
+                var g = new Chess(v.fen);
+                var allValid = true;
+
+                for (var i = 0; i < v.moves.length; i++) {
+                    var moveResult = g.move(v.moves[i]);
+                    if (!moveResult) {
+                        console.error('❌ [' + key + '] 第' + (i + 1) + '步无效: ' + v.moves[i]);
+                        console.error('   当前FEN: ' + g.fen());
+                        allValid = false;
+                        failedCount++;
+                        return;
+                    }
+                }
+
+                if (allValid) {
+                    console.log('✓ [' + key + '] 验证通过 (' + v.moves.length + '步)');
+                    passedCount++;
+                }
+            });
+
+            console.log('\n========== 验证报告 ==========');
+            console.log('总变例数: ' + totalVariations);
+            console.log('通过: ' + passedCount);
+            console.log('失败: ' + failedCount);
+            console.log('==============================\n');
+        });
+    </script>
+
+</body>
+
+</html>
