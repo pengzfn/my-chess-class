@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>费舍尔 vs 斯帕斯基 (1972) - 第6局</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">费舍尔 vs 斯帕斯基 (1972) - 第6局</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>🏆 1972 世锦赛第6局</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_game')">Fischer vs Spassky (1972) Game 6</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键决策点</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp14_bb5')">DP①：13...Rc8 后 14.Bb5（实战）</button>
+                <button class="variation-btn" onclick="selectVariation('dp14_be2')">DP①：13...Rc8 后 14.Be2（稳健）</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp14_dxc5')">DP①：13...Rc8 后 14.dxc5?!（过早澄清）</button>
+
+                <button class="variation-btn" onclick="selectVariation('dp18_qf8')">DP②：18...Qf8（实战，被动）</button>
+                <button class="variation-btn" onclick="selectVariation('dp18_nf6')">DP②：18...Nf6（更顽强）</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>费舍尔 vs 斯帕斯基（1972 世锦赛，第6局）</h3>
+                <p>开局从 1.c4 出发，转入后翼弃兵拒绝（塔塔科维尔体系）典型结构。费舍尔用"悬挂兵/隔离兵"主题压制黑方反击，关键在于：保留中央张力、把对手逼进缺乏主动性的防守姿态，然后在王翼与中心同时发力。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // 数据构造工具
+        // =====================================================
+        function buildSteps(moves, startMoveNumber, commentsByPlyIndex) {
+            var base = Math.max(1, startMoveNumber || 1);
+            var comments = commentsByPlyIndex || {};
+            return moves.map(function (san, idx) {
+                var fullMove = base + Math.floor(idx / 2);
+                var prefix = (idx % 2 === 0) ? (fullMove + '.') : (fullMove + '...');
+                var comment = comments[idx] ? (' ' + comments[idx]) : '';
+                return prefix + san + comment;
+            });
+        }
+
+        // =====================================================
+        // 主线棋谱（来源对齐：TalkChess + ChessStrategiesBlog + ChessBase）
+        // 注意：部分源站省略/误写了"x"与车的歧义，这里已统一为 chess.js 可验证的 SAN
+        // =====================================================
+        const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+        const MAIN_GAME_MOVES = [
+            "c4", "e6",
+            "Nf3", "d5",
+            "d4", "Nf6",
+            "Nc3", "Be7",
+            "Bg5", "O-O",
+            "e3", "h6",
+            "Bh4", "b6",
+            "cxd5", "Nxd5",
+            "Bxe7", "Qxe7",
+            "Nxd5", "exd5",
+            "Rc1", "Be6",
+            "Qa4", "c5",
+            "Qa3", "Rc8",
+            "Bb5", "a6",
+            "dxc5", "bxc5",
+            "O-O", "Ra7",
+            "Be2", "Nd7",
+            "Nd4", "Qf8",
+            "Nxe6", "fxe6",
+            "e4", "d4",
+            "f4", "Qe7",
+            "e5", "Rb8",
+            "Bc4", "Kh8",
+            "Qh3", "Nf8",
+            "b3", "a5",
+            "f5", "exf5",
+            "Rxf5", "Nh7",
+            "Rcf1", "Qd8",
+            "Qg3", "Re7",
+            "h4", "Rbb7",
+            "e6", "Rbc7",
+            "Qe5", "Qe8",
+            "a4", "Qd8",
+            "R1f2", "Qe8",
+            "R2f3", "Qd8",
+            "Bd3", "Qe8",
+            "Qe4", "Nf6",
+            "Rxf6", "gxf6",
+            "Rxf6", "Kg8",
+            "Bc4", "Kh8",
+            "Qf4"
+        ];
+
+        const VARIATIONS = {
+            main_game: {
+                title: "费舍尔 vs 斯帕斯基 (1972) - 第6局（主线全谱）",
+                fen: START_FEN,
+                description: "Robert Fischer vs Boris Spassky，1972 世界冠军赛第6局。开局 1.c4 转入后翼弃兵拒绝（塔塔科维尔体系）。这盘棋的精髓：不给黑方任何"反击窗口"，用结构与空间把优势滚到胜势。",
+                moves: MAIN_GAME_MOVES,
+                steps: buildSteps(MAIN_GAME_MOVES, 1, {
+                    0: "（英语开局，准备转置）",
+                    4: "（正式转置到 QGD 结构）",
+                    26: "（实战关键：把黑方逼出 ...a6）",
+                    32: "（白方完成易位，开始长期压制）",
+                    36: "（黑方被动防守：...Qf8）",
+                    46: "（白方王翼空间 + 中心推进）",
+                    74: "（双车在 f 线配合收网）",
+                    80: "（黑方认输）"
+                })
+            },
+
+            // DP①：13...Rc8 后白方第14手
+            dp14_bb5: (function () {
+                var moves = MAIN_GAME_MOVES.slice(0, 26).concat(["Bb5", "a6", "dxc5", "bxc5", "O-O", "Ra7"]);
+                return {
+                    title: "DP①：13...Rc8 后 14.Bb5（实战主路）",
+                    fen: START_FEN,
+                    description: "费舍尔的选择：用 14.Bb5 先制造结构性约束，迫使 ...a6，然后再用 dxc5 引出悬挂兵/隔离兵主题，进入他最擅长的"无反击式压制"。",
+                    moves: moves,
+                    steps: buildSteps(moves, 1, {
+                        26: "（关键：先用象占位，强迫黑方回答）",
+                        28: "（再交换，改变黑方兵形）"
+                    })
+                };
+            })(),
+
+            dp14_be2: (function () {
+                var moves = MAIN_GAME_MOVES.slice(0, 26).concat(["Be2", "Nc6", "O-O"]);
+                return {
+                    title: "DP①：13...Rc8 后 14.Be2（稳健思路）",
+                    fen: START_FEN,
+                    description: "更稳健的处理：象先回到 e2，避免被 ...a6 赶走产生额外节奏。思路偏"缓慢积累"，但通常也意味着白方少了实战中那种把黑方结构钉死的强迫性。",
+                    moves: moves,
+                    steps: buildSteps(moves, 1, {
+                        26: "（退回象，减少被赶象的节奏损失）"
+                    })
+                };
+            })(),
+
+            dp14_dxc5: (function () {
+                // 说明：这条线不是"强迫杀"，而是展示典型误区：过早澄清张力后，
+                // 白方若执着于"吃回一兵"的战术想象，可能反被 C 线战术惩罚。
+                var moves = MAIN_GAME_MOVES.slice(0, 26).concat(["dxc5", "bxc5", "Rxc5", "Rxc5", "Qxc5", "Qxc5"]);
+                return {
+                    title: "DP①：13...Rc8 后 14.dxc5?!（过早澄清张力）",
+                    fen: START_FEN,
+                    description: "原则性问题：白方过早用 dxc5 澄清中央张力，黑方用 ...bxc5 轻松重构兵形。更糟的是，白方很容易陷入"Rxc5 能吃兵"的战术幻觉，而在 C 线反击下直接丢后。",
+                    moves: moves,
+                    steps: buildSteps(moves, 1, {
+                        26: "（过早交换，给黑方一个舒服的结构）",
+                        28: "（典型误区：执着于吃回兵）",
+                        31: "（黑方 ...Qxc5 后白方无子可回吃）"
+                    })
+                };
+            })(),
+
+            // DP②：18.Nd4 后黑方第18手
+            dp18_qf8: (function () {
+                // 截取到 18.Nd4（白方第18手）为止，然后接黑方选择
+                var moves = MAIN_GAME_MOVES.slice(0, 35).concat(["Qf8", "Nxe6", "fxe6", "e4", "d4"]);
+                return {
+                    title: "DP②：18.Nd4 后 18...Qf8（实战，被动）",
+                    fen: START_FEN,
+                    description: "实战黑方选择 18...Qf8，意图稳住 e7 与后续防守，但把子力更捆在后场，低估了白方 Nxe6 + e4 的结构性打击：黑方中心被固定，反击路线被封死。",
+                    moves: moves,
+                    steps: buildSteps(moves, 1, {
+                        36: "（黑方后退，进入被动防守）",
+                        37: "（白方用结构交换打开主动权）"
+                    })
+                };
+            })(),
+
+            dp18_nf6: (function () {
+                // 截取到 18.Nd4（白方第18手）为止，然后接黑方选择
+                var moves = MAIN_GAME_MOVES.slice(0, 35).concat(["Nf6", "Nxe6", "fxe6", "e4"]);
+                return {
+                    title: "DP②：18.Nd4 后 18...Nf6（更顽强的防守）",
+                    fen: START_FEN,
+                    description: "更顽强的路：18...Nf6 尽量让子力贴近中心，保持一定反击资源。白方仍常见 Nxe6 的结构性交换，但黑方通常比实战的 ...Qf8 更容易把子力协调出来。",
+                    moves: moves,
+                    steps: buildSteps(moves, 1, {
+                        36: "（黑方出子到位，减少纯挨打的风险）"
+                    })
+                };
+            })()
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            window.ChessApp.init('myBoard', START_FEN);
+            selectVariation('main_game');
+
+            // ========== 自动验证脚本 ==========
+            console.log('🔍 开始验证所有变例的走法合法性...\n');
+            var totalVariations = Object.keys(VARIATIONS).length;
+            var passedCount = 0;
+            var failedCount = 0;
+
+            Object.keys(VARIATIONS).forEach(function (key) {
+                var v = VARIATIONS[key];
+                var g = new Chess(v.fen);
+                var allValid = true;
+
+                for (var i = 0; i < v.moves.length; i++) {
+                    var moveResult = g.move(v.moves[i]);
+                    if (!moveResult) {
+                        console.error('❌ [' + key + '] 第' + (i + 1) + '步无效: ' + v.moves[i]);
+                        console.error('   当前FEN: ' + g.fen());
+                        allValid = false;
+                        failedCount++;
+                        return;
+                    }
+                }
+
+                if (allValid) {
+                    console.log('✓ [' + key + '] 验证通过 (' + v.moves.length + '步)');
+                    passedCount++;
+                }
+            });
+
+            console.log('\n========== 验证报告 ==========');
+            console.log('总变例数: ' + totalVariations);
+            console.log('通过: ' + passedCount);
+            console.log('失败: ' + failedCount);
+            console.log('==============================\n');
+
+            // ========== 数据修订日志 ==========
+            console.log('🧾 数据修订日志：');
+            console.log('- 修正主线：补齐缺失的 2.Nf3 d5，并校正车的歧义走法（如 Rcf1、R1f2、R2f3 等）以适配 chess.js SAN 校验。');
+            console.log('- 修正 DP①"惩罚线"：移除不可能发生的"14.dxc5"重复写法，替换为 chess.js 可验证的示例惩罚序列。');
+        });
+    </script>
+
+</body>
+
+</html>

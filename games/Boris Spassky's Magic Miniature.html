@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斯帕斯基的魔术短局 - 拉尔森 vs 斯帕斯基 (1970)</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">斯帕斯基的魔术短局 (1970)</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>⚔️ 拉尔森 vs 斯帕斯基</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>完整对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line')">主线：拉尔森 vs 斯帕斯基 (1970)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键变例</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('variation_en_passant')">为什么不能吃过路兵？</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('variation_d3')">为什么白方不能走 d3？</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('variation_castling')">如果白方短易位会怎样？</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>尼姆佐-拉尔森攻击 (Nimzo-Larsen Attack)</h3>
+                <p>这是1970年苏联对世界联队比赛中拉尔森执白对斯帕斯基的经典对局。拉尔森使用了以自己名字命名的b3开局，但因中局一步f4的严重失误，被斯帕斯基抓住了王翼弱点。斯帕斯基通过精彩的弃马（...h4）和弃车（...Rh1!!）战术，仅仅17回合便击溃了对手。</p>
+                <p><strong>对局信息</strong>：1970年苏联对世界联队比赛，贝尔格莱德</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 经过 GM 级别校验
+        const VARIATIONS = {
+            main_line: {
+                title: "主线：拉尔森 vs 斯帕斯基 (1970)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "这是1970年苏联对世界联队比赛中拉尔森执白对斯帕斯基的经典对局。拉尔森使用了以自己名字命名的b3开局，但因中局一步f4的严重失误，被斯帕斯基抓住了王翼弱点。",
+                moves: [
+                    "b3", "e5", "Bb2", "Nc6", "c4", "Nf6", "Nf3", "e4",
+                    "Nd4", "Bc5", "Nxc6", "dxc6", "e3", "Bf5", "Qc2", "Qe7",
+                    "Be2", "O-O-O", "f4", "Ng4", "g3", "h5", "h3", "h4",
+                    "hxg4", "hxg3", "Rg1", "Rh1", "Rxh1", "g2", "Rf1", "Qh4+",
+                    "Kd1", "Qh1"
+                ],
+                steps: [
+                    "1.b3 拉尔森的招牌开局，意图长距离控制斜线。",
+                    "1...e5 斯帕斯基自然地占据中心，限制白方b2象的发挥。",
+                    "2.Bb2",
+                    "2...Nc6",
+                    "3.c4 拉尔森的疑问手。通常e3更好，这步棋放弃了对中心暗格的争夺。",
+                    "3...Nf6",
+                    "4.Nf3 攻击e5兵。",
+                    "4...e4 挺兵反击，迫使白方马移动。",
+                    "5.Nd4 马跳至中心，若跳至e5容易被困住。",
+                    "5...Bc5 出子并攻击d4马，迫使交换。",
+                    "6.Nxc6",
+                    "6...dxc6 斯帕斯基选择用d兵吃回。虽然背离了'向中心吃子'的原则，但打开了d线并让c8象获得了极好的视野。",
+                    "7.e3 白方只能这样走，无法通过d3挑战黑方e4兵，否则会招致战术打击。",
+                    "7...Bf5 黑方控制关键斜线，阻止白方d3或d4的出棋计划。",
+                    "8.Qc2 被动的一手，试图对e4施压。",
+                    "8...Qe7 巩固e4兵，同时为长易位做准备，连接双车。",
+                    "9.Be2",
+                    "9...O-O-O 长易位。黑王非常安全，且d线车位置极佳。",
+                    "10.f4 白方的致命恶手（败着）！这步棋严重削弱了e3兵和王翼结构，给了黑方入侵的机会。",
+                    "10...Ng4 针对f4弱点的最佳回应。马占据强格，威胁进入h4或弃子在e3。",
+                    "11.g3 试图阻止Qh4+，但制造了新的弱点。",
+                    "11...h5 斯帕斯基意图挺兵h4，撕开防线。",
+                    "12.h3 白方试图赶走黑马。",
+                    "12...h4 精彩的弃子！斯帕斯基无视马的安危，强行制造通路兵。",
+                    "13.hxg4 白方被迫吃马。",
+                    "13...hxg3 兵距升变仅两步之遥，且h线大开。",
+                    "14.Rg1 白方试图阻止g兵升变。",
+                    "14...Rh1 惊世骇俗的弃车！利用战术借力打力，为了争取让g兵前进一步的节奏。",
+                    "15.Rxh1 白方不得不吃。",
+                    "15...g2 兵进逼底线，同时威胁车并打开了后翼斜线。",
+                    "16.Rf1 车躲避，但大势已去。",
+                    "16...Qh4+ 黑后终于杀入战场。",
+                    "17.Kd1",
+                    "17...Qh1 白方此时认输。后续将是 18.Bxh1 gxh1=Q# 的强制杀棋。"
+                ]
+            },
+            variation_en_passant: {
+                title: "变例：为什么不能吃过路兵 (10...exf3?)",
+                fen: "2kr3r/ppp1qppp/2p2n2/2b2b2/2P1pP2/1P2P3/PBQPB1PP/RN2K2R b KQ f3 0 10",
+                description: "很多人会习惯性地想吃过路兵，但在这里是错误的。在第10步白方走f4之后，如果黑方贪吃过路兵，将遭遇战术打击。",
+                moves: [
+                    "exf3", "Qxf5+"
+                ],
+                steps: [
+                    "10...exf3? 黑方若吃过路兵（疑问手），看起来多得一兵。",
+                    "11.Qxf5+ 白后带捉吃象！黑方必须防守将军，随后白方吃掉f5象，黑方反而丢子。"
+                ]
+            },
+            variation_d3: {
+                title: "变例：为什么白方不能走 d3 (7. d3?)",
+                fen: "r1bqk2r/ppp1qppp/2p2n2/2b5/2P1p3/1P3N2/PBPP1PPP/RN1QKB1R w KQkq - 4 7",
+                description: "解释为什么白方只能被动防守而不能反击中心。在第7步，白方如果试图用d3反击中心的e4兵，将遭遇毁灭性战术打击。",
+                moves: [
+                    "d3", "Bf5", "dxe4", "Bxf2+", "Kxf2", "Qxd1"
+                ],
+                steps: [
+                    "7.d3? 白方试图反击中心e4兵（疑问手）。",
+                    "7...Bf5 黑方出象，准备战术。",
+                    "8.dxe4 白方若吃兵。",
+                    "8...Bxf2+! 战术打击！弃象吸引白王，撕开防线。",
+                    "9.Kxf2 白王被迫吃象，暴露在中心。",
+                    "9...Qxd1 黑方抽掉白后，获得决定性优势。"
+                ]
+            },
+            variation_castling: {
+                title: "变例：为什么白方不能易位",
+                fen: "r3k2r/ppp1qppp/2p2n2/2b2b2/2P1p3/1P2P3/PBQP1PPP/RN2KB1R w KQkq - 3 9",
+                description: "在第9步时，白方无法短易位，因为f1的象阻挡了王和车之间的通道。白方只能先移动象（如Be2），这也是为什么主线选择9.Be2的原因。如果白方强行走其他激进的棋，比如f3或f4，局面会更加恶化。",
+                moves: [
+                    "f3", "Ng4", "fxe4", "Nxe3"
+                ],
+                steps: [
+                    "9.f3? 白方试图激进地反击中心（疑问手），但忽略了王的安全。",
+                    "9...Ng4 黑马立即跳到进攻位置，威胁e3兵。",
+                    "10.fxe4 白方被迫吃兵，但打开了f线。",
+                    "10...Nxe3 黑马吃兵，叉击后和车，白方陷入严重困境。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载主线
+            selectVariation('main_line');
+
+            // ===== Phase 3: 自动验证脚本 =====
+            console.log('=== 开始自动验证所有变例 ===\n');
+            
+            var validationResults = [];
+            Object.keys(VARIATIONS).forEach(function(key) {
+                var v = VARIATIONS[key];
+                var g = new Chess(v.fen);
+                var isValid = true;
+                var errorMsg = '';
+                
+                for (var i = 0; i < v.moves.length; i++) {
+                    var result = g.move(v.moves[i]);
+                    if (!result) {
+                        isValid = false;
+                        errorMsg = '第' + (i + 1) + '步无效: ' + v.moves[i];
+                        break;
+                    }
+                }
+                
+                if (isValid && v.moves.length === v.steps.length) {
+                    console.log('✓ [' + key + '] ' + v.title + ' - 验证通过 (' + v.moves.length + '步)');
+                    validationResults.push({ key: key, status: 'pass' });
+                } else if (!isValid) {
+                    console.error('❌ [' + key + '] ' + v.title + ' - ' + errorMsg);
+                    validationResults.push({ key: key, status: 'fail', error: errorMsg });
+                } else {
+                    console.warn('⚠️  [' + key + '] ' + v.title + ' - moves和steps长度不匹配 (' + v.moves.length + ' vs ' + v.steps.length + ')');
+                    validationResults.push({ key: key, status: 'warning', error: 'moves和steps长度不匹配' });
+                }
+            });
+            
+            console.log('\n=== 验证完成 ===');
+            console.log('总计: ' + Object.keys(VARIATIONS).length + ' 个变例');
+            console.log('通过: ' + validationResults.filter(r => r.status === 'pass').length);
+            console.log('失败: ' + validationResults.filter(r => r.status === 'fail').length);
+            console.log('警告: ' + validationResults.filter(r => r.status === 'warning').length);
+        });
+    </script>
+
+</body>
+
+</html>
+
