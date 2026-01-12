@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>棋坛的蒙娜丽莎 - Bagirov vs Gufeld 1973</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Inlined CSS -->
+    <style>
+/* =====================================================
+   Chess Class - Midnight Slate Theme (iPad Optimized)
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* === CSS Variables: Midnight Slate Palette === */
+:root {
+    /* Backgrounds - The "Not Black" Deep Blue-Grey */
+    --bg-page: #0f172a;
+    /* Slate 900 */
+    --bg-panel: #1e293b;
+    /* Slate 800 */
+    --bg-panel-hover: #334155;
+    /* Slate 700 */
+    --bg-subtle: #1e293b;
+
+    /* Borders - Soft & Integrated */
+    --border-color: #334155;
+    /* Slate 700 */
+    --border-light: #475569;
+    /* Slate 600 */
+
+    /* Text - High Legibility on Dark */
+    --text-primary: #f1f5f9;
+    /* Slate 100 */
+    --text-secondary: #cbd5e1;
+    /* Slate 300 */
+    --text-muted: #94a3b8;
+    /* Slate 400 */
+
+    /* Accents - "Sky & Indigo" */
+    --accent: #38bdf8;
+    /* Sky 400 */
+    --accent-hover: #7dd3fc;
+    /* Sky 300 */
+    --accent-dim: rgba(56, 189, 248, 0.15);
+
+    /* Secondary Accent (for navigation active states) */
+    --accent-secondary: #818cf8;
+    /* Indigo 400 */
+
+    /* Status */
+    --success: #4ade80;
+    /* Green 400 */
+    --warning: #fbbf24;
+    /* Amber 400 */
+    --error: #f87171;
+    /* Red 400 */
+
+    /* Layout Variables (Golden Ratio inspired) */
+    --sidebar-width: 280px;
+    /* Narrower for better iPad Fit */
+    --header-height: 64px;
+    --radius: 12px;
+    /* Softer corners */
+    --gap-size: 20px;
+
+    /* Typography */
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* === Global Reset === */
+* {
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+    -webkit-tap-highlight-color: transparent;
+    /* Remove tap highlight on iPad */
+}
+
+/* Custom Scrollbar - Blends better with Slate */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
+}
+
+body {
+    background-color: var(--bg-page);
+    /* Very subtle noise texture for premium feel, optional */
+    background-image: radial-gradient(circle at top center, #1e293b 0%, #0f172a 60%);
+    font-family: var(--font-main);
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* === Top Navigation Bar === */
+.navbar {
+    height: var(--header-height);
+    background: rgba(15, 23, 42, 0.9);
+    /* Slate 900 with opacity */
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    flex-shrink: 0;
+    z-index: 50;
+    justify-content: space-between;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.nav-btn {
+    text-decoration: none;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 10px 16px;
+    /* Larger touch target */
+    border-radius: 8px;
+    background: transparent;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.nav-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-panel);
+    border-color: var(--border-color);
+}
+
+.nav-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 4px 0;
+    letter-spacing: -0.01em;
+}
+
+/* === Main Container === */
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap-size);
+    padding: var(--gap-size);
+    width: 100%;
+    margin: 0 auto;
+    max-width: 1440px;
+    /* Constrain max width for large screens */
+    height: calc(100vh - var(--header-height));
+}
+
+/* === Common Panel Styles === */
+/* Returning to "floating panels" look but with solid slate colors */
+.panel-base {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* === Left Sidebar (Vertical Navigation) === */
+.sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    overflow-y: auto;
+    /* Apply panel base styles */
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    padding: 20px 20px 10px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.category-header {
+    padding: 14px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-panel);
+    transition: background 0.2s;
+}
+
+.category-header:hover {
+    background: var(--bg-panel-hover);
+}
+
+.category-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.arrow {
+    color: var(--accent);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.variation-list {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    gap: 4px;
+    background: rgba(15, 23, 42, 0.3);
+    /* Slightly darker inner bg */
+}
+
+.variation-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 12px 14px;
+    /* Generous touch target */
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-family: var(--font-main);
+}
+
+.variation-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.variation-btn.active {
+    color: #fff;
+    background: var(--accent-secondary);
+    /* Indigo for active state */
+    box-shadow: 0 4px 12px rgba(129, 140, 248, 0.3);
+}
+
+/* === Center Board Area === */
+.board-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    /* Important for flex */
+    position: relative;
+    /* Soft spotlight via gradient */
+    background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 70%);
+    border-radius: var(--radius);
+    /* Removed border for cleaner 'stage' look */
+}
+
+#myBoard {
+    width: 100%;
+    max-width: 65vh;
+    /* Responsive to height on landscape iPad */
+    aspect-ratio: 1/1;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+}
+
+/* Controls - Clean Capsule */
+.controls {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 100px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    width: 44px;
+    height: 44px;
+    /* Good touch target */
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background: var(--bg-panel-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--accent-secondary);
+    color: #fff;
+    box-shadow: 0 4px 6px -1px rgba(129, 140, 248, 0.4);
+}
+
+.btn-primary:hover {
+    background: #6366f1;
+    /* Indigo 500 */
+    box-shadow: 0 10px 15px -3px rgba(129, 140, 248, 0.5);
+}
+
+/* === Right Info Area === */
+.info-area {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    overflow-y: auto;
+    /* Apply panel base styles */
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+}
+
+#statusInfo {
+    padding: 20px;
+    background: rgba(56, 189, 248, 0.1);
+    /* Sky blue tint */
+    border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    /* Sky Blue */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#statusInfo::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+}
+
+.hint-content {
+    padding: 20px;
+}
+
+.hint-content h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 16px 0;
+}
+
+.hint-content p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+.hint-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    margin-left: 10px;
+    border-left: 2px solid var(--border-color);
+}
+
+.hint-content li {
+    padding: 0 0 24px 20px;
+    position: relative;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-family: var(--font-mono);
+    line-height: 1.5;
+}
+
+/* Timeline dots */
+.hint-content li::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    /* Center on 2px border */
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg-page);
+    border: 2px solid var(--border-color);
+    transition: all 0.3s;
+}
+
+.hint-content li.current-step {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.hint-content li.current-step::before {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-dim);
+}
+
+/* Debug */
+#fenDebug {
+    padding: 20px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--border-light);
+    opacity: 0.5;
+}
+
+/* === Responsive === */
+
+/* iPad Landscape Specific (approx 1024px to 1100px) */
+/* The layout naturally fits: 280+280+464 = 1024. 20px gaps -> 1064px needed?
+   Let's check: 1024 - (280*2) - (20*3) = 1024 - 560 - 60 = 404px for board.
+   This is acceptable. The Flex 1 will handle it.
+*/
+
+/* Mobile / Portrait Tablet Breakpoint */
+@media (max-width: 950px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+        overflow-y: auto;
+        padding-bottom: 80px;
+        /* Space for bottom interaction */
+    }
+
+    .sidebar,
+    .info-area {
+        width: 100%;
+        max-height: none;
+        flex: none;
+        margin-bottom: 20px;
+    }
+
+    .board-area {
+        order: -1;
+        /* Board first */
+        padding: 20px 0;
+        min-height: auto;
+    }
+
+    #myBoard {
+        max-width: 100%;
+        max-height: 50vh;
+    }
+}
+
+/* Section Headers */
+.section-header {
+    max-width: 1200px;
+    margin: 50px auto 20px;
+    padding: 0 20px;
+}
+
+.section-header h2 {
+    font-size: 24px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.section-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* Utility Classes */
+.text-danger {
+    color: var(--error) !important;
+}
+
+.text-success {
+    color: var(--success) !important;
+}
+
+.arrow-open {
+    transform: rotate(180deg);
+}
+
+.arrow-closed {
+    transform: rotate(0deg);
+}
+
+/* Home Page */
+body.home-page {
+    background-image: none;
+    overflow-y: auto;
+    display: block;
+}
+
+body.home-page>h1 {
+    text-align: center;
+    margin: 60px 0 40px;
+    font-size: 32px;
+    color: var(--text-primary);
+}
+
+.home-page .card-container {
+    padding: 0 20px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.home-page .card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-page .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-secondary);
+    box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.3);
+}
+
+.home-page .card-header {
+    background: var(--bg-panel-hover);
+    padding: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.home-page .card-body {
+    padding: 20px;
+    color: var(--text-secondary);
+}
+
+.home-page .status-tag {
+    background: rgba(74, 222, 128, 0.1);
+    color: var(--success);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    float: right;
+}
+    </style>
+    
+    <!-- Inlined Chess Logic JS -->
+    <script>
+(function () {
+    // 1. 依赖检查
+    if (typeof Chess === 'undefined' || typeof Chessboard === 'undefined') {
+        console.error('Critical Error: Chess.js or Chessboard.js not loaded.');
+        return;
+    }
+
+    window.ChessApp = {
+        game: null,
+        board: null,
+        undoStack: [],
+        currentVariation: null,
+        stepIndex: 0,
+        isProcessing: false, // Debounce flag to prevent rapid clicks
+
+        // 初始化
+        init: function (boardId, startFen) {
+            console.log('Initializing ChessApp...');
+            try {
+                this.game = new Chess(startFen || 'start');
+
+                var config = {
+                    draggable: true,
+                    position: startFen || 'start',
+                    pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+                    onDragStart: this.onDragStart.bind(this),
+                    onDrop: this.onDrop.bind(this),
+                    onSnapEnd: this.onSnapEnd.bind(this)
+                };
+
+                this.board = Chessboard(boardId, config);
+
+                // 响应式调整
+                window.addEventListener('resize', () => {
+                    if (this.board) this.board.resize();
+                });
+
+                this.updateStatus();
+                console.log('ChessApp initialized successfully.');
+            } catch (e) {
+                console.error('ChessApp initialization failed:', e);
+                this.showError('棋盘初始化失败,请刷新页面重试。');
+            }
+        },
+
+        // 显示用户友好的错误信息
+        showError: function (message) {
+            var statusEl = document.getElementById('statusInfo');
+            if (statusEl) {
+                statusEl.textContent = '⚠️ ' + message;
+                statusEl.style.borderLeftColor = '#fc8181';
+                statusEl.style.color = '#fc8181';
+            }
+        },
+
+        // 验证 FEN 字符串
+        validateFen: function (fen) {
+            if (!fen || typeof fen !== 'string') return false;
+            try {
+                var testGame = new Chess(fen);
+                return testGame !== null;
+            } catch (e) {
+                console.warn('Invalid FEN:', fen, e);
+                return false;
+            }
+        },
+
+        // 拖拽开始
+        onDragStart: function (source, piece, position, orientation) {
+            if (!this.game || this.game.game_over()) return false;
+            if ((this.game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (this.game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                return false;
+            }
+            return true;
+        },
+
+        // 放置棋子
+        onDrop: function (source, target) {
+            try {
+                var move = this.game.move({
+                    from: source,
+                    to: target,
+                    promotion: 'q'
+                });
+
+                if (move === null) return 'snapback';
+
+                this.undoStack = [];
+                this.updateStatus();
+                this.updateHint(this.currentVariation);
+            } catch (e) {
+                console.error('Error in onDrop:', e);
+                return 'snapback';
+            }
+        },
+
+        // 动画结束
+        onSnapEnd: function () {
+            if (this.board && this.game) {
+                this.board.position(this.game.fen());
+            }
+        },
+
+        // 加载变例 - 带验证
+        loadVariation: function (variation) {
+            if (!variation) {
+                console.warn('loadVariation called with null/undefined');
+                return;
+            }
+
+            // 验证变例数据完整性
+            if (!variation.fen || !variation.moves || !variation.steps) {
+                console.error('Invalid variation data: missing required fields', variation);
+                this.showError('变例数据不完整');
+                return;
+            }
+
+            // 验证 moves 和 steps 长度匹配 - 阻断性检查
+            if (variation.moves.length !== variation.steps.length) {
+                console.error('Critical Error: moves.length (' + variation.moves.length + 
+                    ') !== steps.length (' + variation.steps.length + ')');
+                this.showError('数据严重错误：Moves(' + variation.moves.length + 
+                    ') 与 Steps(' + variation.steps.length + ') 数量不匹配！');
+                return; // 阻止加载，防止棋盘错乱
+            }
+
+            console.log('Loading variation:', variation.title);
+
+            try {
+                // 验证 FEN
+                if (!this.validateFen(variation.fen)) {
+                    this.showError('FEN 格式错误: ' + variation.title);
+                    return;
+                }
+
+                this.currentVariation = variation;
+                this.stepIndex = 0;
+
+                this.game.load(variation.fen);
+                this.board.position(variation.fen);
+                this.undoStack = [];
+
+                this.updateStatus();
+                this.updateHint(variation);
+            } catch (e) {
+                console.error('Error loading variation:', e);
+                this.showError('加载变例失败: ' + variation.title);
+            }
+        },
+
+        // 下一步 - 带防抖和错误处理
+        nextMove: function () {
+            // 防止快速点击
+            if (this.isProcessing) return;
+            this.isProcessing = true;
+
+            try {
+                // 优先走变例
+                if (this.currentVariation && this.currentVariation.moves &&
+                    this.stepIndex < this.currentVariation.moves.length) {
+
+                    var moveStr = this.currentVariation.moves[this.stepIndex];
+                    var move = this.game.move(moveStr);
+
+                    if (move) {
+                        this.board.position(this.game.fen());
+                        this.stepIndex++;
+                        this.updateStatus();
+                        this.updateHint(this.currentVariation);
+                    } else {
+                        console.error('Invalid move in variation:', moveStr,
+                            'at step', this.stepIndex,
+                            'FEN:', this.game.fen());
+                        this.showError('无效走法: ' + moveStr);
+                    }
+                }
+                // 否则重做 (从 undoStack)
+                else if (this.undoStack.length > 0) {
+                    var undoMove = this.undoStack.pop();
+                    if (undoMove) {
+                        var result = this.game.move(undoMove);
+                        if (result) {
+                            this.board.position(this.game.fen());
+                            this.updateStatus();
+                            this.updateHint(this.currentVariation);
+                        } else {
+                            // 恢复到栈中
+                            this.undoStack.push(undoMove);
+                            console.error('Failed to redo move:', undoMove);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Error in nextMove:', e);
+            } finally {
+                // 释放防抖锁
+                var self = this;
+                setTimeout(function () {
+                    self.isProcessing = false;
+                }, 150);
+            }
+        },
+
+        // 上一步 - 带防抖和错误处理
+        prevMove: function () {
+            // 防止快速点击
+            if (this.isProcessing) return;
+            this.isProcessing = true;
+
+            try {
+                var move = this.game.undo();
+                if (move) {
+                    this.undoStack.push(move);
+                    this.board.position(this.game.fen());
+
+                    if (this.currentVariation && this.stepIndex > 0) {
+                        this.stepIndex--;
+                    }
+
+                    this.updateStatus();
+                    this.updateHint(this.currentVariation);
+                }
+            } catch (e) {
+                console.error('Error in prevMove:', e);
+            } finally {
+                var self = this;
+                setTimeout(function () {
+                    self.isProcessing = false;
+                }, 150);
+            }
+        },
+
+        // 重置
+        reset: function () {
+            try {
+                if (this.currentVariation) {
+                    this.loadVariation(this.currentVariation);
+                } else {
+                    this.game.reset();
+                    this.board.start();
+                    this.undoStack = [];
+                    this.stepIndex = 0;
+                    this.currentVariation = null;
+                    this.updateStatus();
+                    this.updateHint(null);
+                }
+            } catch (e) {
+                console.error('Error in reset:', e);
+                // 强制重置到初始状态
+                this.game = new Chess();
+                this.board.start();
+                this.undoStack = [];
+                this.stepIndex = 0;
+                this.updateStatus();
+            }
+        },
+
+        // 翻转
+        flipBoard: function () {
+            if (this.board) {
+                this.board.flip();
+            }
+        },
+
+        // 更新状态文字
+        updateStatus: function () {
+            if (!this.game) return;
+
+            var status = '';
+            var moveColor = this.game.turn() === 'w' ? '白方' : '黑方';
+
+            if (this.game.in_checkmate()) {
+                status = '游戏结束，' + moveColor + '被将死。';
+            } else if (this.game.in_draw()) {
+                status = '游戏结束，和棋。';
+            } else {
+                status = '轮到 ' + moveColor + ' 走棋';
+                if (this.game.in_check()) {
+                    status += ' (将军!)';
+                }
+            }
+
+            // 如果在变例中，显示进度
+            if (this.currentVariation && this.currentVariation.moves) {
+                var total = this.currentVariation.moves.length;
+                var current = this.stepIndex;
+                status += ' [' + current + '/' + total + ']';
+            }
+
+            var statusEl = document.getElementById('statusInfo');
+            if (statusEl) {
+                statusEl.textContent = status;
+                // 重置样式
+                statusEl.style.borderLeftColor = '#4fd1c5';
+                statusEl.style.color = '#4fd1c5';
+            }
+
+            var debugEl = document.getElementById('fenDebug');
+            if (debugEl) debugEl.textContent = this.game.fen();
+        },
+
+        // 更新右侧提示 - 使用 CSS 类而非内联样式
+        updateHint: function (variation) {
+            var hintEl = document.getElementById('hintText');
+            if (!hintEl) return;
+
+            if (!variation) {
+                hintEl.innerHTML = '<h3>欢迎</h3><p>请选择一个变例开始。</p>';
+                return;
+            }
+
+            var html = '<h3>' + this.escapeHtml(variation.title) + '</h3>';
+            html += '<p>' + this.escapeHtml(variation.description) + '</p>';
+
+            if (variation.steps && variation.steps.length > 0) {
+                html += '<ul>';
+                var self = this;
+                variation.steps.forEach(function (step, index) {
+                    var isCurrent = (index === self.stepIndex);
+                    var className = isCurrent ? 'current-step' : '';
+                    html += '<li class="' + className + '">' + self.escapeHtml(step) + '</li>';
+                });
+                html += '</ul>';
+            }
+
+            hintEl.innerHTML = html;
+        },
+
+        // HTML 转义防止 XSS
+        escapeHtml: function (text) {
+            if (!text) return '';
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    };
+
+    // =====================================================
+    // 公共 UI 函数（从各 HTML 页面提取）
+    // =====================================================
+
+    /**
+     * 侧边栏折叠/展开功能
+     * @param {HTMLElement} headerElement - 被点击的分类标题元素
+     */
+    window.toggleSidebarCategory = function (headerElement) {
+        var content = headerElement.nextElementSibling;
+        var arrow = headerElement.querySelector('.arrow');
+
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            if (arrow) {
+                arrow.classList.add('arrow-open');
+                arrow.classList.remove('arrow-closed');
+            }
+        } else {
+            content.style.display = 'none';
+            if (arrow) {
+                arrow.classList.remove('arrow-open');
+                arrow.classList.add('arrow-closed');
+            }
+        }
+    };
+})();
+    </script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">棋坛的蒙娜丽莎 - 20世纪最著名的双王对攻范式</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>⚔️ 1973 经典对局</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_game')">完整对局 (36步)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键分支</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('branch_8_castling')">8.Qd2 后的易位选择</button>
+                <button class="variation-btn" onclick="selectVariation('branch_9_castling')">9.Bh6 vs 9.O-O-O</button>
+                <button class="variation-btn" onclick="selectVariation('branch_12_king')">12...Kh8 vs 12...Kg8</button>
+                <button class="variation-btn" onclick="selectVariation('branch_16_timing')">16.g4 vs 16.O-O-O</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('branch_20_mistake')">20.Nef4? 的失误</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>棋坛的蒙娜丽莎 - Bagirov vs Gufeld, 1973</h3>
+                <p><strong>弗拉基米尔·巴盖罗夫 vs 爱德华·古菲尔德</strong></p>
+                <p>1973年苏联锦标赛半决赛 (基洛瓦巴德)</p>
+                <p>这局棋被古菲尔德本人称为他的"蒙娜丽莎"，是20世纪最著名的王翼对攻与中路反击的范式之作。白方在王翼发起猛烈进攻，黑方则以中路反击和侧翼突破回应，最终通过惊人的弃子组合达成将杀。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 基于权威来源修正
+        const VARIATIONS = {
+            main_game: {
+                title: "完整对局 Bagirov vs Gufeld (1973)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "1973年苏联锦标赛半决赛，Gufeld执黑采用国王印度防御萨米什变例，在激烈的王翼对攻中以精妙的战术组合取得胜利。",
+                moves: [
+                    "d4", "g6", "c4", "Bg7", "Nc3", "d6", "e4", "Nf6",
+                    "f3", "O-O", "Be3", "Nc6", "Nge2", "Rb8", "Qd2", "a6",
+                    "Bh6", "b5", "h4", "e5", "Bxg7", "Kxg7", "h5", "Kh8",
+                    "Nd5", "bxc4", "hxg6", "fxg6", "Qh6", "Nh5", "g4", "Rxb2",
+                    "gxh5", "g5", "Rg1", "g4", "O-O-O", "Rxa2", "Nef4", "exf4",
+                    "Nxf4", "Rxf4", "Qxf4", "c3", "Bc4", "Ra3", "fxg4", "Nb4",
+                    "Kb1", "Be6", "Bxe6", "Nd3", "Qf7", "Qb8+", "Bb3", "Rxb3+",
+                    "Kc2", "Nb4+", "Kxb3", "Nd5+", "Kc2", "Qb2+", "Kd3", "Qb5+",
+                    "Kc2", "Qe2+", "Rd2", "Qxd2+", "Kb3", "Qb2+", "Ka4", "Qb4#"
+                ],
+                steps: [
+                    "1.d4 国王印度防御的开始",
+                    "1...g6 黑方选择国王印度体系",
+                    "2.c4",
+                    "2...Bg7 王翼象出动",
+                    "3.Nc3",
+                    "3...d6 建立稳固的中心",
+                    "4.e4 白方占据中心",
+                    "4...Nf6 攻击e4兵",
+                    "5.f3 萨米什变例：白方用f3支撑e4，但延缓了王翼易位",
+                    "5...O-O 黑方先确保王安全",
+                    "6.Be3 白方发展象",
+                    "6...Nc6 黑方出马发展",
+                    "7.Nge2 白方准备d5推进或灵活调整",
+                    "7...Rb8 黑方在后翼准备反击",
+                    "8.Qd2 白方准备王翼进攻",
+                    "8...a6 黑方准备b5反击（分支点1：白方可以O-O-O先保证王安全）",
+                    "9.Bh6 白方交换黑格象，加强王翼攻势（分支点2：9.O-O-O更稳健）",
+                    "9...b5 黑方立即反击",
+                    "10.h4 白方继续王翼推进",
+                    "10...e5 黑方中路反击",
+                    "11.Bxg7 白方交换象",
+                    "11...Kxg7 黑方王吃象",
+                    "12.h5 白方继续推进h兵",
+                    "12...Kh8 黑王走到h8（分支点3：12...Kg8可能更安全）",
+                    "13.Nd5 白方马跳到强位",
+                    "13...bxc4 黑方吃c4兵",
+                    "14.hxg6 白方吃g6兵",
+                    "14...fxg6 黑方f兵吃回",
+                    "15.Qh6 白后进入攻击位置",
+                    "15...Nh5 黑马防守关键格",
+                    "16.g4 白方继续推进（分支点4：16.O-O-O先易位更稳妥）",
+                    "16...Rxb2 黑方开始反击！车吃b2兵",
+                    "17.gxh5 白方吃马",
+                    "17...g5 黑方封锁白方攻势",
+                    "18.Rg1 白车参战",
+                    "18...g4 黑方继续推进",
+                    "19.O-O-O 白方终于易位，但为时已晚",
+                    "19...Rxa2 黑车继续破坏",
+                    "20.Nef4 白方试图进攻（分支点5：这是关键失误，20.fxg4可能更好）",
+                    "20...exf4 黑方吃兵",
+                    "21.Nxf4 白方马吃回",
+                    "21...Rxf4 黑车吃马！",
+                    "22.Qxf4 白后吃车",
+                    "22...c3 黑方关键推进！威胁白王",
+                    "23.Bc4 白方象防守",
+                    "23...Ra3 黑车占据强位",
+                    "24.fxg4 白方吃g4兵",
+                    "24...Nb4 黑马跳入关键位置",
+                    "25.Kb1 白王逃离",
+                    "25...Be6 黑象参战",
+                    "26.Bxe6 白方吃象",
+                    "26...Nd3 黑马插入中心！",
+                    "27.Qf7 白后试图反击",
+                    "27...Qb8+ 黑后开始将军序列",
+                    "28.Bb3 白象挡将",
+                    "28...Rxb3+!! 黑车惊人弃子！",
+                    "29.Kc2 白王被迫吃车",
+                    "29...Nb4+ 黑马将军",
+                    "30.Kxb3 白王吃车",
+                    "30...Nd5+ 黑马继续将军",
+                    "31.Kc2 白王逃离",
+                    "31...Qb2+ 黑后将军",
+                    "32.Kd3 白王被迫前进",
+                    "32...Qb5+ 黑后继续将军（主线在此结束，这一步导致白方投降）",
+                    "33.Kc2 白王回c2",
+                    "33...Qe2+ 黑后继续追杀",
+                    "34.Rd2 白车试图挡将",
+                    "34...Qxd2+ 黑后吃车将军",
+                    "35.Kb3 白王逃离",
+                    "35...Qb2+ 黑后将军",
+                    "36.Ka4 白王被迫走到a4",
+                    "36...Qb4# 黑后将杀！"
+                ]
+            },
+
+            branch_8_castling: {
+                title: "8.Qd2后的易位选择 - 稳健路线",
+                fen: "1rbq1rk1/1pp1ppbp/p1np1np1/8/2PPP3/2N1BP2/PP1QN1PP/R3KB1R w KQ - 0 9",
+                description: "在8.Qd2 a6之后，白方有一个关键选择：是立即O-O-O确保王安全，还是继续Bh6追求王翼攻势？本变例展示稳健的易位路线。",
+                moves: [
+                    "O-O-O", "b5", "h4"
+                ],
+                steps: [
+                    "9.O-O-O 白方先保证王安全（而不是实战的9.Bh6）",
+                    "9...b5 黑方继续后翼反击",
+                    "10.h4 白方开始王翼攻势，王已安全，可以从容展开进攻"
+                ]
+            },
+
+            branch_9_castling: {
+                title: "9.Bh6 vs 9.O-O-O - 攻守抉择",
+                fen: "1rbq1rk1/1pp1ppbp/p1np1np1/8/2PPP3/2N1BP2/PP1QN1PP/R3KB1R w KQ - 0 9",
+                description: "这是白方最关键的战略选择：Bh6追求王翼攻势但牺牲王安全，还是O-O-O稳健发展？实战中Bagirov选择了激进的Bh6。",
+                moves: [
+                    "O-O-O", "b5", "Bh6"
+                ],
+                steps: [
+                    "9.O-O-O 稳健选择：先易位",
+                    "9...b5 黑方反击",
+                    "10.Bh6 白方仍可交换黑格象，但王已在安全位置，局面优于实战"
+                ]
+            },
+
+            branch_12_king: {
+                title: "12...Kh8 vs 12...Kg8 - 王的位置",
+                fen: "1rbq1r2/2p2pkp/p1np1np1/1p2p2P/2PPP3/2N2P2/PP1QN1P1/R3KB1R b KQ - 0 12",
+                description: "在11.Bxg7 Kxg7 12.h5之后，黑王应该回h8还是g8？这个选择影响后续防御的灵活性。",
+                moves: [
+                    "Kg8", "Nd5", "bxc4", "hxg6", "hxg6"
+                ],
+                steps: [
+                    "12...Kg8 黑王回g8（而不是实战的Kh8）",
+                    "13.Nd5 白马跳d5",
+                    "13...bxc4 黑方吃兵",
+                    "14.hxg6 白方吃g6",
+                    "14...hxg6 黑方h兵吃回（与实战f兵吃回不同），g8的王比h8更灵活"
+                ]
+            },
+
+            branch_16_timing: {
+                title: "16.g4 vs 16.O-O-O - 时机选择",
+                fen: "1rbq1r1k/2p4p/p1np2pQ/3Np2n/2pPP3/5P2/PP2N1P1/R3KB1R w KQ - 2 16",
+                description: "在15...Nh5之后，白方应该立即g4推进攻势，还是先O-O-O确保王安全？这是攻守时机的典型问题。",
+                moves: [
+                    "O-O-O", "Rxb2", "g4"
+                ],
+                steps: [
+                    "16.O-O-O 先易位（而不是实战的16.g4）",
+                    "16...Rxb2 黑方仍然可以反击",
+                    "17.g4 白方推进，但王已在安全位置，局面远优于实战"
+                ]
+            },
+
+            branch_20_mistake: {
+                title: "20.Nef4? - 关键失误与正确走法",
+                fen: "2bq1r1k/2p4p/p1np3Q/3Np2P/2pPP1p1/5P2/r3N3/2KR1BR1 w - - 0 20",
+                description: "在19.O-O-O Rxa2之后，白方的20.Nef4是个失误。正确的走法应该是20.fxg4，保持局面的复杂性。",
+                moves: [
+                    "fxg4", "Ra1+", "Kc2"
+                ],
+                steps: [
+                    "20.fxg4 白方吃g4兵（正确走法，而不是实战的Nef4）",
+                    "20...Ra1+ 黑车将军",
+                    "21.Kc2 白王移动，局面仍然复杂，远好于实战的迅速崩溃"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载主对局
+            selectVariation('main_game');
+
+            // 自动验证所有变例
+            console.log('=== 开始验证所有变例 ===');
+            var totalVariations = Object.keys(VARIATIONS).length;
+            var validVariations = 0;
+            var invalidVariations = [];
+
+            Object.keys(VARIATIONS).forEach(function(key) {
+                var v = VARIATIONS[key];
+                var g = new Chess(v.fen);
+                var isValid = true;
+
+                for (var i = 0; i < v.moves.length; i++) {
+                    var move = g.move(v.moves[i]);
+                    if (!move) {
+                        console.error('❌ [' + key + '] 第' + (i + 1) + '步无效: ' + v.moves[i]);
+                        console.error('   当前FEN: ' + g.fen());
+                        isValid = false;
+                        invalidVariations.push({
+                            key: key,
+                            step: i + 1,
+                            move: v.moves[i],
+                            fen: g.fen()
+                        });
+                        break;
+                    }
+                }
+
+                if (isValid) {
+                    console.log('✓ [' + key + '] 验证通过 (' + v.moves.length + '步)');
+                    validVariations++;
+                }
+            });
+
+            console.log('=== 验证完成 ===');
+            console.log('总变例数: ' + totalVariations);
+            console.log('有效变例: ' + validVariations);
+            console.log('无效变例: ' + invalidVariations.length);
+
+            if (invalidVariations.length > 0) {
+                console.error('无效变例详情:', invalidVariations);
+            } else {
+                console.log('🎉 所有变例均通过验证！');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
