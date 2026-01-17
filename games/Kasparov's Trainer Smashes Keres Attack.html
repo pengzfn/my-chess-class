@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kasparov's Trainer Smashes Keres Attack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">Kasparov's Trainer Smashes Keres Attack</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>卡雷斯攻击实战</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_game')">Pokojowczyk vs Timoschenko (1979)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键分歧</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('better_alternative')">13.h5 强攻方案</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('mistake_line')">13.Rg1 过于谨慎</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>反击与终局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('counterplay_phase')">黑方反击节奏</button>
+                <button class="variation-btn" onclick="selectVariation('endgame_combination')">终局强制线</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>西西里防御 · 舍维宁根 · 卡雷斯攻击</h3>
+                <p>Polanica Zdroj（Rubinstein Memorial）1979，IM Pokojowczyk 对阵 GM Gennadi Timoschenko。卡雷斯攻击强调速度与线路，异侧王车易位下节奏优先。本局白方的 13.Rg1?! 与 15.Nd5?! 放慢了进攻，黑方抓住节奏完成反击并转入强制胜势。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VARIATIONS = {
+            main_game: {
+                title: "Pokojowczyk vs Timoschenko (1979)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "卡雷斯攻击主对局。训练问题：异侧王车易位的进攻方最重要的资源是什么？为什么允许打开 g 线往往有利？",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "d6", "g4", "Nc6", "g5", "Nd7", "Be3", "a6",
+                    "h4", "Be7", "Qd2", "Nxd4", "Qxd4", "O-O", "O-O-O", "b5",
+                    "Rg1", "Rb8", "h5", "b4", "Nd5", "exd5", "h6", "Ne5",
+                    "f4", "Qc7", "exd5", "Bf5", "Rg2", "Rfc8", "Rdd2", "b3",
+                    "axb3", "Rxb3", "Kd1", "Bf6", "cxb3", "Qc1+", "Ke2", "Nf3",
+                    "Qb4", "Re8", "Kxf3", "Qxf1+", "Bf2", "Qh1", "Bg1", "Qh3+",
+                    "Rg3", "Qf1+", "Rf2", "Re3+"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...d6",
+                    "6.g4 卡雷斯攻击的核心推进",
+                    "6...Nc6",
+                    "7.g5",
+                    "7...Nd7",
+                    "8.Be3",
+                    "8...a6",
+                    "9.h4",
+                    "9...Be7",
+                    "10.Qd2",
+                    "10...Nxd4",
+                    "11.Qxd4",
+                    "11...O-O",
+                    "12.O-O-O 异侧王车易位，先手攻势",
+                    "12...b5",
+                    "13.Rg1 过于谨慎，节奏损失",
+                    "13...Rb8 黑方反击起手",
+                    "14.h5",
+                    "14...b4",
+                    "15.Nd5 激进但时机不足",
+                    "15...exd5",
+                    "16.h6",
+                    "16...Ne5",
+                    "17.f4",
+                    "17...Qc7",
+                    "18.exd5",
+                    "18...Bf5 黑方开始制造威胁",
+                    "19.Rg2",
+                    "19...Rfc8",
+                    "20.Rdd2",
+                    "20...b3",
+                    "21.axb3",
+                    "21...Rxb3",
+                    "22.Kd1",
+                    "22...Bf6 关键释放子力",
+                    "23.cxb3",
+                    "23...Qc1+ 强制线开始",
+                    "24.Ke2",
+                    "24...Nf3",
+                    "25.Qb4",
+                    "25...Re8",
+                    "26.Kxf3",
+                    "26...Qxf1+",
+                    "27.Bf2",
+                    "27...Qh1",
+                    "28.Bg1",
+                    "28...Qh3+",
+                    "29.Rg3",
+                    "29...Qf1+",
+                    "30.Rf2",
+                    "30...Re3+ 终局收束"
+                ]
+            },
+            better_alternative: {
+                title: "13.h5! 强化进攻节奏",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "关键分歧。13.h5 直接打开进攻线路，强调速度优先于物质。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "d6", "g4", "Nc6", "g5", "Nd7", "Be3", "a6",
+                    "h4", "Be7", "Qd2", "Nxd4", "Qxd4", "O-O", "O-O-O", "b5",
+                    "h5", "Bxg5", "h6"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...d6",
+                    "6.g4",
+                    "6...Nc6",
+                    "7.g5",
+                    "7...Nd7",
+                    "8.Be3",
+                    "8...a6",
+                    "9.h4",
+                    "9...Be7",
+                    "10.Qd2",
+                    "10...Nxd4",
+                    "11.Qxd4",
+                    "11...O-O",
+                    "12.O-O-O",
+                    "12...b5",
+                    "13.h5 速度优先的强攻选择",
+                    "13...Bxg5 黑方贪吃侧翼兵",
+                    "14.h6 攻势升级"
+                ]
+            },
+            mistake_line: {
+                title: "13.Rg1 过于谨慎",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "防守性走法让黑方获得关键反击节奏，白方进攻速度不足。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "d6", "g4", "Nc6", "g5", "Nd7", "Be3", "a6",
+                    "h4", "Be7", "Qd2", "Nxd4", "Qxd4", "O-O", "O-O-O", "b5",
+                    "Rg1", "Rb8", "h5", "b4"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...d6",
+                    "6.g4",
+                    "6...Nc6",
+                    "7.g5",
+                    "7...Nd7",
+                    "8.Be3",
+                    "8...a6",
+                    "9.h4",
+                    "9...Be7",
+                    "10.Qd2",
+                    "10...Nxd4",
+                    "11.Qxd4",
+                    "11...O-O",
+                    "12.O-O-O",
+                    "12...b5",
+                    "13.Rg1 过于谨慎",
+                    "13...Rb8 反击节奏到位",
+                    "14.h5",
+                    "14...b4"
+                ]
+            },
+            counterplay_phase: {
+                title: "黑方反击节奏",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "从 13...Rb8 起的反击阶段，黑方持续制造威胁并在 22...Bf6 形成决定性攻势。附注：在 15.Ne2 分支中存在 20.Rd5!? 的交换献牲思路，计算复杂且有防守资源。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "d6", "g4", "Nc6", "g5", "Nd7", "Be3", "a6",
+                    "h4", "Be7", "Qd2", "Nxd4", "Qxd4", "O-O", "O-O-O", "b5",
+                    "Rg1", "Rb8", "h5", "b4", "Nd5", "exd5", "h6", "Ne5",
+                    "f4", "Qc7", "exd5", "Bf5", "Rg2", "Rfc8", "Rdd2", "b3",
+                    "axb3", "Rxb3", "Kd1", "Bf6"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...d6",
+                    "6.g4",
+                    "6...Nc6",
+                    "7.g5",
+                    "7...Nd7",
+                    "8.Be3",
+                    "8...a6",
+                    "9.h4",
+                    "9...Be7",
+                    "10.Qd2",
+                    "10...Nxd4",
+                    "11.Qxd4",
+                    "11...O-O",
+                    "12.O-O-O",
+                    "12...b5",
+                    "13.Rg1",
+                    "13...Rb8 反击起点",
+                    "14.h5",
+                    "14...b4",
+                    "15.Nd5",
+                    "15...exd5",
+                    "16.h6",
+                    "16...Ne5",
+                    "17.f4",
+                    "17...Qc7",
+                    "18.exd5",
+                    "18...Bf5",
+                    "19.Rg2",
+                    "19...Rfc8",
+                    "20.Rdd2",
+                    "20...b3",
+                    "21.axb3",
+                    "21...Rxb3",
+                    "22.Kd1",
+                    "22...Bf6 关键反击"
+                ]
+            },
+            endgame_combination: {
+                title: "终局强制线",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方在 23...Qc1+ 之后连续强制威胁，直至 30...Re3+，白方无法防守而认输。",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "d6", "g4", "Nc6", "g5", "Nd7", "Be3", "a6",
+                    "h4", "Be7", "Qd2", "Nxd4", "Qxd4", "O-O", "O-O-O", "b5",
+                    "Rg1", "Rb8", "h5", "b4", "Nd5", "exd5", "h6", "Ne5",
+                    "f4", "Qc7", "exd5", "Bf5", "Rg2", "Rfc8", "Rdd2", "b3",
+                    "axb3", "Rxb3", "Kd1", "Bf6", "cxb3", "Qc1+", "Ke2", "Nf3",
+                    "Qb4", "Re8", "Kxf3", "Qxf1+", "Bf2", "Qh1", "Bg1", "Qh3+",
+                    "Rg3", "Qf1+", "Rf2", "Re3+"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...d6",
+                    "6.g4",
+                    "6...Nc6",
+                    "7.g5",
+                    "7...Nd7",
+                    "8.Be3",
+                    "8...a6",
+                    "9.h4",
+                    "9...Be7",
+                    "10.Qd2",
+                    "10...Nxd4",
+                    "11.Qxd4",
+                    "11...O-O",
+                    "12.O-O-O",
+                    "12...b5",
+                    "13.Rg1",
+                    "13...Rb8",
+                    "14.h5",
+                    "14...b4",
+                    "15.Nd5",
+                    "15...exd5",
+                    "16.h6",
+                    "16...Ne5",
+                    "17.f4",
+                    "17...Qc7",
+                    "18.exd5",
+                    "18...Bf5",
+                    "19.Rg2",
+                    "19...Rfc8",
+                    "20.Rdd2",
+                    "20...b3",
+                    "21.axb3",
+                    "21...Rxb3",
+                    "22.Kd1",
+                    "22...Bf6",
+                    "23.cxb3 强制线起点",
+                    "23...Qc1+",
+                    "24.Ke2",
+                    "24...Nf3",
+                    "25.Qb4",
+                    "25...Re8",
+                    "26.Kxf3",
+                    "26...Qxf1+",
+                    "27.Bf2",
+                    "27...Qh1",
+                    "28.Bg1",
+                    "28...Qh3+",
+                    "29.Rg3",
+                    "29...Qf1+",
+                    "30.Rf2",
+                    "30...Re3+ 黑方胜势"
+                ]
+            }
+        };
+
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        $(document).ready(function () {
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            window.ChessApp.init('myBoard', startFen);
+
+            selectVariation('main_game');
+        });
+    </script>
+
+</body>
+
+</html>

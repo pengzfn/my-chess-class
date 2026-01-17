@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡尔波夫的龙式杰作 - Karpov vs Korchnoi (1974)</title>
+    <meta name="description" content="1974年世界冠军候选人决赛第2轮，卡尔波夫以精准的南斯拉夫攻击摧毁科奇诺伊的龙式防御。这场胜利为卡尔波夫最终赢得挑战权奠定基础。">
+    <meta name="keywords" content="卡尔波夫,科奇诺伊,西西里防御,龙式变例,1974,世界冠军候选人赛">
+    <meta name="author" content="鹏子国际象棋课堂">
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local Resources -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">卡尔波夫的龙式杰作</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>龙式防御 - 南斯拉夫攻击</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_game')">Karpov vs Korchnoi 完整对局</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键决策点</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('decision_point_1')">8...O-O后的选择</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('mistake_11g4')">11.g4?的战术崩溃</button>
+                <button class="variation-btn" onclick="selectVariation('decision_point_3')">15...Nf6后的选择</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键时刻</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('black_mistake')">16...Qa5黑方失误</button>
+                <button class="variation-btn" onclick="selectVariation('white_attack')">19...Rc5后的攻击</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>西西里防御 · 龙式变例 · 南斯拉夫攻击</h3>
+                <p><strong>赛事</strong>：世界冠军候选人决赛 (Candidates Final) 第2轮<br>
+                <strong>地点</strong>：莫斯科，苏联<br>
+                <strong>日期</strong>：1974年9月18日<br>
+                <strong>结果</strong>：白方获胜 1-0<br>
+                <strong>开局分类</strong>：西西里防御 - 龙式变例 (ECO B77)</p>
+                <p>这是卡尔波夫通往世界冠军之路上的关键一战。在1974年的候选人决赛中，年轻的卡尔波夫面对经验丰富的科奇诺伊，以精准的南斯拉夫攻击展示了他的战术锐度。科奇诺伊选择了龙式防御，这个开局以其复杂的王翼对攻著称，但在这盘棋中，白方的攻击更加凶猛有力。</p>
+                <p>训练问题：在异侧王车易位的局面中，进攻的核心资源是什么？为什么白方愿意用兵作为撞锤打开通往黑王的道路？</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VARIATIONS = {
+            main_game: {
+                title: "Karpov vs Korchnoi (1974) - 完整对局",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "1974年世界冠军候选人决赛第2轮，卡尔波夫在27回合内以南斯拉夫攻击摧毁科奇诺伊的龙式防御。训练问题：为什么在龙式防御中，黑方通常不愿意交换黑格象？",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Bg7", "f3", "Nc6", "Qd2", "O-O",
+                    "Bc4", "Bd7", "h4", "Rc8", "Bb3", "Ne5", "O-O-O", "Nc4",
+                    "Bxc4", "Rxc4", "h5", "Nxh5", "g4", "Nf6", "Nde2", "Qa5",
+                    "Bh6", "Bxh6", "Qxh6", "Rfc8", "Rd3", "R4c5", "g5", "Rxg5",
+                    "Rd5", "Rxd5", "Nxd5", "Re8", "Nef4", "Bc6", "e5", "Bxd5",
+                    "exf6", "exf6", "Qxh7+", "Kf8", "Qh8+"
+                ],
+                steps: [
+                    "1.e4 开始",
+                    "1...c5 西西里防御，黑方争夺中心",
+                    "2.Nf3 正常发展",
+                    "2...d6 支持...Nf6",
+                    "3.d4 白方挑战中心",
+                    "3...cxd4 黑方接受",
+                    "4.Nxd4 开放西西里",
+                    "4...Nf6 发展并攻击e4",
+                    "5.Nc3 保护e4",
+                    "5...g6 龙式防御！黑方准备王翼弃兵",
+                    "6.Be3 稳健发展",
+                    "6...Bg7 龙象就位，控制长对角线",
+                    "7.f3 南斯拉夫攻击！白方准备异侧易位后发起王翼进攻",
+                    "7...Nc6 发展并攻击d4马",
+                    "8.Qd2 为长易位做准备",
+                    "8...O-O 黑方短易位，双方王在不同翼",
+                    "9.Bc4 关键着法！阻止黑方用...d5解放阵型",
+                    "9...Bd7 准备...Rc8反击",
+                    "10.h4 王翼攻击起手！h兵作为撞锤",
+                    "10...Rc8 黑方在后翼反击",
+                    "11.Bb3 稳固象位，避免战术反击",
+                    "11...Ne5 黑方集结，准备...Nc4",
+                    "12.O-O-O 异侧易位完成，比赛正式进入",
+                    "12...Nc4 交换白方强象",
+                    "13.Bxc4 黑方移除了关键防御子力",
+                    "13...Rxc4 收回",
+                    "14.h5 继续撞门！",
+                    "14...Nxh5 黑方接受牺牲",
+                    "15.g4 驱逐骑士",
+                    "15...Nf6 退回",
+                    "16.Nde2 巩固c3马，防止...Rxc3牺牲",
+                    "16...Qa5 黑方错误！应该...Re8加强防守",
+                    "17.Bh6 决定性着法！交换黑格象削弱黑王",
+                    "17...Bxh6 被迫接受",
+                    "18.Qxh6 黑王暴露",
+                    "18...Rfc8 加强后翼",
+                    "19.Rd3 车移到攻击线",
+                    "19...R4c5 c4的车移到c5，试图换子缓解压力",
+                    "20.g5 破坏防守！",
+                    "20...Rxg5 接受牺牲",
+                    "21.Rd5 用车攻击！",
+                    "21...Rxd5 被迫换",
+                    "22.Nxd5 白方d5马强大",
+                    "22...Re8 试图防守",
+                    "23.Nef4 瞄准e6和h5",
+                    "23...Bc6 防守",
+                    "24.e5 打开攻击线路！",
+                    "24...Bxd5 被迫吃马",
+                    "25.exf6 打开e线",
+                    "25...exf6 被迫接受",
+                    "26.Qxh7+ 将军！",
+                    "26...Kf8 被迫逃王",
+                    "27.Qh8+ 黑方认输！白方胜势明显"
+                ]
+            },
+            decision_point_1: {
+                title: "8...O-O后的选择：9.Bc4还是9.O-O-O？",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方关键选择：是否阻止黑方...d5。训练问题：9.Bc4的目的是什么？如果允许黑方...d5会怎样？",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Bg7", "f3", "Nc6", "Qd2", "O-O",
+                    "Bc4"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...d6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...g6",
+                    "6.Be3",
+                    "6...Bg7",
+                    "7.f3",
+                    "7...Nc6",
+                    "8.Qd2",
+                    "8...O-O",
+                    "9.Bc4 当时最具攻击性的选择！阻止...d5，保持中心控制。如果9.O-O-O，黑方可以立即...d5获得反击机会"
+                ]
+            },
+            mistake_11g4: {
+                title: "11.g4?的战术灾难",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "如果白方在c4象未被保护时过早推进g4，将遭遇战术反击。训练问题：为什么在象未被防守时贸然推进翼兵是危险的？",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Bg7", "f3", "Nc6", "Qd2", "O-O",
+                    "Bc4", "Bd7", "h4", "Rc8", "g4", "Nxd4", "Qxd4", "Nxg4"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...d6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nf6",
+                    "5.Nc3",
+                    "5...g6",
+                    "6.Be3",
+                    "6...Bg7",
+                    "7.f3",
+                    "7...Nc6",
+                    "8.Qd2",
+                    "8...O-O",
+                    "9.Bc4",
+                    "9...Bd7",
+                    "10.h4",
+                    "10...Rc8",
+                    "11.g4? 过早！c4象无防守",
+                    "11...Nxd4 战术反击开始！",
+                    "12.Qxd4 被迫吃",
+                    "12...Nxg4！多个子力同时被攻击，白方大量失子。c4象和e3象都在攻击之下，白方战术崩溃"
+                ]
+            },
+            decision_point_3: {
+                title: "15...Nf6后：16.Bh6还是16.Nde2？",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方选择巩固c3马还是立即交换黑格象？训练问题：为什么白方选择先用16.Nde2巩固而不是立即Bh6？",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Bg7", "f3", "Nc6", "Qd2", "O-O",
+                    "Bc4", "Bd7", "h4", "Rc8", "Bb3", "Ne5", "O-O-O", "Nc4",
+                    "Bxc4", "Rxc4", "h5", "Nxh5", "g4", "Nf6", "Nde2"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...d6", "3.d4", "3...cxd4",
+                    "4.Nxd4", "4...Nf6", "5.Nc3", "5...g6", "6.Be3", "6...Bg7",
+                    "7.f3", "7...Nc6", "8.Qd2", "8...O-O", "9.Bc4", "9...Bd7",
+                    "10.h4", "10...Rc8", "11.Bb3", "11...Ne5", "12.O-O-O", "12...Nc4",
+                    "13.Bxc4", "13...Rxc4", "14.h5", "14...Nxh5", "15.g4", "15...Nf6",
+                    "16.Nde2 巩固c3马，防止黑方典型的...Rxc3交换牺牲。虽然16.Bh6立即交换也强，但需要精确计算复杂战术"
+                ]
+            },
+            black_mistake: {
+                title: "16...Qa5 - 黑方的关键失误",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方此时应该...Re8加强王翼防守，而不是Qa5侧翼出击。训练问题：为什么在王翼面临威胁时，后的侧翼活动往往是错误的？",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Bg7", "f3", "Nc6", "Qd2", "O-O",
+                    "Bc4", "Bd7", "h4", "Rc8", "Bb3", "Ne5", "O-O-O", "Nc4",
+                    "Bxc4", "Rxc4", "h5", "Nxh5", "g4", "Nf6", "Nde2", "Qa5",
+                    "Bh6", "Bxh6", "Qxh6"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...d6", "3.d4", "3...cxd4",
+                    "4.Nxd4", "4...Nf6", "5.Nc3", "5...g6", "6.Be3", "6...Bg7",
+                    "7.f3", "7...Nc6", "8.Qd2", "8...O-O", "9.Bc4", "9...Bd7",
+                    "10.h4", "10...Rc8", "11.Bb3", "11...Ne5", "12.O-O-O", "12...Nc4",
+                    "13.Bxc4", "13...Rxc4", "14.h5", "14...Nxh5", "15.g4", "15...Nf6",
+                    "16.Nde2", "16...Qa5 错误！黑方应该...Re8巩固王翼防守",
+                    "17.Bh6！决定性！白方交换黑格象",
+                    "17...Bxh6 被迫",
+                    "18.Qxh6 黑王暴露，防守节奏完全丧失。相比...Re8，Qa5未解决王翼防守的根本问题"
+                ]
+            },
+            white_attack: {
+                title: "19...R4c5后的强制攻击",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方用兵和车作为撞锤，打开通往黑王的道路。训练问题：为什么白方愿意牺牲g5兵和d5车来接近黑王？",
+                moves: [
+                    "e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Bg7", "f3", "Nc6", "Qd2", "O-O",
+                    "Bc4", "Bd7", "h4", "Rc8", "Bb3", "Ne5", "O-O-O", "Nc4",
+                    "Bxc4", "Rxc4", "h5", "Nxh5", "g4", "Nf6", "Nde2", "Qa5",
+                    "Bh6", "Bxh6", "Qxh6", "Rfc8", "Rd3", "R4c5", "g5", "Rxg5",
+                    "Rd5", "Rxd5", "Nxd5"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...d6", "3.d4", "3...cxd4",
+                    "4.Nxd4", "4...Nf6", "5.Nc3", "5...g6", "6.Be3", "6...Bg7",
+                    "7.f3", "7...Nc6", "8.Qd2", "8...O-O", "9.Bc4", "9...Bd7",
+                    "10.h4", "10...Rc8", "11.Bb3", "11...Ne5", "12.O-O-O", "12...Nc4",
+                    "13.Bxc4", "13...Rxc4", "14.h5", "14...Nxh5", "15.g4", "15...Nf6",
+                    "16.Nde2", "16...Qa5", "17.Bh6", "17...Bxh6", "18.Qxh6", "18...Rfc8",
+                    "19.Rd3 车转移到攻击线",
+                    "19...R4c5 c4的车移到c5，试图换子缓解压力",
+                    "20.g5！典型破防手段",
+                    "20...Rxg5 被迫接受",
+                    "21.Rd5！用车攻击，配合后续Nxd5形成强制攻击",
+                    "21...Rxd5 被迫换",
+                    "22.Nxd5 d5马占据强位，黑方王翼完全崩溃"
+                ]
+            }
+        };
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', function () {
+            ChessApp.init('myBoard', 'start');
+            // Load main game by default
+            ChessApp.loadVariation(VARIATIONS.main_game);
+        });
+
+        // Global function for variation selection
+        window.selectVariation = function (variationId) {
+            if (VARIATIONS[variationId]) {
+                ChessApp.loadVariation(VARIATIONS[variationId]);
+            }
+        };
+
+        // Global function for sidebar category toggle
+        window.toggleSidebarCategory = function (headerElement) {
+            const arrow = headerElement.querySelector('.arrow');
+            const variationList = headerElement.nextElementSibling;
+
+            if (variationList && variationList.classList.contains('variation-list')) {
+                const isOpen = arrow.classList.contains('arrow-open');
+
+                if (isOpen) {
+                    arrow.classList.remove('arrow-open');
+                    arrow.classList.add('arrow-closed');
+                    variationList.style.display = 'none';
+                } else {
+                    arrow.classList.remove('arrow-closed');
+                    arrow.classList.add('arrow-open');
+                    variationList.style.display = 'block';
+                }
+            }
+        };
+    </script>
+
+</body>
+
+</html>

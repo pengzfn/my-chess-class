@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡尔波夫的首败 - Karpov vs Andersson (1975)</title>
+    <meta name="description" content="1975年米兰国际赛第8轮，Andersson用刺猬防御体系结合惊人的中心弃兵和交换祭献，终结了卡尔波夫作为世界冠军的连胜记录。这场胜利展示了刺猬阵型的战略深度和Andersson的技术造诣。">
+    <meta name="keywords" content="卡尔波夫,Andersson,西西里防御,刺猬防御,1975,米兰,马洛奇束缚">
+    <meta name="author" content="鹏子国际象棋课堂">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">卡尔波夫的首败</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>刺猬防御的胜利</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_game')">Karpov vs Andersson 完整对局</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>战略阶段</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('hedgehog_setup')">刺猬阵型的形成</button>
+                <button class="variation-btn" onclick="selectVariation('black_counterplay')">黑方反击套路</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键时刻</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('pawn_sacrifice_d5')">24...d5!! 中心弃兵</button>
+                <button class="variation-btn" onclick="selectVariation('exchange_sacrifice')">27...Rxe3!! 交换祭献</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>西西里防御 · 刺猬变例 · 马洛奇束缚</h3>
+                <p><strong>赛事</strong>：米兰国际赛 (Milan) 第8轮<br>
+                <strong>地点</strong>：米兰，意大利<br>
+                <strong>日期</strong>：1975年8月28日<br>
+                <strong>结果</strong>：黑方获胜 0-1<br>
+                <strong>开局分类</strong>：西西里防御 - 保尔森变例 (ECO B44)</p>
+                <p>这是国际象棋历史上的一个里程碑时刻！1975年4月，卡尔波夫因菲舍尔弃权而成为世界冠军。在接下来的几个月里，他保持着不败战绩，直到1975年8月28日在米兰遇到了瑞典大师乌尔夫·安德森。</p>
+                <p>Andersson是"刺猬防御"体系的先驱之一。这种防御的特点是黑方将兵固定在a6、b6、d6、e6的位置，看似被动，实则蓄势待发。在本局中，Andersson在第24步走出了震撼的<strong>...d5!!</strong>中心弃兵，随后在第27步献出交换<strong>...Rxe3!!</strong>，用子力换取黑格控制权和持久的主动权。</p>
+                <p>《纽约时报》在第二天专文报道："<em>Karpov Loses First Game As World Chess Champion</em>"（卡尔波夫作为世界冠军输掉首场比赛）。这场对局历经近9小时，79个回合，最终Andersson以精湛的技术终局能力获胜。</p>
+                <p><strong>训练问题</strong>：在刺猬结构中，为什么"耐心"和"时机"如此重要？什么时候应该用弃兵或献子来打破僵局？</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VARIATIONS = {
+            main_game: {
+                title: "Karpov vs Andersson (1975) - 完整对局（79步）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "1975年米兰国际赛第8轮，Andersson用刺猬防御终结了卡尔波夫作为世界冠军的连胜记录。这场历时近9小时的对局展示了Andersson的精湛技术，最终在第79步迫使卡尔波夫投降。训练问题：观察黑方如何在前23步保持极度耐心，然后在24步突然爆发，并在终局阶段如何通过精准的将军序列获胜！",
+                moves: ["e4","c5","Nf3","e6","d4","cxd4","Nxd4","Nc6","Nb5","d6","c4","Nf6","N1c3","a6","Na3","Be7","Be2","O-O","O-O","b6","Be3","Bb7","Rc1","Re8","Qb3","Nd7","Rfd1","Rc8","Rd2","Qc7","Qd1","Qb8","f3","Ba8","Qf1","Nce5","Nab1","Nf6","Kh1","h6","Rdd1","Bf8","Nd2","Rcd8","Qf2","Ned7","a3","d5","cxd5","exd5","exd5","Bd6","Nf1","Rxe3","Nxe3","Bxh2","Nf1","Bf4","Rc2","b5","Bd3","Nb6","Be4","Nc4","a4","Re8","axb5","axb5","Re2","Be5","Qc5","Nd6","Na2","Ndxe4","fxe4","Bd6","Qc2","Re5","g3","Qe8","Rde1","Bb7","Kg1","Nh7","Nc1","Ng5","Nd2","Bb4","Kf2","Bxd2","Rxd2","Nxe4+","Rxe4","Rxe4","Ne2","Bc8","Nc3","Re1","Ne2","Ra1","Rd4","Qd8","Qc6","Bd7","Qd6","Qe8","Qf4","Qc8","b4","Bh3","Qe4","Bf5","Qe3","Qc2","g4","Bd7","Qe4","Qb3","Qd3","Qb2","Qe4","Ra8","Qe3","Ra2","d6","Ra8","Re4","Bc6","Qd4","Qb1","Re7","Qh1","Qf4","Qg2+","Ke1","Ra1+","Kd2","Qd5+","Qd4","Ra2+","Kc3","Qf3+","Re3","Ra3+","Kd2","Ra2+","Ke1","Qh1+","Kf2","Qg2+","Ke1","Qh1+","Kf2","Ra1","Rc3","Qg2+","Ke3","Qf3+"],
+                steps: ["1.e4 白方占据中心","1...c5 西西里防御！黑方立即反击","2.Nf3 白方正常发展","2...e6 黑方准备...d5或采用灵活阵型","3.d4 白方挑战中心","3...cxd4 黑方兑换","4.Nxd4 开放西西里","4...Nc6 发展并攻击d4马","5.Nb5 白方尝试换马或压制d6","5...d6 黑方巩固中心","6.c4 马洛奇束缚！白方用c4和e4兵控制d5格","6...Nf6 黑方发展并施压e4","7.N1c3 白方马回防","7...a6 驱逐b5马，获得空间","8.Na3 白方马到边缘，但保留了灵活性","8...Be7 黑方象稳健发展","9.Be2 白方象对称发展","9...O-O 黑方王车易位，完成基本发展","10.O-O 白方也王车易位","10...b6 刺猬结构的标志！黑方准备...Bb7","11.Be3 白方象发展到良好格子","11...Bb7 黑方象对准长对角线","12.Rc1 白方后翼施压c线","12...Re8 黑方准备后翼反击","13.Qb3 白方后出动，瞄准b6和e6","13...Nd7 黑方马撤退，准备...Nc5或...Nf6","14.Rfd1 白方车控制d线","14...Rc8 黑方对称地控制c线","15.Rd2 白方车横移，保持灵活性","15...Qc7 黑方后出动","16.Qd1 白方后撤退，避免交换","16...Qb8 黑方后也撤退，保持张力","17.f3 白方巩固e4兵","17...Ba8 黑方象退回，避免被Nd2-b3骚扰","18.Qf1 白方后继续调整","18...Nce5 黑方马跳到强格，准备...Nc4","19.Nab1 白方a3马撤回，防止...Nc4的战术","19...Nf6 黑方马回到灵活位置","20.Kh1 白方王走开g1，为后翼腾出空间","20...h6 黑方防止Ng5","21.Rdd1 白方车回到d线","21...Bf8 黑方象撤退，保持灵活性","22.Nd2 白方马调整位置","22...Rcd8 黑方车施压d线","23.Qf2 白方后继续调整","23...Ned7 黑方e5马撤回","24.a3 白方防止...Nb4或...Nc5","24...d5!! 震撼的中心弃兵！黑方终于爆发","25.cxd5 白方接受弃兵","25...exd5 黑方继续弃兵","26.exd5 黑方用两个兵换取中心活跃度","26...Bd6 黑方象瞄准h2！威胁战术","27.Nf1 白方马防守","27...Rxe3!! 惊人的交换祭献！黑方献出车换取主动权","28.Nxe3 白方被迫吃车","28...Bxh2 黑方象吃掉h2兵，黑格完全控制","29.Nf1 白方马继续防守","29...Bf4 黑方象占据强格","30.Rc2 白方车横移","30...b5 黑方继续施压","31.Bd3 白方象发展","31...Nb6 黑方马跳到好格","32.Be4 白方象换位","32...Nc4 黑方马占据强格","33.a4 白方试图反击","33...Re8 黑方车施压e线","34.axb5 白方吃兵","34...axb5 黑方收回","35.Re2 白方车兑换","35...Be5 黑方象占据中心强格","36.Qc5 白方后出击","36...Nd6 黑方马跳到好格","37.Na2 白方马调整（关键失误！）","37...Ndxe4!! 黑方骑士吃掉e4象","38.fxe4 白方被迫吃马","38...Bd6 黑方象回到好位置","39.Qc2 白方后撤退","39...Re5 黑方车占据第五横线","40.g3 白方巩固","40...Qe8 黑方后调整","41.Rde1 白方车支援","41...Bb7 黑方象回归","42.Kg1 白方王调整","42...Nh7 黑方马调整","43.Nc1 白方马继续调整","43...Ng5 黑方马到好格","44.Nd2 白方马换位","44...Bb4 黑方象钉住d2马","45.Kf2 白方王走开","45...Bxd2 黑方象吃掉d2马","46.Rxd2 白方车收回","46...Nxe4+ 黑方马将军","47.Rxe4 白方车吃马","47...Rxe4 黑方车收回","48.Ne2 白方马调整","48...Bc8 黑方象撤回","49.Nc3 白方马回到c3","49...Re1 黑方车占据第一横线","50.Ne2 白方马撤退","50...Ra1 黑方车活跃","51.Rd4 白方车防守","51...Qd8 黑方后调整","52.Qc6 白方后出击","52...Bd7 黑方象防守","53.Qd6 白方后继续施压","53...Qe8 黑方后防守","54.Qf4 白方后换位","54...Qc8 黑方后调整","55.b4 白方推进b兵","55...Bh3！黑方象到h3，威胁Ng4+战术","56.Qe4 白方后防守","56...Bf5 黑方象回到f5","57.Qe3 白方后到e3","57...Qc2 黑方后侵入c2","58.g4 白方推进g兵","58...Bd7 黑方象撤回","59.Qe4 白方后回到e4","59...Qb3 黑方后继续活跃","60.Qd3 白方后防守","60...Qb2 黑方后施压","61.Qe4 白方后继续防守","61...Ra8 黑方车移动","62.Qe3 白方后继续调整","62...Ra2 黑方车到第二横线","63.d6！白方通路兵冲刺","63...Ra8 黑方车撤回","64.Re4 白方车到e4","64...Bc6 黑方象防守d7","65.Qd4 白方后到d4","65...Qb1 黑方后到b1","66.Re7 白方车到第七横线","66...Qh1 黑方后威胁","67.Qf4 白方后防守","67...Qg2+ 黑方后将军","68.Ke1 白方王逃跑","68...Ra1+ 黑方车将军","69.Kd2 白方王到d2","69...Qd5+ 黑方后将军","70.Qd4 白方后挡住","70...Ra2+ 黑方车将军","71.Kc3 白方王到c3","71...Qf3+ 黑方后将军","72.Re3 白方车挡住","72...Ra3+ 黑方车将军","73.Kd2 白方王回到d2","73...Ra2+ 黑方车重复将军","74.Ke1 白方王到e1","74...Qh1+ 黑方后将军","75.Kf2 白方王到f2","75...Qg2+ 黑方后将军","76.Ke1 白方王回到e1","76...Qh1+ 黑方后重复将军","77.Kf2 白方王回到f2","77...Ra1 黑方车移开（不再重复）","78.Rc3 白方车到c3","78...Qg2+ 黑方后将军","79.Ke3 白方王到e3","79...Qf3+ 黑方后将军！白方投降 0-1"]
+            },
+            hedgehog_setup: {
+                title: "刺猬阵型的形成（前11步）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "观察黑方如何构建经典的刺猬结构：兵在a6、b6、d6、e6，看似被动但蕴含弹性。训练问题：为什么刺猬结构中黑方愿意接受空间劣势？",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nc6", "Nb5", "d6",
+                    "c4", "Nf6", "N1c3", "a6", "Na3", "Be7", "Be2", "O-O", "O-O", "b6",
+                    "Be3", "Bb7"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5 西西里防御",
+                    "2.Nf3",
+                    "2...e6 灵活的应对，保留多种可能",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nc6",
+                    "5.Nb5 白方尝试压制d6",
+                    "5...d6 黑方巩固中心",
+                    "6.c4 马洛奇束缚形成！白方控制d5格",
+                    "6...Nf6",
+                    "7.N1c3",
+                    "7...a6 刺猬特征之一",
+                    "8.Na3",
+                    "8...Be7",
+                    "9.Be2",
+                    "9...O-O",
+                    "10.O-O",
+                    "10...b6 刺猬阵型标志！黑方将兵固定在第6横线",
+                    "11.Be3",
+                    "11...Bb7 黑方长对角线象就位，刺猬阵型基本完成。观察黑方的兵链：a6、b6、d6、e6，形成坚固的防线，同时保留...d5或...b5的反击潜力"
+                ]
+            },
+            pawn_sacrifice_d5: {
+                title: "24...d5!! 震撼的中心弃兵",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "在23步的耐心等待后，Andersson在第24步走出...d5!!，用两个中心兵换取子力活跃度和黑格控制权。训练问题：为什么这个弃兵在此刻如此强大？白方拒绝弃兵会怎样？",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nc6", "Nb5", "d6",
+                    "c4", "Nf6", "N1c3", "a6", "Na3", "Be7", "Be2", "O-O", "O-O", "b6",
+                    "Be3", "Bb7", "Rc1", "Re8", "Qb3", "Nd7", "Rfd1", "Rc8", "Rd2", "Qc7",
+                    "Qd1", "Qb8", "f3", "Ba8", "Qf1", "Nce5", "Nab1", "Nf6", "Kh1", "h6",
+                    "Rdd1", "Bf8", "Nd2", "Rcd8", "Qf2", "Ned7", "a3", "d5", "cxd5", "exd5",
+                    "exd5", "Bd6"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...e6", "3.d4", "3...cxd4",
+                    "4.Nxd4", "4...Nc6", "5.Nb5", "5...d6", "6.c4", "6...Nf6",
+                    "7.N1c3", "7...a6", "8.Na3", "8...Be7", "9.Be2", "9...O-O",
+                    "10.O-O", "10...b6", "11.Be3", "11...Bb7", "12.Rc1", "12...Re8",
+                    "13.Qb3", "13...Nd7", "14.Rfd1", "14...Rc8", "15.Rd2", "15...Qc7",
+                    "16.Qd1", "16...Qb8", "17.f3", "17...Ba8", "18.Qf1", "18...Nce5",
+                    "19.Nab1", "19...Nf6", "20.Kh1", "20...h6", "21.Rdd1", "21...Bf8",
+                    "22.Nd2", "22...Rcd8", "23.Qf2", "23...Ned7", "24.a3",
+                    "24...d5!! 震撼的中心弃兵！经过23步的耐心布局，黑方终于选择此刻爆发。这个弃兵的目的不是获得物质优势，而是用两个兵换取子力的极度活跃",
+                    "25.cxd5 白方接受第一个兵",
+                    "25...exd5 黑方继续弃第二个兵",
+                    "26.exd5 白方现在多两个兵，但...",
+                    "26...Bd6！黑方象直指h2，白方面临巨大压力。关键点：(1)黑方的Bb7（实际是Ba8）和Nf6形成完美协调 (2)白方的e3象将成为攻击目标 (3)黑方的d5兵虽然孤立，但限制了白方的机动性 (4)黑方将在接下来的几步用交换祭献进一步加强主动权"
+                ]
+            },
+            exchange_sacrifice: {
+                title: "27...Rxe3!! 惊人的交换祭献",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "在弃掉两个中心兵后，Andersson继续献出交换（车换象），完全控制黑格并获得持久的主动权。训练问题：为什么车换象在这个局面中是正确的？如何评估补偿？",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nc6", "Nb5", "d6",
+                    "c4", "Nf6", "N1c3", "a6", "Na3", "Be7", "Be2", "O-O", "O-O", "b6",
+                    "Be3", "Bb7", "Rc1", "Re8", "Qb3", "Nd7", "Rfd1", "Rc8", "Rd2", "Qc7",
+                    "Qd1", "Qb8", "f3", "Ba8", "Qf1", "Nce5", "Nab1", "Nf6", "Kh1", "h6",
+                    "Rdd1", "Bf8", "Nd2", "Rcd8", "Qf2", "Ned7", "a3", "d5", "cxd5", "exd5",
+                    "exd5", "Bd6", "Nf1", "Rxe3", "Nxe3", "Bxh2", "Nf1", "Bf4", "Rc2", "b5",
+                    "Bd3", "Nb6", "Be4", "Nc4", "a4", "Re8", "axb5", "axb5", "Re2", "Be5",
+                    "Qc5", "Nd6", "Na2", "Ndxe4", "fxe4", "Bd6"
+                ],
+                steps: [
+                    "1.e4", "1...c5", "2.Nf3", "2...e6", "3.d4", "3...cxd4",
+                    "4.Nxd4", "4...Nc6", "5.Nb5", "5...d6", "6.c4", "6...Nf6",
+                    "7.N1c3", "7...a6", "8.Na3", "8...Be7", "9.Be2", "9...O-O",
+                    "10.O-O", "10...b6", "11.Be3", "11...Bb7", "12.Rc1", "12...Re8",
+                    "13.Qb3", "13...Nd7", "14.Rfd1", "14...Rc8", "15.Rd2", "15...Qc7",
+                    "16.Qd1", "16...Qb8", "17.f3", "17...Ba8", "18.Qf1", "18...Nce5",
+                    "19.Nab1", "19...Nf6", "20.Kh1", "20...h6", "21.Rdd1", "21...Bf8",
+                    "22.Nd2", "22...Rcd8", "23.Qf2", "23...Ned7", "24.a3", "24...d5!!",
+                    "25.cxd5", "25...exd5", "26.exd5", "26...Bd6", "27.Nf1 白方马回防",
+                    "27...Rxe3!! 震撼的交换祭献！黑方用车（价值5）换象（价值3），物质上亏损，但获得：(1)黑格完全控制 (2)白王周围防线削弱 (3)白方子力不协调",
+                    "28.Nxe3 白方被迫接受",
+                    "28...Bxh2！黑方象立即吃掉h2兵，进一步削弱白王",
+                    "29.Nf1 白方马继续防守，但已经被动",
+                    "29...Bf4 黑方象占据绝佳格子，控制黑格",
+                    "30.Rc2",
+                    "30...b5 黑方继续施压，开始推进后翼兵",
+                    "31.Bd3",
+                    "31...Nb6 黑方马跳到强格",
+                    "32.Be4",
+                    "32...Nc4 黑方马占据前哨，控制d2和e3",
+                    "33.a4",
+                    "33...Re8 黑方车回到e线，准备施压e4象",
+                    "34.axb5",
+                    "34...axb5",
+                    "35.Re2",
+                    "35...Be5 黑方象占据中心强格",
+                    "36.Qc5",
+                    "36...Nd6 黑方马跳到好格",
+                    "37.Na2",
+                    "37...Ndxe4!! 黑方再次献子！吃掉白方重要的e4象",
+                    "38.fxe4",
+                    "38...Bd6 黑方象回归，白方虽然多子，但子力完全不协调，黑方占据主动。在接下来的对局中，Andersson用精湛的技术终局能力最终获胜"
+                ]
+            },
+            black_counterplay: {
+                title: "黑方在刺猬中的典型反击套路",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "观察黑方如何在刺猬结构中保持灵活性，准备...d5或...b5的反击。训练问题：为什么黑方宁愿在前期接受空间劣势，而不急于反击？",
+                moves: [
+                    "e4", "c5", "Nf3", "e6", "d4", "cxd4", "Nxd4", "Nc6", "Nb5", "d6",
+                    "c4", "Nf6", "N1c3", "a6", "Na3", "Be7", "Be2", "O-O", "O-O", "b6",
+                    "Be3", "Bb7", "Rc1", "Re8", "Qb3", "Nd7"
+                ],
+                steps: [
+                    "1.e4",
+                    "1...c5",
+                    "2.Nf3",
+                    "2...e6",
+                    "3.d4",
+                    "3...cxd4",
+                    "4.Nxd4",
+                    "4...Nc6",
+                    "5.Nb5",
+                    "5...d6",
+                    "6.c4 马洛奇束缚",
+                    "6...Nf6",
+                    "7.N1c3",
+                    "7...a6",
+                    "8.Na3",
+                    "8...Be7",
+                    "9.Be2",
+                    "9...O-O",
+                    "10.O-O",
+                    "10...b6 刺猬结构",
+                    "11.Be3",
+                    "11...Bb7",
+                    "12.Rc1",
+                    "12...Re8 黑方车到e线，增加灵活性",
+                    "13.Qb3",
+                    "13...Nd7 关键着法！黑方马撤退，看似被动，实则准备多种反击：(1)马可以跳到c5或e5 (2)释放了Nf6的位置 (3)保持...d5或...b5反击的弹性。这就是刺猬防御的精髓：在白方还未完成完美布局前，保持高度灵活性，等待最佳反击时机"
+                ]
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', function() {
+            ChessApp.init('myBoard', 'start');
+        });
+
+        function selectVariation(id) {
+            ChessApp.loadVariation(VARIATIONS[id]);
+        }
+    </script>
+
+</body>
+
+</html>

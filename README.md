@@ -25,8 +25,19 @@
 
 ## 📂 课程目录 (Current Content)
 
-目前我们专注于 **苏格兰开局**：
+### 🏆 名局复盘 (Master Games)
 
+#### 70年代经典系列
+- `卡尔波夫的首败.html`: Karpov vs Andersson (1975) - 西西里防御，刺猬变例 ✨ 新增
+- `卡尔波夫的龙式杰作.html`: Karpov vs Korchnoi (1974) - 西西里防御，龙式变例 ✨ 新增
+- `Kasparov's Trainer Smashes Keres Attack.html`: Pokojowczyk vs Timoschenko (1979) - 西西里防御，斯凯文宁根变例
+- `棋坛的蒙娜丽莎.html`: Bagirov vs Gufeld (1973) - 国王印度防御
+- `Boris Spassky's Magic Miniature.html`: Larsen vs Spassky (1970) - 尼姆佐-拉尔森攻击
+- `fischer-spassky-game6.html`: Fischer vs Spassky (1972) - 世纪对局第6局
+
+### 📚 开局系统学习 (Opening Systems)
+
+#### 苏格兰开局系列
 - `scotland-intro.html`: 开局总览
 - `scotland-1.html` ~ `scotland-3.html`: 基础定式与陷阱
 - `scotland-4.html` ~ `scotland-6.html`: 中级战术与攻防
