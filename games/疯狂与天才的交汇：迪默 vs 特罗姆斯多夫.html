@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>疯狂与天才的交汇 - Diemer vs Trommsdorf (1973)</title>
+    <meta name="description" content="1973年法国Bagneux，Blackmar-Diemer弃兵法共同发明人Emil Diemer与Fro Trommsdorf的经典对局。白方在第29步走出罕见的长易位O-O-O，黑方错失32...b3!!的致胜机会，最终和棋。">
+    <meta name="keywords" content="Diemer,Trommsdorf,1973,Bagneux,Blackmar-Diemer,O-O-O,b3,疯狂走法">
+    <meta name="author" content="鹏子国际象棋课堂">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">疯狂与天才的交汇</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>Diemer vs Trommsdorf 1973</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_game')">完整对局 (47步)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>疯狂开局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('crazy_opening')">g4-h4 兵风暴</button>
+                <button class="variation-btn" onclick="selectVariation('h_file_attack')">h列攻王战术</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键时刻</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('late_castling')">29.O-O-O!! 惊世易位</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('missed_win')">32...b3!! 错失良机</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>疯狂与天才的交汇</h3>
+                <p><strong>赛事</strong>：Bagneux 公开赛<br>
+                <strong>地点</strong>：法国 Bagneux<br>
+                <strong>日期</strong>：1973年7月<br>
+                <strong>结果</strong>：和棋 ½-½<br>
+                <strong>开局分类</strong>：Veresov Opening / Modern Defense (1.d4 Nf6 2.Nc3)</p>
+                <p>Emil Joseph Diemer (1908-1990) 是国际象棋史上最具争议的人物之一。他是 Blackmar-Diemer 弃兵法的共同发明人，被医生禁止下棋（因为太过痴迷），同时也是第三帝国的官方国际象棋记者。尽管有着复杂的历史背景，他的棋风却极具观赏性——永远追求进攻，永远追求牺牲。</p>
+                <p>在这盘对局中，Diemer 推进双翼兵（g4和h4），牺牲物质换取王翼进攻。在第29步，他走出了极其罕见的 <strong>O-O-O!!</strong>——在如此靠后的回合进行长易位，几乎闻所未闻！</p>
+                <p>然而，命运眷顾了 Diemer：在第32步，黑方 Trommsdorf 错过了 <strong>32...b3!!</strong> 这步惊世妙手。如果走出，黑方将有一系列精彩的将杀威胁，很可能赢得对局。可惜 Trommsdorf 选择了其他着法，最终双方以将军和棋告终。</p>
+                <p>Sam Copeland (Chess.com 全国大师) 将此局评为"70年代十大最佳对局"第7名。</p>
+                <p><strong>训练问题</strong>：(1) 为什么王车易位可以在如此靠后的回合进行？(2) 32...b3!! 之后黑方的致胜思路是什么？</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VARIATIONS = {
+            main_game: {
+                title: "Diemer vs Trommsdorf (1973) - 完整对局（47步）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "1973年法国Bagneux公开赛，Blackmar-Diemer弃兵法发明人Emil Diemer的经典对局。白方采用极端激进的g4-h4兵风暴，黑方顽强防守。关键时刻：29.O-O-O!!（罕见的后期长易位）和32...b3!!（黑方走出的致胜妙手）。训练问题：观察白方如何在开局阶段牺牲结构换取进攻！",
+                moves: ["d4","Nf6","Nc3","g6","e4","d6","Be2","c6","g4","b5","g5","Nfd7","h4","b4","Nb1","d5","e5","e6","h5","c5","hxg6","fxg6","Bd3","Bg7","Rxh7","Rxh7","Bxg6+","Ke7","Bxh7","cxd4","f4","Qh8","Qh5","Ba6","Nf3","Nc6","Nh4","Nf8","g6","Kd7","Nd2","Kc7","Ndf3","Nd7","Bd2","Qf8","Ng5","Re8","Qg4","Ndxe5","Qh3","Nc4","Nxe6+","Kd7","f5","Nxd2","O-O-O","Qf6","Nxg7","Re3","Nh5","Qg5","Qg4","b3","axb3","Nxb3+","Kb1","Rd3","Qg1","Nd2+","Ka1","Qd8","Nf6+","Kc8","Rxd2","Qa5+","Kb1","Nb4","Rxd3","Qa2+","Kc1","Nxd3+","Kd2","Qa5+","Ke2","Ne5+","Kf2","Qd2+","Kg3","Qg5+","Kf2","Qd2+","Kg3","Qg5+"],
+                steps: ["1.d4 白方占据中心","1...Nf6 黑方发展马并攻击e4","2.Nc3 白方准备e4推进","2...g6 黑方准备fianchetto象","3.e4 白方建立强大中心","3...d6 黑方巩固中心","4.Be2 白方稳健发展","4...c6 黑方准备...d5或...b5","5.g4!! Diemer的标志性走法！开始激进的王翼进攻","5...b5 黑方反击后翼","6.g5 白方继续推进，驱逐f6马","6...Nfd7 马被迫后撤","7.h4 Harry也来了！双兵风暴","7...b4 黑方继续后翼反击","8.Nb1 马让路，准备Nd2","8...d5 黑方挑战中心","9.e5 白方固守中心","9...e6 黑方巩固","10.h5 h兵继续推进","10...c5 黑方反击d4","11.hxg6 白方打开h列！","11...fxg6 黑方被迫接受","12.Bd3 白方象瞄准弱点","12...Bg7 黑方发展","13.Rxh7!! 白方牺牲车！","13...Rxh7 黑方接受祭献","14.Bxg6+ 将军！双象攻击","14...Ke7 国王被迫走动","15.Bxh7 白方收回物质","15...cxd4 黑方吃掉d4兵","16.f4 白方继续进攻","16...Qh8 黑方后瞄准h7","17.Qh5 白方后加入进攻","17...Ba6 黑方发展象","18.Nf3 白方马出动","18...Nc6 黑方发展","19.Nh4 白方马跳到好格","19...Nf8 黑方防守","20.g6 通路兵推进！","20...Kd7 国王继续躲避","21.Nd2 白方调整马位","21...Kc7 国王躲到后翼","22.Ndf3 白方马换位","22...Nd7 黑方调整","23.Bd2 白方象发展","23...Qf8 黑方后调整","24.Ng5 白方马跳到攻击格","24...Re8 黑方车到e列","25.Qg4 白方后施压","25...Ndxe5 黑方吃掉e5兵","26.Qh3 白方后调整","26...Nc4 黑方马进入强格","27.Nxe6+ 白方骑士将军吃兵！","27...Kd7 国王躲避","28.f5 白方推进f兵","28...Nxd2 黑方马吃象","29.O-O-O!! 震撼的长易位！在第29步进行王车易位，极其罕见！","29...Qf6 黑方后发力","30.Nxg7 白方马吃象","30...Re3 黑方车侵入！","31.Nh5 白方马跳出","31...Qg5 黑方后施压","32.Qg4 白方后施压","32...b3!! 黑方走出了这步惊世妙手！","33.axb3 白方被迫接受","33...Nxb3+ 骑士将军！","34.Kb1 国王躲避","34...Rd3 黑方车继续进攻","35.Qg1 白方后退守","35...Nd2+ 又一记将军！","36.Ka1 国王躲避","36...Qd8 黑方后瞄准d2","37.Nf6+ 白方马将军","37...Kc8 国王躲","38.Rxd2 白方车吃马","38...Qa5+ 黑方后将军","39.Kb1 国王躲","39...Nb4 黑方马威胁","40.Rxd3 白方车吃车","40...Qa2+ 黑方后将军","41.Kc1 国王躲","41...Nxd3+ 骑士将军！","42.Kd2 国王躲","42...Qa5+ 黑方后将军","43.Ke2 国王躲","43...Ne5+ 骑士将军","44.Kf2 国王躲","44...Qd2+ 将军","45.Kg3 国王躲","45...Qg5+ 将军","46.Kf2 国王躲","46...Qd2+ 将军","47.Kg3 国王躲","47...Qg5+ 三次重复，和棋！虽然黑方走出了b3!!，但最终仍是和棋结局"]
+            },
+            crazy_opening: {
+                title: "g4-h4 兵风暴（前12步）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "观察Diemer如何用g4和h4双兵风暴发起王翼进攻。这是典型的Diemer风格——不计代价地寻求进攻！训练问题：白方为什么愿意削弱自己的王位安全来换取进攻？",
+                moves: ["d4","Nf6","Nc3","g6","e4","d6","Be2","c6","g4","b5","g5","Nfd7","h4","b4","Nb1","d5","e5","e6","h5","c5","hxg6","fxg6","Bd3","Bg7"],
+                steps: ["1.d4 白方占据中心","1...Nf6 黑方发展","2.Nc3 准备e4","2...g6 准备fianchetto","3.e4 建立中心","3...d6 巩固","4.Be2 发展","4...c6 灵活","5.g4!! 这就是Diemer！g4兵风暴开始","5...b5 黑方后翼反击","6.g5 驱逐f6马","6...Nfd7 马被迫后撤","7.h4 Harry加入！双兵风暴形成","7...b4 黑方继续后翼压力","8.Nb1 马让路","8...d5 挑战中心","9.e5 白方固守","9...e6 巩固","10.h5 h兵继续推进","10...c5 黑方反击","11.hxg6! 打开h列","11...fxg6 被迫接受","12.Bd3 象瞄准g6","12...Bg7 黑方完成发展。观察：白方已经削弱了自己的王位（g4-h4已经推进），但获得了h列的开放线和对黑方王翼的压力"]
+            },
+            h_file_attack: {
+                title: "h列攻王战术（13-20步）",
+                fen: "rnbqk2r/p2n2bp/4p1p1/2ppP1P1/1p1P4/3B4/PPP2P2/RNBQK1NR w KQkq - 2 13",
+                description: "白方通过牺牲车来打开h列，发起对黑王的猛攻。训练问题：车换双兵加进攻机会，这个交换值得吗？",
+                moves: ["Rxh7","Rxh7","Bxg6+","Ke7","Bxh7","cxd4","f4","Qh8","Qh5","Ba6","Nf3","Nc6","Nh4","Nf8","g6","Kd7"],
+                steps: ["13.Rxh7!! 惊人的牺牲！白方用车换取进攻","13...Rxh7 黑方接受","14.Bxg6+ 将军！现在白方双象瞄准黑王","14...Ke7 国王被迫离开原位，失去易位权","15.Bxh7 白方收回物质（车换车+双兵），获得强大进攻","15...cxd4 黑方反击中心","16.f4 白方继续施压","16...Qh8 黑方后瞄准h7象","17.Qh5 白方后加入进攻，威胁多个目标","17...Ba6 黑方发展象","18.Nf3 白方马出动","18...Nc6 黑方发展","19.Nh4 白方马跳到强格，准备g6突破","19...Nf8 黑方防守","20.g6! 通路兵推进！","20...Kd7 国王继续躲避。评估：白方用结构上的缺陷换取了持久的进攻"]
+            },
+            late_castling: {
+                title: "29.O-O-O!! 惊世长易位",
+                fen: "4rq2/p2k2bB/b1n1N1P1/3p1P2/1p1p3N/7Q/PPPn4/R3K3 w Q - 0 29",
+                description: "在第29步进行王车易位，这是国际象棋中极其罕见的场景！大多数对局在前10-15步就完成易位，但Diemer在第29步才进行长易位，而且是完全合理的！训练问题：为什么此时易位是好棋？",
+                moves: ["O-O-O","Qf6","Nxg7","Re3","Nh5","Qg5","Qg4","b3","axb3","Nxb3+","Kb1","Rd3","Qg1","Nd2+","Ka1"],
+                steps: ["29.O-O-O!! 震撼的长易位！这可能是国际象棋史上最晚的有意义易位之一。此步的好处：(1)国王终于安全 (2)车立即进入战斗 (3)双车连通","29...Qf6 黑方后发力","30.Nxg7 白方马吃象","30...Re3 黑方车侵入！战术反击开始","31.Nh5 白方马调整","31...Qg5 黑方后施压","32.Qg4 白方后威胁","32...b3!! 黑方走出这步惊世妙手！","33.axb3 白方被迫接受","33...Nxb3+ 骑士将军！","34.Kb1 国王躲避","34...Rd3 黑方车继续进攻","35.Qg1 白方后退守","35...Nd2+ 又一记将军！","36.Ka1 国王躲避。黑方已经取得巨大优势！"]
+            },
+            missed_win: {
+                title: "32...b3!! 惊世妙手",
+                fen: "8/p2k3B/b1n3P1/3p1PqN/1p1p2QN/4r3/PPPn4/2KR4 b - - 4 32",
+                description: "这是整盘棋最关键的时刻！实战中黑方确实走出了32...b3!!这步惊世妙手，发起致命反击。Sam Copeland称这步棋为'INSANE move'（疯狂的一步）。训练问题：32...b3!!之后，黑方的取胜思路是什么？",
+                moves: ["b3","axb3","Nxb3+","Kb1"],
+                steps: ["32...b3!! 这就是惊世妙手！看起来只是一步普通的推兵，但背后蕴含着精彩的战术。黑方威胁：(1)bxa2+将军 (2)Nxb3+将军 (3)Ba6钉车","33.axb3 白方被迫接受，否则bxa2+更加致命","33...Nxb3+ 骑士将军！","34.Kb1 国王躲避。此时黑方有多条致胜路线，包括...Rd3进攻，以及...Nd2+继续追击。实战中Trommsdorf确实走出了这步妙手，但遗憾的是最终仍以和棋告终"]
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', function() {
+            ChessApp.init('myBoard', 'start');
+        });
+
+        function selectVariation(id) {
+            ChessApp.loadVariation(VARIATIONS[id]);
+        }
+    </script>
+
+</body>
+
+</html>
