@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>史上最伟大的法兰西防御 - Reshevsky vs Vaganian (1976)</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">史上最伟大的法兰西防御</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>🇫🇷 法兰西防御经典</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_game')">Reshevsky vs Vaganian (1976)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键决策点</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp_e5_sacrifice')">DP①：14...e5!! 中心爆破</button>
+                <button class="variation-btn" onclick="selectVariation('dp_ndxe5_sacrifice')">DP②：15...Ndxe5!! 马的献祭</button>
+                <button class="variation-btn" onclick="selectVariation('dp_bh4_check')">DP③：16...Bh4+!! 象的献祭</button>
+                <button class="variation-btn" onclick="selectVariation('dp_rxf3_sacrifice')">DP④：17...Rxf3!! 车的献祭</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>开局理论</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('opening_tarrasch')">塔拉什变例基础</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('white_mistake_kf2')">白方错误：8.Kf2?!</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>战略主题</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('theme_king_hunt')">主题：暴露的王</button>
+                <button class="variation-btn" onclick="selectVariation('theme_mating_patterns')">主题：杀棋模式</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>史上最伟大的法兰西防御</h3>
+                <p>1976年斯科普里，Vaganian 对阵传奇棋手 Reshevsky，用四连击献祭（14...e5!! 15...Ndxe5!! 16...Bh4+!! 17...Rxf3!!）将白王彻底击溃，创造了法兰西防御历史上最华丽的胜利。</p>
+                <p><strong>教训</strong>：如果你忽视发展和王的安全，必须非常谨慎地审视所有将军、吃子和弃子的可能。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // 棋谱数据 - Reshevsky vs Vaganian, Skopje 1976
+        // 法兰西防御：塔拉什变例，兵中心变化 (C05)
+        // =====================================================
+        const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+        // 完整主线走法 (56步，黑方认输)
+        const MAIN_GAME_MOVES = [
+            "e4", "e6", "d4", "d5", "Nd2", "Nf6", "e5", "Nfd7", "f4", "c5",
+            "c3", "Nc6", "Ndf3", "Qa5", "Kf2", "Be7", "Bd3", "Qb6", "Ne2", "f6",
+            "exf6", "Bxf6", "Kg3", "cxd4", "cxd4", "O-O", "Re1", "e5", "fxe5", "Ndxe5",
+            "dxe5", "Bh4+", "Kxh4", "Rxf3", "Rf1", "Qb4+", "Bf4", "Qe7+", "Bg5", "Qe6",
+            "Bf5", "Rxf5", "Nf4", "Qxe5", "Qg4", "Rf7", "Qh5", "Ne7", "g4", "Ng6+",
+            "Kg3", "Bd7", "Rae1", "Qd6", "Bh6", "Raf8"
+        ];
+
+        // 主线注释
+        const MAIN_GAME_COMMENTS = {
+            0: "法兰西防御开始。",
+            2: "白方建立中心。",
+            4: "3.Nd2 塔拉什变例的标志性走法。",
+            6: "4.e5 推进中心，挤压黑马。",
+            8: "5.f4 激进的兵形，试图控制全局，但会削弱王翼。",
+            14: "8.Kf2?! 非常激进的手段——\"手动易位\"，但王位暴露。",
+            18: "10.Ne2 白方继续发展，但王在f2非常危险。",
+            22: "12.Kg3 白王跑到g3，意图连通车，但位置极其暴露。",
+            26: "14.Re1 白方完成发展，但黑方已准备好反击。",
+            27: "14...e5!! 第一个惊人的突破！黑方直接挑战中心。",
+            29: "15...Ndxe5!! 第二次献祭！黑马冲入虎穴。",
+            31: "16...Bh4+!! 第三次献祭！迫使白王进入致命位置。",
+            33: "17...Rxf3!! 第四次献祭！车也投入战斗。",
+            35: "18...Qb4+ 将军！白王无处可逃。",
+            55: "白方认输。黑方的攻击势不可挡。"
+        };
+
+        // 数据构造工具
+        function buildSteps(moves, startMoveNumber, commentsByPlyIndex) {
+            var base = Math.max(1, startMoveNumber || 1);
+            var comments = commentsByPlyIndex || {};
+            return moves.map(function (san, idx) {
+                var fullMove = base + Math.floor(idx / 2);
+                var prefix = (idx % 2 === 0) ? (fullMove + '.') : (fullMove + '...');
+                var comment = comments[idx] ? (' ' + comments[idx]) : '';
+                return prefix + san + comment;
+            });
+        }
+
+        const VARIATIONS = {
+            main_game: {
+                title: "Reshevsky vs Vaganian (1976) - 主线全谱",
+                fen: START_FEN,
+                description: "Samuel Reshevsky vs Rafael Vaganian，1976年斯科普里国际象棋大赛第5轮。法兰西防御塔拉什变例(C05)。黑方用四连击献祭创造了法兰西防御史上最华丽的胜利。",
+                moves: MAIN_GAME_MOVES,
+                steps: buildSteps(MAIN_GAME_MOVES, 1, MAIN_GAME_COMMENTS)
+            },
+
+            // DP①：14...e5!! 中心爆破
+            dp_e5_sacrifice: {
+                title: "DP①：14...e5!! 中心爆破",
+                fen: START_FEN,
+                description: "关键决策点：黑方在第14步用 e5 突破中心，这是整个组合的开始。白方的f4兵被吃掉后，中心完全崩溃。",
+                moves: MAIN_GAME_MOVES.slice(0, 28),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 28), 1, {
+                    26: "白方刚完成发展，但王位暴露。",
+                    27: "14...e5!! 关键突破！直接挑战白方中心。fxe5后，白方d4兵孤立，e5兵成为攻击目标。"
+                })
+            },
+
+            // DP②：15...Ndxe5!! 马的献祭
+            dp_ndxe5_sacrifice: {
+                title: "DP②：15...Ndxe5!! 马的献祭",
+                fen: START_FEN,
+                description: "第二个惊人之举：黑马吃掉e5兵，即使会被白方马吃回。关键是打开f线和对角线攻击白王。",
+                moves: MAIN_GAME_MOVES.slice(0, 30),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 30), 1, {
+                    28: "15.fxe5 白方吃兵。",
+                    29: "15...Ndxe5!! 马的献祭！即使白方dxe5吃马，黑方也能用象和车发动致命攻击。"
+                })
+            },
+
+            // DP③：16...Bh4+!! 象的献祭
+            dp_bh4_check: {
+                title: "DP③：16...Bh4+!! 象的献祭",
+                fen: START_FEN,
+                description: "第三次献祭：黑象将军，白王被迫吃象。但这样白王就被引诱到h4——一个致命的位置。",
+                moves: MAIN_GAME_MOVES.slice(0, 32),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 32), 1, {
+                    30: "16.dxe5 白方吃马。",
+                    31: "16...Bh4+!! 象的献祭！白王必须吃象（Kxh4），否则会丢更多子力。但吃象后白王被引诱到h4，陷入绝境。"
+                })
+            },
+
+            // DP④：17...Rxf3!! 车的献祭
+            dp_rxf3_sacrifice: {
+                title: "DP④：17...Rxf3!! 车的献祭",
+                fen: START_FEN,
+                description: "第四次献祭：车吃f3马！白方完全无法阻挡黑后的进攻。白王在h4被困，面临多种杀棋威胁。",
+                moves: MAIN_GAME_MOVES.slice(0, 36),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 36), 1, {
+                    32: "17.Kxh4 白王被迫吃象。",
+                    33: "17...Rxf3!! 车的献祭！威胁 Qb4+ 将军。",
+                    34: "18.Rf1 白方试图用车保护，但已经太晚了。",
+                    35: "18...Qb4+ 将军！白王在h4无处可逃，黑方有多种杀棋路线。"
+                })
+            },
+
+            // 开局理论：塔拉什变例基础
+            opening_tarrasch: {
+                title: "法兰西防御：塔拉什变例基础",
+                fen: START_FEN,
+                description: "塔拉什变例（3.Nd2）是法兰西防御中白方的主要选择之一。白方避免了Nc3后被Bb4牵制的问题，保持灵活性。",
+                moves: ["e4", "e6", "d4", "d5", "Nd2", "Nf6", "e5", "Nfd7", "f4", "c5", "c3", "Nc6", "Ndf3"],
+                steps: [
+                    "1.e4 王翼兵开局。",
+                    "1...e6 法兰西防御的标志。",
+                    "2.d4 建立理想中心。",
+                    "2...d5 黑方挑战白方中心。",
+                    "3.Nd2 塔拉什变例！避免马被象牵制。",
+                    "3...Nf6 攻击e4兵。",
+                    "4.e5 推进中心，挤压黑马。",
+                    "4...Nfd7 马被迫后退。",
+                    "5.f4 支撑e5兵，但削弱王翼。",
+                    "5...c5 黑方反击中心。",
+                    "6.c3 支撑d4兵。",
+                    "6...Nc6 发展并增加对d4的压力。",
+                    "7.Ndf3 马重新定位，准备防守d4。"
+                ]
+            },
+
+            // 白方错误：8.Kf2?!
+            white_mistake_kf2: {
+                title: "白方错误：8.Kf2?! 激进的手动易位",
+                fen: START_FEN,
+                description: "⚠️ Reshevsky选择了极其激进的8.Kf2，意图\"手动易位\"连通双车。但这让王处于暴露位置，成为黑方攻击目标。",
+                moves: ["e4", "e6", "d4", "d5", "Nd2", "Nf6", "e5", "Nfd7", "f4", "c5", "c3", "Nc6", "Ndf3", "Qa5", "Kf2"],
+                steps: [
+                    "1.e4",
+                    "1...e6",
+                    "2.d4",
+                    "2...d5",
+                    "3.Nd2",
+                    "3...Nf6",
+                    "4.e5",
+                    "4...Nfd7",
+                    "5.f4",
+                    "5...c5",
+                    "6.c3",
+                    "6...Nc6",
+                    "7.Ndf3",
+                    "7...Qa5 黑后出动，增加对c3的压力。",
+                    "8.Kf2?! 激进但危险的选择！白方想手动连通双车，但王位非常暴露。更安全的是8.Bd2或8.Be2完成发展再短易位。"
+                ]
+            },
+
+            // 战略主题：暴露的王
+            theme_king_hunt: {
+                title: "主题：追杀暴露的王",
+                fen: START_FEN,
+                description: "本局的核心主题：白王从f2走到g3，最后被迫到h4。这种\"王的漫步\"在中局是非常危险的，黑方充分利用了这一点。",
+                moves: MAIN_GAME_MOVES.slice(0, 34),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 34), 1, {
+                    14: "白王走到f2——第一步错误。",
+                    22: "白王走到g3——更加暴露！",
+                    32: "白王被迫到h4——致命的位置！"
+                })
+            },
+
+            // 战略主题：杀棋模式
+            theme_mating_patterns: {
+                title: "主题：杀棋模式识别",
+                fen: START_FEN,
+                description: "Vaganian需要快速识别多种杀棋模式才能完成这场华丽的攻击。学习这些模式对提高战术能力至关重要。",
+                moves: MAIN_GAME_MOVES.slice(0, 40),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 40), 1, {
+                    35: "Qb4+ 后，白王在h4面临多种杀棋威胁。",
+                    37: "Qe7+ 继续追杀，白方被迫用象挡驾。",
+                    39: "黑后到e6，继续攻击。白王难逃一劫。"
+                })
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            window.ChessApp.init('myBoard', START_FEN);
+            selectVariation('main_game');
+
+            // ========== 自动验证脚本 ==========
+            console.log('🔍 开始验证所有变例的走法合法性...\n');
+            var totalVariations = Object.keys(VARIATIONS).length;
+            var passedCount = 0;
+            var failedCount = 0;
+
+            Object.keys(VARIATIONS).forEach(function (key) {
+                var v = VARIATIONS[key];
+                var g = new Chess(v.fen);
+                var allValid = true;
+
+                // 检查数组长度匹配
+                if (v.moves.length !== v.steps.length) {
+                    console.error('❌ [' + key + '] 数据不匹配: moves=' + v.moves.length + ', steps=' + v.steps.length);
+                    failedCount++;
+                    return;
+                }
+
+                for (var i = 0; i < v.moves.length; i++) {
+                    var moveResult = g.move(v.moves[i]);
+                    if (!moveResult) {
+                        console.error('❌ [' + key + '] 第' + (i + 1) + '步无效: ' + v.moves[i]);
+                        console.error('   当前FEN: ' + g.fen());
+                        allValid = false;
+                        failedCount++;
+                        return;
+                    }
+                }
+
+                if (allValid) {
+                    console.log('✓ [' + key + '] 验证通过 (' + v.moves.length + '步)');
+                    passedCount++;
+                }
+            });
+
+            console.log('\n========== 验证报告 ==========');
+            console.log('总变例数: ' + totalVariations);
+            console.log('通过: ' + passedCount);
+            console.log('失败: ' + failedCount);
+            console.log('==============================\n');
+
+            // ========== 数据来源说明 ==========
+            console.log('📚 数据来源：');
+            console.log('- ChessBase: Reshevsky vs Vaganian, Skopje 1976, Round 5');
+            console.log('- ECO: C05 (French Defense, Tarrasch, Pawn Center Variation)');
+            console.log('- 结果: 0-1 (黑胜)');
+            console.log('- 参考: Chess.com "The Greatest French Defense Ever Played"');
+        });
+    </script>
+
+</body>
+
+</html>

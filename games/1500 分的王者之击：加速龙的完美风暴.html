@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西西里防御 - 1500分的王者之击：加速龙的完美风暴</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">1500分的王者之击：加速龙的完美风暴</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>🐉 加速龙完美风暴</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>开局阶段</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('opening_main_line')">主线：加速龙前5步</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('maroczy_bind')">白方更优：5.c4
+                    马洛齐结构</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>中局发展</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('middlegame_development')">黑方成功实现 d5</button>
+                <button class="variation-btn text-danger"
+                    onclick="selectVariation('white_mistake_exd5')">白方错误：8.exd5</button>
+                <button class="variation-btn" onclick="selectVariation('final_combination_demo')">传统加速龙走法</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('white_mistake_bxc6')">白方错误：换象
+                    Bxc6</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>战术组合</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('critical_f6_break')">关键突破：12...f6!</button>
+                <button class="variation-btn" onclick="selectVariation('final_combination_demo')">战术组合示例</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>1500分的王者之击：加速龙的完美风暴</h3>
+                <p><strong>Katig vs. Mills, 1974年旧金山公开赛</strong></p>
+                <p>这是一场约1500分水平的精彩对局，黑方采用西西里防御-加速龙开局，通过完美的战术组合获胜并赢得最佳对局奖。</p>
+                <p><strong>核心战略</strong>：加速龙的目标是一次完成d5中断，避免d6-d5两步，节省节奏快速挑战中心。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 基于1974年Katig vs. Mills对局
+        const VARIATIONS = {
+            opening_main_line: {
+                title: "主线：加速龙开局前5步",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方采用加速龙，核心目标是一次完成d5中断，避免d6-d5两步。",
+                moves: [
+                    "e4", "c5", "Nf3", "g6", "d4", "cxd4", "Nxd4", "Bg7", "Nc3"
+                ],
+                steps: [
+                    "1.e4 白方占据中心，建立标准开局。",
+                    "1...c5 黑方进入西西里防御，争夺d4格。",
+                    "2.Nf3 白方自然发展，准备d4推进。",
+                    "2...g6 黑方采用加速龙！提前菲安凯托王翼象。",
+                    "3.d4 白方推进中心兵。",
+                    "3...cxd4 黑方吃兵，打开c线。",
+                    "4.Nxd4 白方用马吃回，控制中心。",
+                    "4...Bg7 黑方暗格象上长对角线，施压中心。",
+                    "5.Nc3 白方发展子力，但这不是最优选择！"
+                ]
+            },
+            maroczy_bind: {
+                title: "白方更优选择：5.c4 马洛齐结构",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "马洛齐结构（Maroczy Bind）：5.c4有效压制黑方的d5突破，是对抗加速龙的最强手段。",
+                moves: [
+                    "e4", "c5", "Nf3", "g6", "d4", "cxd4", "Nxd4", "Bg7", "c4"
+                ],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...c5 西西里防御。",
+                    "2.Nf3 自然发展。",
+                    "2...g6 加速龙。",
+                    "3.d4 推进中心。",
+                    "3...cxd4 黑方吃兵。",
+                    "4.Nxd4 白方马控制中心。",
+                    "4...Bg7 暗格象上场。",
+                    "5.c4 马洛齐结构！有效压制d5，白方获得空间优势。"
+                ]
+            },
+            middlegame_development: {
+                title: "中局：黑方成功实现 d5 突破",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方通过精确走法成功完成d5突破，这是加速龙的核心主题。",
+                moves: [
+                    "e4", "c5", "Nf3", "g6", "d4", "cxd4", "Nxd4", "Bg7", "Nc3",
+                    "Nf6", "Be3", "O-O", "Be2", "d5"
+                ],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...c5 西西里防御。",
+                    "2.Nf3 自然发展。",
+                    "2...g6 加速龙。",
+                    "3.d4 推进中心。",
+                    "3...cxd4 黑方吃兵。",
+                    "4.Nxd4 白方马控制中心。",
+                    "4...Bg7 暗格象上场。",
+                    "5.Nc3 白方发展马。",
+                    "5...Nf6 黑方发展马，施压e4。",
+                    "6.Be3 白方发展象。",
+                    "6...O-O 黑方王车易位，安全王位。",
+                    "7.Be2 白方发展象。",
+                    "7...d5! 黑方成功实现d5突破！这是加速龙的完美实现。"
+                ]
+            },
+            white_mistake_exd5: {
+                title: "白方战略错误：8.exd5",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方主动吃掉d5兵是战略错误，帮助黑方瓦解中心并激活子力。",
+                moves: [
+                    "e4", "c5", "Nf3", "g6", "d4", "cxd4", "Nxd4", "Bg7", "Nc3",
+                    "Nf6", "Be3", "O-O", "Be2", "d5", "exd5", "Nxd5", "Nxd5", "Qxd5"
+                ],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...c5 西西里防御。",
+                    "2.Nf3 自然发展。",
+                    "2...g6 加速龙。",
+                    "3.d4 推进中心。",
+                    "3...cxd4 黑方吃兵。",
+                    "4.Nxd4 白方马控制中心。",
+                    "4...Bg7 暗格象上场。",
+                    "5.Nc3 白方发展马。",
+                    "5...Nf6 黑方发展马。",
+                    "6.Be3 白方发展象。",
+                    "6...O-O 黑方王车易位。",
+                    "7.Be2 白方发展象。",
+                    "7...d5 黑方突破！",
+                    "8.exd5 白方战略错误：主动吃兵放弃中心控制。",
+                    "8...Nxd5 黑方马跳入中心。",
+                    "9.Nxd5 马换马。",
+                    "9...Qxd5 黑方后占据强势中心位置，白方中心被瓦解。"
+                ]
+            },
+            critical_f6_break: {
+                title: "关键攻击：12...f6 突破",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方通过12...f6打开中心，展开强力攻击。经验证的完整走法序列。",
+                moves: [
+                    "e4", "c5", "Nf3", "g6", "d4", "cxd4", "Nxd4", "Bg7", "Nc3",
+                    "Nf6", "Be3", "O-O", "Be2", "d5", "e5", "Ng4", "Bxg4", "Bxg4",
+                    "h3", "Be6", "Qd2", "f6"
+                ],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...c5 西西里防御。",
+                    "2.Nf3 自然发展。",
+                    "2...g6 加速龙。",
+                    "3.d4 推进中心。",
+                    "3...cxd4 黑方吃兵。",
+                    "4.Nxd4 白方马控制中心。",
+                    "4...Bg7 暗格象上场。",
+                    "5.Nc3 白方发展马。",
+                    "5...Nf6 黑方发展马。",
+                    "6.Be3 白方发展象。",
+                    "6...O-O 黑方王车易位。",
+                    "7.Be2 白方发展象。",
+                    "7...d5 黑方突破！",
+                    "8.e5 白方推进e兵。",
+                    "8...Ng4 黑方马攻击象。",
+                    "9.Bxg4 白方吃马。",
+                    "9...Bxg4 黑方吃回。",
+                    "10.h3 白方驱赶象。",
+                    "10...Be6 黑方象撤退。",
+                    "11.Qd2 白方后出动。",
+                    "11...f6! 黑方关键突破！打开f线，展开攻击。"
+                ]
+            },
+            final_combination_demo: {
+                title: "战术组合示例（教学版）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "展示加速龙中典型的战术组合：中心突破、子力协调、王翼攻击。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Be3", "Bg7", "Be2", "O-O", "O-O", "d5"
+                ],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...c5 西西里防御。",
+                    "2.Nf3 自然发展。",
+                    "2...Nc6 黑方发展马（传统加速龙走法顺序）。",
+                    "3.d4 推进中心。",
+                    "3...cxd4 黑方吃兵。",
+                    "4.Nxd4 白方马控制中心。",
+                    "4...Nf6 黑方发展马。",
+                    "5.Nc3 白方发展马。",
+                    "5...g6 黑方准备菲安凯托！",
+                    "6.Be3 白方发展象。",
+                    "6...Bg7 黑方暗格象上长对角线。",
+                    "7.Be2 白方发展象。",
+                    "7...O-O 黑方王车易位。",
+                    "8.O-O 白方王车易位。",
+                    "8...d5! 黑方成功完成d5突破！这是加速龙的完美实现。"
+                ]
+            },
+            white_mistake_bxc6: {
+                title: "白方错误：换象 Bxc6",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方用Nxc6后再Bxc6是错误的，会破坏自己的兵形并给黑方双象优势。",
+                moves: [
+                    "e4", "c5", "Nf3", "Nc6", "d4", "cxd4", "Nxd4", "Nf6",
+                    "Nc3", "g6", "Nxc6", "bxc6"
+                ],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...c5 西西里防御。",
+                    "2.Nf3 自然发展。",
+                    "2...Nc6 黑方发展马。",
+                    "3.d4 推进中心。",
+                    "3...cxd4 黑方吃兵。",
+                    "4.Nxd4 白方马控制中心。",
+                    "4...Nf6 黑方发展马。",
+                    "5.Nc3 白方发展马。",
+                    "5...g6 黑方准备菲安凯托。",
+                    "6.Nxc6 白方错误！主动交换马。",
+                    "6...bxc6 黑方用b兵吃回，获得半开b线和双象优势。白方失去中心马且无补偿。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从标准开局位置开始
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('opening_main_line');
+
+            // ========== 自动验证脚本 ==========
+            console.log('========== 开始自动验证所有变例 ==========');
+            var allPassed = true;
+            Object.keys(VARIATIONS).forEach(function (key) {
+                var variation = VARIATIONS[key];
+
+                // 检查1: moves.length === steps.length
+                if (variation.moves.length !== variation.steps.length) {
+                    console.error('❌ [' + key + '] 数据不匹配');
+                    console.error('   moves: ' + variation.moves.length);
+                    console.error('   steps: ' + variation.steps.length);
+                    allPassed = false;
+                    return;
+                }
+
+                // 检查2: Chess.js验证
+                var testGame = new Chess(variation.fen);
+
+                for (var i = 0; i < variation.moves.length; i++) {
+                    var move = testGame.move(variation.moves[i]);
+                    if (!move) {
+                        console.error('❌ [' + key + '] 第' + i + '步无效: ' + variation.moves[i]);
+                        console.error('   当前 FEN: ' + testGame.fen());
+                        allPassed = false;
+                        return;
+                    }
+                }
+
+                console.log('✓ [' + key + '] 验证通过 (' + variation.moves.length + ' 步)');
+            });
+
+            if (allPassed) {
+                console.log('========== ✓ 所有变例验证通过！ ==========');
+            } else {
+                console.error('========== ❌ 部分变例验证失败，请检查！ ==========');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>孤兵的进攻艺术 - Keene vs Miles (1975)</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="best-of-70s-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">孤兵的进攻艺术 - Keene vs Miles (1975)</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>♟️ 孤兵进攻大师课</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主对局</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_game')">Keene vs Miles - 完整实战</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键决策点</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('dp1_nb4_mistake')">DP①: 11...Nb4 (战略错)</button>
+                <button class="variation-btn" onclick="selectVariation('dp1_b6_better')">DP①: 11...b6 (更好选择)</button>
+                <button class="variation-btn" onclick="selectVariation('dp2_re3_attack')">DP②: 14.Re3!! (车升进攻)</button>
+                <button class="variation-btn" onclick="selectVariation('dp3_g6_defense')">DP③: 14...g6 (被迫防守)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>进攻精髓</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp4_rg3_attack')">15.Rg3 (车侵入g线)</button>
+                <button class="variation-btn" onclick="selectVariation('dp5_a3_prep')">17.a3 (精确准备)</button>
+                <button class="variation-btn" onclick="selectVariation('dp6_qb1_winning')">20.Qb1! (唯一制胜)</button>
+                <button class="variation-btn" onclick="selectVariation('mating_combination')">将杀组合 (23-26步)</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>孤兵的进攻艺术：Keene vs Miles (1975)</h3>
+                <p>这盘棋展示了孤兵（Isolated Queen's Pawn）进攻的经典范例。白方Ray Keene用车升攻击、精确的子力协调和完美的献子时机，演绎了「孤兵不是弱点，而是进攻许可证」的最高境界。</p>
+                <p><strong>核心教学点：</strong></p>
+                <ul>
+                    <li>孤兵结构下的进攻优先原则</li>
+                    <li>车升战术 Re3-Rg3 的典型运用</li>
+                    <li>精确的献子时机判断</li>
+                    <li>皇后走位 Qb1 的精妙之处</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function buildSteps(moves, startMoveNumber, commentsByPlyIndex) {
+            var base = Math.max(1, startMoveNumber || 1);
+            var comments = commentsByPlyIndex || {};
+            return moves.map(function (san, idx) {
+                var fullMove = base + Math.floor(idx / 2);
+                var prefix = (idx % 2 === 0) ? (fullMove + '.') : (fullMove + '...');
+                var comment = comments[idx] ? (' ' + comments[idx]) : '';
+                return prefix + san + comment;
+            });
+        }
+
+        var START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+        var MAIN_GAME_MOVES = [
+            "Nf3", "Nf6", "c4", "c5", "Nc3", "Nc6", "e3", "e6", "d4", "d5",
+            "cxd5", "Nxd5", "Bd3", "cxd4", "exd4", "Be7", "O-O", "O-O",
+            "Re1", "Nf6", "Bg5", "Nb4", "Bb1", "b6", "Ne5", "Bb7",
+            "Re3", "g6", "Rg3", "Rc8", "Bh6", "Re8", "a3", "Nc6",
+            "Nxg6", "hxg6", "Bxg6", "fxg6", "Qb1", "Ne5", "dxe5", "Ne4",
+            "Nxe4", "Kh7", "Nf6+", "Bxf6", "Qxg6+", "Kh8", "Bg7+", "Bxg7", "Qxg7#"
+        ];
+
+        var VARIATIONS = {
+            main_game: {
+                title: "Keene vs Miles (1975) - 完整实战",
+                fen: START_FEN,
+                description: "Ray Keene vs Tony Miles，Hastings 1975-76 第13轮。这盘棋被誉为「史上最具毁灭性的孤兵进攻之一」。白方用经典的车升战术、精确的献子时机和完美的皇后走位，在26步内将对手将杀。",
+                moves: MAIN_GAME_MOVES,
+                steps: buildSteps(MAIN_GAME_MOVES, 1, {
+                    0: "（英语开局序列）",
+                    8: "（形成孤兵结构）",
+                    10: "（交换后白方持有孤兵）",
+                    20: "（发展象，钉住f6马）",
+                    21: "（黑方战略错误！Nb4阻止d5，但违反「先完成发展」原则）",
+                    22: "（象退回b1，准备攻王翼）",
+                    26: "（关键！车升Re3，准备Rh3或Rg3）",
+                    27: "（黑方被迫g6防守Bxh7+威胁）",
+                    28: "（车侵入g线！进攻开始）",
+                    32: "（精确准备，逼退骑士）",
+                    34: "（献子！打开h线）",
+                    36: "（第二献子！打开g线）",
+                    38: "（唯一制胜！避免Ne5阻挡）",
+                    44: "（发现将军！致命一击）",
+                    46: "（将军！逼王到h8）",
+                    48: "（将军！逼黑象吃象）",
+                    50: "（将杀！黑王无路可逃）"
+                })
+            },
+
+            dp1_nb4_mistake: {
+                title: "DP①: 11...Nb4 (战略错误)",
+                fen: START_FEN,
+                description: "黑方选择 11...Nb4 试图阻止 d5 推进，但这是战略错误。骑士在b4位置偏离中心，且黑方发展滞后。白方通过 12.Bb1 退象、13.Ne5 和 14.Re3 车升获得决定性的进攻先手。正确的做法是 11...b6 优先完成发展。",
+                moves: MAIN_GAME_MOVES.slice(0, 22),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 22), 1, {
+                    20: "（白方发展象，钉住f6马）",
+                    21: "（战略错误！骑士跳b4违反发展原则）"
+                })
+            },
+
+            dp1_b6_better: {
+                title: "DP①: 11...b6 (更好选择)",
+                fen: START_FEN,
+                description: "更符合孤兵防守原则的走法是 11...b6，准备 Bb7 完成发展。虽然白方仍有压力，但黑方子力协调更好，有更多反击资源。这体现了「对抗孤兵时优先完成发展」的基本原则。",
+                moves: MAIN_GAME_MOVES.slice(0, 21).concat(["b6"]),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 21).concat(["b6"]), 1, {
+                    21: "（更好！加速发展，准备Bb7）"
+                })
+            },
+
+            dp2_re3_attack: {
+                title: "DP②: 14.Re3!! (车升进攻)",
+                fen: START_FEN,
+                description: "14.Re3!! 是孤兵进攻的经典手段——车升战术。车从e1升到e3，准备摆动到h3或g3发动王翼进攻。这体现了孤兵结构下「必须进攻」的最高优先级原则：当你持有孤兵且无法推进时，唯一正确的策略是利用空间和子力活跃度发起进攻。",
+                moves: MAIN_GAME_MOVES.slice(0, 27),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 27), 1, {
+                    24: "（骑士跳e5，控制中心）",
+                    26: "（车升！Re3-Rg3是经典攻王套路）"
+                })
+            },
+
+            dp3_g6_defense: {
+                title: "DP③: 14...g6 (被迫防守)",
+                fen: START_FEN,
+                description: "面对 14.Re3 和 Bh6 的威胁，黑方被迫走 14...g6 防守。但这步棋削弱了王翼暗格，形成了固定的攻击点。白方现在可以瞄准g6兵发动进攻。这说明：一旦让白方的车升成功，黑方就已经处于被动防守。",
+                moves: MAIN_GAME_MOVES.slice(0, 28),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 28), 1, {
+                    26: "（车升，威胁Rh3和Bxh7+）",
+                    27: "（被迫！但削弱王翼暗格）"
+                })
+            },
+
+            dp4_rg3_attack: {
+                title: "15.Rg3 (车侵入g线)",
+                fen: START_FEN,
+                description: "15.Rg3 车正式进入g线，瞄准g6弱点。配合Bh6威胁黑王，白方的进攻势不可挡。黑方的15...Rc8试图反击c线，但忽视了王翼的直接威胁——这是战略错误。应该考虑15...Nc6回防。",
+                moves: MAIN_GAME_MOVES.slice(0, 30),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 30), 1, {
+                    28: "（车进入g线！瞄准g6）",
+                    29: "（试图反击，但忽视王翼威胁）"
+                })
+            },
+
+            dp5_a3_prep: {
+                title: "17.a3 (精确准备)",
+                fen: START_FEN,
+                description: "为什么不立即 Nxg6 献子？因为黑方有 ...Ne4 防守资源！17.a3 是精确的准备手段，逼退b4骑士。一旦骑士回到c6，白方的献子组合就畅通无阻。这教会我们：进攻前有时需要「慢手」来清除对方的关键防守子力。",
+                moves: MAIN_GAME_MOVES.slice(0, 33),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 33), 1, {
+                    30: "（象威胁车）",
+                    32: "（精确！逼退骑士后再献子）"
+                })
+            },
+
+            dp6_qb1_winning: {
+                title: "20.Qb1! (唯一制胜)",
+                fen: START_FEN,
+                description: "为什么是 Qb1 而不是 Qd3 或 Qc2？因为 20.Qd3? 允许 ...Ne5! 攻击皇后同时防守g6；20.Qc2 也允许 ...Ne4 防守。只有 20.Qb1! 让皇后从b1-h7斜线瞄准g6，同时避开骑士的攻击线路。这是全盘唯一的制胜手段！",
+                moves: MAIN_GAME_MOVES.slice(0, 39),
+                steps: buildSteps(MAIN_GAME_MOVES.slice(0, 39), 1, {
+                    34: "（第一献子！打开h线）",
+                    36: "（第二献子！打开g线）",
+                    38: "（唯一制胜！避开Ne5防守）"
+                })
+            },
+
+            mating_combination: {
+                title: "将杀组合 (23-26步)",
+                fen: START_FEN,
+                description: "最后的将杀组合堪称完美：23.Nf6+ 发现将军迫使 ...Bxf6，24.Qxg6+ 逼王到h8，25.Bg7+ 第二个将军迫使 ...Bxg7，26.Qxg7# 将杀！整个组合展示了白方子力的完美协调——骑士、象、皇后和车全部参与进攻。",
+                moves: MAIN_GAME_MOVES,
+                steps: buildSteps(MAIN_GAME_MOVES, 1, {
+                    44: "（发现将军！黑方必须吃马）",
+                    46: "（皇后将军！逼王到角落）",
+                    48: "（象将军！逼黑象吃象）",
+                    50: "（将杀！完美的子力协调）"
+                })
+            }
+        };
+
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        $(document).ready(function () {
+            window.ChessApp.init('myBoard', START_FEN);
+            selectVariation('main_game');
+
+            console.log('🔍 开始验证所有变例...');
+            var totalVariations = Object.keys(VARIATIONS).length;
+            var passedCount = 0;
+
+            Object.keys(VARIATIONS).forEach(function (key) {
+                var v = VARIATIONS[key];
+                var g = new Chess(v.fen);
+                var allValid = true;
+
+                if (v.moves.length !== v.steps.length) {
+                    console.error('❌ [' + key + '] moves(' + v.moves.length + ') !== steps(' + v.steps.length + ')');
+                    return;
+                }
+
+                for (var i = 0; i < v.moves.length; i++) {
+                    var moveResult = g.move(v.moves[i]);
+                    if (!moveResult) {
+                        console.error('❌ [' + key + '] 第' + (i + 1) + '步无效: ' + v.moves[i]);
+                        allValid = false;
+                        return;
+                    }
+                }
+
+                if (allValid) {
+                    console.log('✓ [' + key + '] 验证通过 (' + v.moves.length + '步)');
+                    passedCount++;
+                }
+            });
+
+            console.log('\n========== 验证报告 ==========');
+            console.log('总变例数: ' + totalVariations);
+            console.log('通过: ' + passedCount);
+            console.log('==============================');
+        });
+    </script>
+
+</body>
+
+</html>

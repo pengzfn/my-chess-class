@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Play The Italian - Giuoco Piano</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="Italy-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">Why Play The Italian - Giuoco Piano</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>Italian Game - Giuoco Piano</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主线体系</span>
+                <span class="arrow arrow-open"></span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line')">主线：白方后翼扩展</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>决策点1：5.c3 后黑方选择</span>
+                <span class="arrow arrow-open"></span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp1_correct')">正确：5...a6</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp1_mistake')">错误：5...d6 (象被困)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>决策点2：6.a4 后王车易位</span>
+                <span class="arrow arrow-open"></span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp2_variation')">变例：6...O-O</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp2_mistake')">错误：O-O后d6 (Bg5攻击)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>决策点3：9.b4 后马的转移</span>
+                <span class="arrow arrow-open"></span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp3_correct')">正确：9...Ne7</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp3_mistake')">错误：9...d5? (战术失误)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>决策点4：14.c4 关键时刻</span>
+                <span class="arrow arrow-open"></span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp4_correct')">正确：14...Nf4!</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp4_mistake')">错误：14...exd4 (失去反击)</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>Italian Game - Giuoco Piano</h3>
+                <p>意大利开局（Giuoco Piano）是历史最悠久的开局之一，"Giuoco Piano"在意大利语中意为"慢棋"。白方通过后翼扩展和中心空间争夺获得持久优势，黑方必须立即寻求王翼反击。</p>
+                <p><strong>讲解者：Yuri Krikun (IM)</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - Italian Game: Giuoco Piano
+        const VARIATIONS = {
+            main_line: {
+                title: "主线：白方后翼扩展与中心空间争夺",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "白方通过后翼扩展和中心空间争夺获得大量空间优势；黑方必须立即寻求王翼反击。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "c3", "a6", "a4", "d6", "O-O", "O-O", "h3", "Ba7", "b4", "Ne7", "Bb3", "Ng6", "d4", "c6", "Re1", "Re8", "Bb2", "Be6", "c4"],
+                steps: [
+                    "1.e4 白方占据中心，标准开局。",
+                    "1...e5 黑方对称应对，争夺中心。",
+                    "2.Nf3 攻击e5兵，发展骑士。",
+                    "2...Nc6 保护e5兵，出子。",
+                    "3.Bc4 意大利开局成型！象瞄准f7弱点。",
+                    "3...Nf6 黑方也出马攻击e4，这是Two Knights变例的开始。",
+                    "4.d3 Giuoco Pianissimo体系，稳健发展。",
+                    "4...Bc5 黑方对称出象。",
+                    "5.c3 关键铺垫，为d4和b4扩展做准备。",
+                    "5...a6 正确！提前为黑格象预留退路，避免被a4-b4-a5夹击。",
+                    "6.a4 白方准备后翼扩展。",
+                    "6...d6 巩固中心，准备发展。",
+                    "7.O-O 白王安全。",
+                    "7...O-O 黑王也安全。",
+                    "8.h3 为象创造退路，防止...Bg4。",
+                    "8...Ba7 象退到对角线深处，保持活力。",
+                    "9.b4 白方开始后翼扩展！",
+                    "9...Ne7 正确的马路！为Ng6-f4创造条件。",
+                    "10.Bb3 保护象，准备进一步计划。",
+                    "10...Ng6 马转移到g6，准备f4或h4跳跃。",
+                    "11.d4 白方终于推进中心！",
+                    "11...c6 黑方巩固中心，限制白方扩展。",
+                    "12.Re1 车占据半开放线。",
+                    "12...Re8 黑方也占据e线。",
+                    "13.Bb2 象发展到长对角线，攻击中心。",
+                    "13...Be6 黑方发展最后一个轻子。",
+                    "14.c4 白方获得巨大空间优势！黑方必须立即寻求反击。"
+                ]
+            },
+            dp1_correct: {
+                title: "决策点1正确：5...a6",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "5...a6 提前为黑格象预留退路，避免被a4-b4-a5夹击。这是主线中的正确选择。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "c3", "a6"],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称应对。",
+                    "2.Nf3 攻击e5，出子。",
+                    "2...Nc6 保护e5。",
+                    "3.Bc4 意大利开局成型。",
+                    "3...Nf6 攻击e4。",
+                    "4.d3 Giuoco Pianissimo。",
+                    "4...Bc5 对称出象。",
+                    "5.c3 准备扩展。",
+                    "5...a6! 正确！提前为象预留a7退路，避免被b4-a5夹击。"
+                ]
+            },
+            dp1_mistake: {
+                title: "决策点1错误：5...d6",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "5...d6 是战略错误！黑方黑格象会被锁死，后翼空间严重不足。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "c3", "d6", "a4", "a6", "b4", "Ba7", "a5"],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称应对。",
+                    "2.Nf3 攻击e5，出子。",
+                    "2...Nc6 保护e5。",
+                    "3.Bc4 意大利开局成型。",
+                    "3...Nf6 攻击e4。",
+                    "4.d3 Giuoco Pianissimo。",
+                    "4...Bc5 对称出象。",
+                    "5.c3 准备扩展。",
+                    "5...d6? 战略错误！没有先下a6。",
+                    "6.a4 白方准备后翼扩展。",
+                    "6...a6 现在才下a6已经太晚了。",
+                    "7.b4 白方开始扩展！",
+                    "7...Ba7 象被迫退到角落。",
+                    "8.a5! 锁死后翼！黑方黑格象被困，长期被动。"
+                ]
+            },
+            dp2_variation: {
+                title: "决策点2变例：6...O-O",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "6...O-O 先王车易位是常见选择，但需要警惕随后d6造成的象钉住问题。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "c3", "a6", "a4", "O-O"],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称应对。",
+                    "2.Nf3 攻击e5，出子。",
+                    "2...Nc6 保护e5。",
+                    "3.Bc4 意大利开局成型。",
+                    "3...Nf6 攻击e4。",
+                    "4.d3 Giuoco Pianissimo。",
+                    "4...Bc5 对称出象。",
+                    "5.c3 准备扩展。",
+                    "5...a6 正确的预防措施。",
+                    "6.a4 准备后翼扩展。",
+                    "6...O-O 先王车易位，这是常见的变例选择。"
+                ]
+            },
+            dp2_mistake: {
+                title: "决策点2错误：O-O后d6 (Bg5攻击)",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "先王车易位后立即下d6，会遭到Bg5的强力攻击！王翼被打开，黑王遭到直接进攻。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "c3", "a6", "a4", "O-O", "O-O", "d6", "Bg5", "h6", "Bh4", "g5", "Nxg5", "hxg5", "Bxg5"],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称应对。",
+                    "2.Nf3 攻击e5，出子。",
+                    "2...Nc6 保护e5。",
+                    "3.Bc4 意大利开局成型。",
+                    "3...Nf6 攻击e4。",
+                    "4.d3 Giuoco Pianissimo。",
+                    "4...Bc5 对称出象。",
+                    "5.c3 准备扩展。",
+                    "5...a6 预防a4-b4-a5。",
+                    "6.a4 准备后翼扩展。",
+                    "6...O-O 先王车易位。",
+                    "7.O-O 白王也安全。",
+                    "7...d6? 原则错误！这允许Bg5攻击。",
+                    "8.Bg5! 钉住f6马！攻击开始。",
+                    "8...h6 试图驱赶象。",
+                    "9.Bh4 保持压力。",
+                    "9...g5? 被迫推兵，但这削弱了王翼。",
+                    "10.Nxg5! 牺牲马打开王翼！",
+                    "10...hxg5 被迫吃马。",
+                    "11.Bxg5 王翼完全暴露，白方获得强大攻势！"
+                ]
+            },
+            dp3_correct: {
+                title: "决策点3正确：9...Ne7",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "9...Ne7 为Ng6-f4/d3创造条件，准备反击。这是正确的马路转移。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "c3", "a6", "a4", "d6", "O-O", "O-O", "h3", "Ba7", "b4", "Ne7"],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称应对。",
+                    "2.Nf3 攻击e5，出子。",
+                    "2...Nc6 保护e5。",
+                    "3.Bc4 意大利开局成型。",
+                    "3...Nf6 攻击e4。",
+                    "4.d3 Giuoco Pianissimo。",
+                    "4...Bc5 对称出象。",
+                    "5.c3 准备扩展。",
+                    "5...a6 预防夹击。",
+                    "6.a4 准备后翼扩展。",
+                    "6...d6 巩固中心。",
+                    "7.O-O 白王安全。",
+                    "7...O-O 黑王也安全。",
+                    "8.h3 为象创造退路。",
+                    "8...Ba7 象退到对角线深处。",
+                    "9.b4 白方后翼扩展。",
+                    "9...Ne7! 正确！马准备转移到g6，再跳f4或h4寻求反击。"
+                ]
+            },
+            dp3_mistake: {
+                title: "决策点3错误：9...d5?",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "9...d5? 是战术错误！黑方中心不稳，马会被驱赶。c3兵虽弱，但立即d5缺乏充分支持。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "c3", "a6", "a4", "d6", "O-O", "O-O", "h3", "Ba7", "b4", "d5", "exd5", "Nxd5", "b5"],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称应对。",
+                    "2.Nf3 攻击e5，出子。",
+                    "2...Nc6 保护e5。",
+                    "3.Bc4 意大利开局成型。",
+                    "3...Nf6 攻击e4。",
+                    "4.d3 Giuoco Pianissimo。",
+                    "4...Bc5 对称出象。",
+                    "5.c3 准备扩展。",
+                    "5...a6 预防夹击。",
+                    "6.a4 准备后翼扩展。",
+                    "6...d6 巩固中心。",
+                    "7.O-O 白王安全。",
+                    "7...O-O 黑王也安全。",
+                    "8.h3 为象创造退路。",
+                    "8...Ba7 象退到对角线深处。",
+                    "9.b4 白方后翼扩展。",
+                    "9...d5? 战术错误！过早冲击中心。",
+                    "10.exd5 白方吃兵。",
+                    "10...Nxd5 黑马吃回。",
+                    "11.b5! 驱赶c6马！黑方中心不稳，马被驱赶，白方获得优势。"
+                ]
+            },
+            dp4_correct: {
+                title: "决策点4正确：14...Nf4!",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "14...Nf4! 制造王翼威胁，尝试牺牲打开h线获取反击。这是黑方唯一的活跃机会！",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "c3", "a6", "a4", "d6", "O-O", "O-O", "h3", "Ba7", "b4", "Ne7", "Bb3", "Ng6", "d4", "c6", "Re1", "Re8", "Bb2", "Be6", "c4", "Nf4"],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称应对。",
+                    "2.Nf3 攻击e5，出子。",
+                    "2...Nc6 保护e5。",
+                    "3.Bc4 意大利开局成型。",
+                    "3...Nf6 攻击e4。",
+                    "4.d3 Giuoco Pianissimo。",
+                    "4...Bc5 对称出象。",
+                    "5.c3 准备扩展。",
+                    "5...a6 预防夹击。",
+                    "6.a4 准备后翼扩展。",
+                    "6...d6 巩固中心。",
+                    "7.O-O 白王安全。",
+                    "7...O-O 黑王也安全。",
+                    "8.h3 为象创造退路。",
+                    "8...Ba7 象退到对角线深处。",
+                    "9.b4 白方后翼扩展。",
+                    "9...Ne7 马准备转移。",
+                    "10.Bb3 保护象。",
+                    "10...Ng6 马到位，准备跳跃。",
+                    "11.d4 白方推进中心。",
+                    "11...c6 巩固中心。",
+                    "12.Re1 车占据e线。",
+                    "12...Re8 对抗e线。",
+                    "13.Bb2 象发展到长对角线。",
+                    "13...Be6 发展最后一个轻子。",
+                    "14.c4 白方获得巨大空间。",
+                    "14...Nf4! 正确的反击！马跳f4，威胁王翼，这是黑方唯一的活跃机会！"
+                ]
+            },
+            dp4_mistake: {
+                title: "决策点4错误：14...exd4",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "14...exd4 是战略错误！交换只会强化白方据点d5与中心控制，黑方失去唯一反击窗口。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "c3", "a6", "a4", "d6", "O-O", "O-O", "h3", "Ba7", "b4", "Ne7", "Bb3", "Ng6", "d4", "c6", "Re1", "Re8", "Bb2", "Be6", "c4", "exd4", "Nxd4", "Bd7", "Bc2"],
+                steps: [
+                    "1.e4 白方占据中心。",
+                    "1...e5 黑方对称应对。",
+                    "2.Nf3 攻击e5，出子。",
+                    "2...Nc6 保护e5。",
+                    "3.Bc4 意大利开局成型。",
+                    "3...Nf6 攻击e4。",
+                    "4.d3 Giuoco Pianissimo。",
+                    "4...Bc5 对称出象。",
+                    "5.c3 准备扩展。",
+                    "5...a6 预防夹击。",
+                    "6.a4 准备后翼扩展。",
+                    "6...d6 巩固中心。",
+                    "7.O-O 白王安全。",
+                    "7...O-O 黑王也安全。",
+                    "8.h3 为象创造退路。",
+                    "8...Ba7 象退到对角线深处。",
+                    "9.b4 白方后翼扩展。",
+                    "9...Ne7 马准备转移。",
+                    "10.Bb3 保护象。",
+                    "10...Ng6 马到位。",
+                    "11.d4 白方推进中心。",
+                    "11...c6 巩固中心。",
+                    "12.Re1 车占据e线。",
+                    "12...Re8 对抗e线。",
+                    "13.Bb2 象发展到长对角线。",
+                    "13...Be6 发展最后一个轻子。",
+                    "14.c4 白方获得巨大空间。",
+                    "14...exd4? 战略错误！交换中心兵。",
+                    "15.Nxd4 白方马占据d4强格。",
+                    "15...Bd7 象被迫退让。",
+                    "16.Bc2 白方获得决定性空间优势，黑方完全被压制，所有子力受限，失去反击机会。"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            var startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+            window.ChessApp.init('myBoard', startFen);
+            
+            // 默认加载主线
+            selectVariation('main_line');
+
+            // ========== 自动验证脚本 ==========
+            console.log('开始验证所有变例的走法合法性...\n');
+            var totalVariations = Object.keys(VARIATIONS).length;
+            var passedCount = 0;
+            var failedCount = 0;
+
+            Object.keys(VARIATIONS).forEach(function(key) {
+                var v = VARIATIONS[key];
+                var g = new Chess(v.fen);
+                var allValid = true;
+                
+                // 检查 moves 和 steps 长度匹配
+                if (v.moves.length !== v.steps.length) {
+                    console.error('[' + key + '] 数据严重错误: moves(' + v.moves.length + ') != steps(' + v.steps.length + ')');
+                    failedCount++;
+                    return;
+                }
+                
+                for (var i = 0; i < v.moves.length; i++) {
+                    var moveResult = g.move(v.moves[i]);
+                    if (!moveResult) {
+                        console.error('[' + key + '] 第' + (i+1) + '步无效: ' + v.moves[i]);
+                        console.error('   当前FEN: ' + g.fen());
+                        allValid = false;
+                        failedCount++;
+                        return;
+                    }
+                }
+                
+                if (allValid) {
+                    console.log('[' + key + '] 验证通过 (' + v.moves.length + '步)');
+                    passedCount++;
+                }
+            });
+
+            console.log('\n========== 验证报告 ==========');
+            console.log('总变例数: ' + totalVariations);
+            console.log('通过: ' + passedCount);
+            console.log('失败: ' + failedCount);
+            console.log('==============================\n');
+        });
+    </script>
+
+</body>
+
+</html>
