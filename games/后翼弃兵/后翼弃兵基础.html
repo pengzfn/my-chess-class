@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后翼弃兵基础 - 交换变例</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <script src="../../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="../后翼弃兵-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回目录
+            </a>
+            <span class="nav-title">后翼弃兵基础 - 交换变例 (ECO D35)</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>♟️ 后翼弃兵 · 交换变例</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>主线学习</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line', this)">主线：1.d4 到 4.cxd5 exd5</button>
+                <button class="variation-btn" onclick="selectVariation('full_main_line', this)">完整主线：加入 5.Bg5 6.e3</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>决策点 1: 4...exd5 后</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp1_bg5', this)">✓ 5.Bg5 (主线)</button>
+                <button class="variation-btn" onclick="selectVariation('dp1_e3', this)">○ 5.e3 (稳健变例)</button>
+                <button class="variation-btn" onclick="selectVariation('dp1_nf3', this)">○ 5.Nf3 (自然发展)</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp1_bf4_mistake', this)">✗ 5.Bf4? (原则错误)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>决策点 2: 5.Bg5 Be7 后</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp2_e3', this)">✓ 6.e3 (主线)</button>
+                <button class="variation-btn" onclick="selectVariation('dp2_qc2', this)">○ 6.Qc2 (Q+B 电池)</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp2_nf3_mistake', this)">✗ 6.Nf3? (战略错误)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>少数兵进攻计划</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('minority_attack', this)">少数兵进攻：Rb1-b4-b5</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>后翼弃兵拒弃式 · 交换变例</h3>
+                <p>这是后翼弃兵最经典的变例之一。白方通过早期交换中心兵，形成 Carlsbad 兵型结构，然后实施「少数兵进攻」策略。</p>
+                <p><strong>核心学习目标：</strong></p>
+                <ul>
+                    <li>理解 Carlsbad 兵型结构的战略意义</li>
+                    <li>掌握白方少数兵进攻 (b4-b5) 计划</li>
+                    <li>学习限制黑方浅色象的关键技巧</li>
+                    <li>识别常见的原则性错误</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 构建步骤说明的辅助函数
+        function buildSteps(moves, startMoveNumber, commentsByPlyIndex) {
+            var base = Math.max(1, startMoveNumber || 1);
+            var comments = commentsByPlyIndex || {};
+            return moves.map(function (san, idx) {
+                var fullMove = base + Math.floor(idx / 2);
+                var prefix = (idx % 2 === 0) ? (fullMove + '.') : (fullMove + '...');
+                var comment = comments[idx] ? (' ' + comments[idx]) : '';
+                return prefix + san + comment;
+            });
+        }
+
+        var START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+        // 主线走法：1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.cxd5 exd5
+        var MAIN_LINE_MOVES = ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5"];
+
+        // 完整主线：加入 5.Bg5 Be7 6.e3
+        var FULL_MAIN_LINE_MOVES = ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5", "Bg5", "Be7", "e3"];
+
+        // DP1: 4...exd5 之后的局面 FEN
+        var DP1_FEN = "rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4";
+        // 注意：这个FEN需要验证，让我用正确的FEN
+        // 实际上在4.cxd5 exd5之后的FEN
+
+        // 少数兵进攻示例
+        var MINORITY_ATTACK_MOVES = [
+            "d4", "d5", "c4", "e6", "Nc3", "Nf6", "cxd5", "exd5",  // 主线前8步
+            "Bg5", "Be7", "e3", "c6",  // 5.Bg5 Be7 6.e3 c6
+            "Bd3", "Nbd7", "Nf3", "O-O",  // 7.Bd3 Nbd7 8.Nf3 O-O
+            "O-O", "Re8", "Rb1"  // 9.O-O Re8 10.Rb1 (准备b4-b5)
+        ];
+
+        var VARIATIONS = {
+            main_line: {
+                title: "主线：1.d4 到 4.cxd5 exd5",
+                fen: START_FEN,
+                description: "后翼弃兵拒弃式·交换变例的起始序列。白方在第4步用c4兵吃d5兵，黑方用e6兵夺回，形成经典的Carlsbad兵型结构。这是学习后翼弃兵的基础。",
+                moves: MAIN_LINE_MOVES,
+                steps: buildSteps(MAIN_LINE_MOVES, 1, {
+                    0: "（后翼弃兵开始）",
+                    1: "（黑方用d兵保护中心）",
+                    2: "（白方推c兵，攻击d5）",
+                    3: "（黑方e6，支撑d5兵）",
+                    4: "（白方发展马，准备cxd5）",
+                    5: "（黑方发展王翼马）",
+                    6: "（交换！形成Carlsbad结构）",
+                    7: "（黑方夺回，完成交换变例）"
+                })
+            },
+
+            full_main_line: {
+                title: "完整主线：5.Bg5 Be7 6.e3",
+                fen: START_FEN,
+                description: "交换变例的完整主线。5.Bg5钉住Nf6，限制黑方Bf5出象；黑方Be7应对，准备短王城堡；白方6.e3巩固中心，为Bd3和Nf3做准备。这是最标准的理论续法。",
+                moves: FULL_MAIN_LINE_MOVES,
+                steps: buildSteps(FULL_MAIN_LINE_MOVES, 1, {
+                    0: "（后翼弃兵开始）",
+                    1: "（保护中心）",
+                    2: "（攻击d5）",
+                    3: "（支撑d5）",
+                    4: "（发展马）",
+                    5: "（发展马）",
+                    6: "（交换，形成Carlsbad）",
+                    7: "（夺回）",
+                    8: "（关键！钉住Nf6，限制Bf5）",
+                    9: "（打破钉马，准备O-O）",
+                    10: "（完成发展，为Bd3铺路）"
+                })
+            },
+
+            dp1_bg5: {
+                title: "DP①: 5.Bg5 (主线)",
+                fen: START_FEN,
+                description: "决策点1的最佳选择。5.Bg5钉住Nf6马，同时限制黑方...Bf5的发展计划。这是交换变例中白方争取优势的核心思路——限制黑方浅色象的活动，因为黑方的浅色象在这个结构中是「问题象」。",
+                moves: MAIN_LINE_MOVES.concat(["Bg5"]),
+                steps: buildSteps(MAIN_LINE_MOVES.concat(["Bg5"]), 1, {
+                    6: "（交换，形成Carlsbad）",
+                    7: "（黑方夺回）",
+                    8: "（主线！钉马限制Bf5发展）"
+                })
+            },
+
+            dp1_e3: {
+                title: "DP①: 5.e3 (稳健变例)",
+                fen: START_FEN,
+                description: "稳健的发展方式。5.e3为Bd3和Bf4做准备，是一种灵活的走法。虽然不如5.Bg5激进，但保持了更多的战略弹性。适合喜欢稳健局面的棋手。",
+                moves: MAIN_LINE_MOVES.concat(["e3"]),
+                steps: buildSteps(MAIN_LINE_MOVES.concat(["e3"]), 1, {
+                    6: "（交换，形成Carlsbad）",
+                    7: "（黑方夺回）",
+                    8: "（稳健！为Bd3/Bf4做准备）"
+                })
+            },
+
+            dp1_nf3: {
+                title: "DP①: 5.Nf3 (自然发展)",
+                fen: START_FEN,
+                description: "自然的发展走法，但灵活性略低于5.Bg5或5.e3。5.Nf3不能有效限制黑方...Bf5的计划。在现代理论中，这被认为不是最精确的选择。",
+                moves: MAIN_LINE_MOVES.concat(["Nf3"]),
+                steps: buildSteps(MAIN_LINE_MOVES.concat(["Nf3"]), 1, {
+                    6: "（交换，形成Carlsbad）",
+                    7: "（黑方夺回）",
+                    8: "（自然发展，但灵活性较低）"
+                })
+            },
+
+            dp1_bf4_mistake: {
+                title: "DP①: 5.Bf4? (原则错误)",
+                fen: START_FEN,
+                description: "这是一个原则性错误！5.Bf4?允许黑方5...Bd6轻松解决浅色象问题。黑方可以用Bd6攻击f4象，迫使交换或撤退，从而无代价地完成发展。这违反了交换变例的核心战略——白方应该限制黑方浅色象的活动。",
+                moves: MAIN_LINE_MOVES.concat(["Bf4", "Bd6"]),
+                steps: buildSteps(MAIN_LINE_MOVES.concat(["Bf4", "Bd6"]), 1, {
+                    6: "（交换，形成Carlsbad）",
+                    7: "（黑方夺回）",
+                    8: "（原则错误！象过早出动）",
+                    9: "（反击！黑方轻松解决浅色象问题）"
+                })
+            },
+
+            dp2_e3: {
+                title: "DP②: 6.e3 (主线)",
+                fen: START_FEN,
+                description: "决策点2的标准主线。5.Bg5 Be7之后，6.e3完成发展准备，为Bd3和Nf3铺路。这是最稳健、最经典的续法，平衡了发展速度和结构稳定性。",
+                moves: MAIN_LINE_MOVES.concat(["Bg5", "Be7", "e3"]),
+                steps: buildSteps(MAIN_LINE_MOVES.concat(["Bg5", "Be7", "e3"]), 1, {
+                    6: "（交换，形成Carlsbad）",
+                    7: "（黑方夺回）",
+                    8: "（钉马，限制Bf5）",
+                    9: "（打破钉马威胁）",
+                    10: "（主线！完成发展准备）"
+                })
+            },
+
+            dp2_qc2: {
+                title: "DP②: 6.Qc2 (Q+B 电池)",
+                fen: START_FEN,
+                description: "一种有趣的变例。6.Qc2建立皇后+象的电池，继续限制黑方...Bf5的可能性。虽然不如6.e3常见，但在某些情况下可以产生不同的局面特征。",
+                moves: MAIN_LINE_MOVES.concat(["Bg5", "Be7", "Qc2"]),
+                steps: buildSteps(MAIN_LINE_MOVES.concat(["Bg5", "Be7", "Qc2"]), 1, {
+                    6: "（交换，形成Carlsbad）",
+                    7: "（黑方夺回）",
+                    8: "（钉马，限制Bf5）",
+                    9: "（打破钉马威胁）",
+                    10: "（建立Q+B电池，继续限制Bf5）"
+                })
+            },
+
+            dp2_nf3_mistake: {
+                title: "DP②: 6.Nf3? (战略错误)",
+                fen: START_FEN,
+                description: "战略错误！6.Nf3?在这个时机允许黑方6...Bf5顺利解放浅色象。一旦黑方的Bf5出象，黑方就完成了关键的发展任务，局面趋于均衡。白方失去了交换变例的长期优势。",
+                moves: MAIN_LINE_MOVES.concat(["Bg5", "Be7", "Nf3", "Bf5"]),
+                steps: buildSteps(MAIN_LINE_MOVES.concat(["Bg5", "Be7", "Nf3", "Bf5"]), 1, {
+                    6: "（交换，形成Carlsbad）",
+                    7: "（黑方夺回）",
+                    8: "（钉马，限制Bf5）",
+                    9: "（打破钉马威胁）",
+                    10: "（战略错误！马过早发展）",
+                    11: "（黑方成功！浅色象解放）"
+                })
+            },
+
+            minority_attack: {
+                title: "少数兵进攻：Rb1-b4-b5",
+                fen: START_FEN,
+                description: "白方的核心战略计划——少数兵进攻。通过Rb1、b4、b5，白方用后翼的两个兵进攻黑方后翼的三个兵（a7、b7、c6）。目标是制造c6后退兵或d5孤兵的结构弱点。这是Carlsbad兵型中白方争取长期优势的经典方法。",
+                moves: MINORITY_ATTACK_MOVES,
+                steps: buildSteps(MINORITY_ATTACK_MOVES, 1, {
+                    6: "（交换，形成Carlsbad）",
+                    7: "（黑方夺回）",
+                    8: "（钉马）",
+                    9: "（打破钉马）",
+                    10: "（完成发展准备）",
+                    11: "（黑方巩固c6）",
+                    12: "（发展象到最佳位置）",
+                    13: "（黑方发展马）",
+                    14: "（发展王翼马）",
+                    15: "（黑方短王城堡）",
+                    16: "（白方短王城堡）",
+                    17: "（黑方准备中心反击）",
+                    18: "（关键！车到b1线，准备b4-b5）"
+                })
+            }
+        };
+
+        function selectVariation(key, clickedElement) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+                
+                // 更新按钮状态
+                document.querySelectorAll('.variation-btn').forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                
+                // 如果有点击的元素，添加active类
+                if (clickedElement) {
+                    clickedElement.classList.add('active');
+                } else {
+                    // 初始化时，找到对应的按钮并激活
+                    document.querySelectorAll('.variation-btn').forEach(function(btn) {
+                        if (btn.onclick && btn.onclick.toString().includes("'" + key + "'")) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        $(document).ready(function () {
+            window.ChessApp.init('myBoard', START_FEN);
+            selectVariation('main_line');
+
+            // 验证所有变例
+            console.log('🔍 开始验证所有变例...');
+            var totalVariations = Object.keys(VARIATIONS).length;
+            var passedCount = 0;
+
+            Object.keys(VARIATIONS).forEach(function (key) {
+                var v = VARIATIONS[key];
+                var g = new Chess(v.fen);
+                var allValid = true;
+
+                // 检查 moves 和 steps 长度匹配
+                if (v.moves.length !== v.steps.length) {
+                    console.error('❌ [' + key + '] moves(' + v.moves.length + ') !== steps(' + v.steps.length + ')');
+                    return;
+                }
+
+                // 验证每步走法
+                for (var i = 0; i < v.moves.length; i++) {
+                    var moveResult = g.move(v.moves[i]);
+                    if (!moveResult) {
+                        console.error('❌ [' + key + '] 第' + (i + 1) + '步无效: ' + v.moves[i]);
+                        console.error('   当前FEN: ' + g.fen());
+                        allValid = false;
+                        return;
+                    }
+                }
+
+                if (allValid) {
+                    console.log('✓ [' + key + '] 验证通过 (' + v.moves.length + '步)');
+                    passedCount++;
+                }
+            });
+
+            console.log('\n========== 验证报告 ==========');
+            console.log('总变例数: ' + totalVariations);
+            console.log('通过: ' + passedCount);
+            console.log('失败: ' + (totalVariations - passedCount));
+            console.log('==============================');
+        });
+    </script>
+
+</body>
+
+</html>
