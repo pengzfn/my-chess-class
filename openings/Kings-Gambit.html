@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王翼弃兵（King's Gambit）- ECO C30-C39</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <span class="nav-title">王翼弃兵（King's Gambit）</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>👑 王翼弃兵</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>接受弃兵（Accepted）</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line')">主线：经典3.Nf3 g5</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('muzio_gambit')">穆奇奥弃兵（浪漫牺牲）</button>
+                <button class="variation-btn" onclick="selectVariation('bishops_gambit')">主教弃兵（3.Bc4）</button>
+                <button class="variation-btn" onclick="selectVariation('fischer_defense')">费舍尔防御（3...d6）</button>
+                <button class="variation-btn" onclick="selectVariation('schallopp_defense')">沙洛普防御（3...Nf6）</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>拒绝弃兵（Declined）</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('falkbeer_countergambit')">法尔克贝尔反弃兵</button>
+                <button class="variation-btn" onclick="selectVariation('classical_declined')">经典拒绝（2...Bc5）</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>王翼弃兵（King's Gambit）</h3>
+                <p><strong>ECO编码：</strong>C30-C39</p>
+                <p><strong>核心思路：</strong>白方通过 2.f4 牺牲f兵，目的是打开f线、争夺中心并制造王翼攻势。这是一个拥有500年历史的浪漫开局，在19世纪极受欢迎。</p>
+                <p><strong>风险与机会：</strong>白方削弱王安全和长对角线，但可获得快速发展和攻击机会。黑方可选择接受弃兵（2...exf4）或拒绝弃兵（如 2...d5 Falkbeer反弃兵）。</p>
+                <p><strong>现代评价：</strong>虽然顶级棋手在高风险对局中较少使用，但它仍是一个可行且富有战术威力的开局，特别适合快棋和实战心理战。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - 经过 Chess.js 逻辑校验（Phase 1 100%通过）
+        const VARIATIONS = {
+            main_line: {
+                title: "王翼弃兵接受 - 经典变例（3.Nf3 g5 4.Bc4）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "这是王翼弃兵接受后最流行和可靠的走法。3.Nf3 防止黑后Qh4+的麻烦，并准备d4占据中心。黑方3...g5是经典应对，巩固f4兵并准备...g4赶马。",
+                moves: [
+                    "e4", "e5", "f4", "exf4", "Nf3", "g5", "Bc4", "g4", "O-O", "Bg7", "d4", "d6", "c3", "Nc6", "Qb3"
+                ],
+                steps: [
+                    "1.e4 白方推进中心兵，控制中心",
+                    "1...e5 黑方应对中心兵，对称布局",
+                    "2.f4 白方牺牲f兵（王翼弃兵），目的是打开f线并争夺中心",
+                    "2...exf4 黑方接受弃兵，进入王翼弃兵接受（KGA）",
+                    "3.Nf3 白方出马，这是最流行的走法：防止...Qh4+，并准备d4",
+                    "3...g5 黑方巩固f4兵（经典防御），准备...g4赶马",
+                    "4.Bc4 白方出象指向f7弱点，准备王翼易位",
+                    "4...g4 黑方推进g兵赶马，威胁gxf3",
+                    "5.O-O 白方直接王翼易位，激活f1车",
+                    "5...Bg7 黑方出象到长对角线",
+                    "6.d4 白方推进d兵占据中心",
+                    "6...d6 黑方推进d兵支持中心",
+                    "7.c3 白方推进c兵准备Qb3",
+                    "7...Nc6 黑方出马发展子力",
+                    "8.Qb3 白方出后施压f7和b7"
+                ]
+            },
+            
+            muzio_gambit: {
+                title: "穆奇奥弃兵（Muzio Gambit）- 浪漫牺牲",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "这是王翼弃兵中最浪漫和危险的变例！白方在第5步直接王翼易位，牺牲马以换取超快发展和f线压力。虽然客观评价偏可疑，但实战心理杀伤力极大。",
+                moves: [
+                    "e4", "e5", "f4", "exf4", "Nf3", "g5", "Bc4", "g4", "O-O", "gxf3", "Qxf3", "Qf6", "e5", "Qxe5", "d3", "Bh6", "Nc3", "Ne7", "Bd2"
+                ],
+                steps: [
+                    "1.e4 白方推进中心兵",
+                    "1...e5 黑方应对中心兵",
+                    "2.f4 白方牺牲f兵（王翼弃兵）",
+                    "2...exf4 黑方接受弃兵",
+                    "3.Nf3 白方出马防止Qh4+",
+                    "3...g5 黑方g5巩固f4兵",
+                    "4.Bc4 白方出象指向f7",
+                    "4...g4 黑方g4赶马",
+                    "5.O-O 白方王翼易位！直接牺牲马（穆奇奥弃兵的标志）",
+                    "5...gxf3 黑方吃马",
+                    "6.Qxf3 白方后吃回，控制f线",
+                    "6...Qf6 黑方后防守f4并准备换后",
+                    "7.e5 白方推进e5打开对角线",
+                    "7...Qxe5 黑方后吃e5兵",
+                    "8.d3 白方d3支持中心",
+                    "8...Bh6 黑方出象到h6",
+                    "9.Nc3 白方出马发展",
+                    "9...Ne7 黑方出马到e7",
+                    "10.Bd2 白方出象完成发展"
+                ]
+            },
+            
+            bishops_gambit: {
+                title: "主教弃兵（Bishop's Gambit, 3.Bc4）- 费舍尔偏好",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "这是费舍尔（Bobby Fischer）偏好的走法。白方直接出象允许黑后将军，但后续Nf3可赢回节奏。比3.Nf3更冒险，但给黑方更多强硬回应的机会。",
+                moves: [
+                    "e4", "e5", "f4", "exf4", "Bc4", "Qh4+", "Kf1", "d6", "Nf3", "Qh5", "d4", "g5", "h4", "Bg7"
+                ],
+                steps: [
+                    "1.e4 白方推进中心兵",
+                    "1...e5 黑方应对中心兵",
+                    "2.f4 白方牺牲f兵（王翼弃兵）",
+                    "2...exf4 黑方接受弃兵",
+                    "3.Bc4 白方直接出象（主教弃兵），允许黑后将军",
+                    "3...Qh4+ 黑方后将军（这是主教弃兵的特点）",
+                    "4.Kf1 白方王走f1，牺牲易位权",
+                    "4...d6 黑方d6支持中心",
+                    "5.Nf3 白方出马，同时攻击后",
+                    "5...Qh5 黑方后退到h5",
+                    "6.d4 白方d4占据中心",
+                    "6...g5 黑方g5巩固f4兵",
+                    "7.h4 白方h4打击g5兵",
+                    "7...Bg7 黑方出象到长对角线"
+                ]
+            },
+            
+            fischer_defense: {
+                title: "费舍尔防御（Fischer Defense, 3...d6）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: '费舍尔在1961年宣称此线破解了王翼弃兵（A Bust to the King\'s Gambit）。黑方3...d6控制e5格，比经典3...g5更稳健。现代评价：黑方胜率50%，优于其他应对。',
+                moves: [
+                    "e4", "e5", "f4", "exf4", "Nf3", "d6", "d4", "g5", "h4", "g4", "Ng1", "Bh6", "Nc3", "Nf6", "Bxf4", "Bxf4", "Qd2"
+                ],
+                steps: [
+                    "1.e4 白方推进中心兵",
+                    "1...e5 黑方应对中心兵",
+                    "2.f4 白方牺牲f兵",
+                    "2...exf4 黑方接受弃兵",
+                    "3.Nf3 白方出马",
+                    "3...d6 黑方d6！费舍尔防御的关键走法，控制e5格",
+                    "4.d4 白方d4占据中心",
+                    "4...g5 黑方g5巩固f4兵（现在e5被控制，白马无法跳入）",
+                    "5.h4 白方h4打击g5兵",
+                    "5...g4 黑方g4赶马",
+                    "6.Ng1 白方马退回（被迫）",
+                    "6...Bh6 黑方出象到h6",
+                    "7.Nc3 白方出马到c3",
+                    "7...Nf6 黑方出马到f6",
+                    "8.Bxf4 白方象吃f4兵",
+                    "8...Bxf4 黑方象吃回",
+                    "9.Qd2 白方后d2发展"
+                ]
+            },
+            
+            schallopp_defense: {
+                title: "沙洛普防御（Schallopp Defense, 3...Nf6）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方优先发展子力并准备...d5反击中心。白方常用4.e5赶马，黑方可选择Nh5（保护f4兵）、Ne4或Nd5。",
+                moves: [
+                    "e4", "e5", "f4", "exf4", "Nf3", "Nf6", "e5", "Nh5", "d4", "d5", "Bxf4", "Nxf4", "Nc3", "Be6"
+                ],
+                steps: [
+                    "1.e4 白方推进中心兵",
+                    "1...e5 黑方应对中心兵",
+                    "2.f4 白方牺牲f兵",
+                    "2...exf4 黑方接受弃兵",
+                    "3.Nf3 白方出马",
+                    "3...Nf6 黑方出马到f6（沙洛普防御）",
+                    "4.e5 白方e5推进赶马",
+                    "4...Nh5 黑方马到h5",
+                    "5.d4 白方d4占据中心",
+                    "5...d5 黑方d5打击e5兵",
+                    "6.Bxf4 白方象吃f4兵",
+                    "6...Nxf4 黑方马吃回",
+                    "7.Nc3 白方出马到c3",
+                    "7...Be6 黑方出象到e6"
+                ]
+            },
+            
+            falkbeer_countergambit: {
+                title: "法尔克贝尔反弃兵（Falkbeer Countergambit, 2...d5）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方用中心反击而非接受弃兵。重要陷阱：3.fxe5?? Qh4+ 4.g3 Qxe4+ 叉王车！正确走法是3.exd5接受或3.Nf3发展。ECO: C31-C32。",
+                moves: [
+                    "e4", "e5", "f4", "d5", "exd5", "e4", "d3", "Nf6", "dxe4", "Nxe4", "Nf3", "Bc5", "Be2", "Bf5"
+                ],
+                steps: [
+                    "1.e4 白方推进中心兵",
+                    "1...e5 黑方应对中心兵",
+                    "2.f4 白方f4牺牲兵",
+                    "2...d5 黑方d5！反弃兵，打击中心而非接受弃兵",
+                    "3.exd5 白方吃d5兵",
+                    "3...e4 黑方e4推进，反击",
+                    "4.d3 白方d3打击e4兵",
+                    "4...Nf6 黑方出马到f6",
+                    "5.dxe4 白方吃e4兵",
+                    "5...Nxe4 黑方马吃回",
+                    "6.Nf3 白方出马到f3",
+                    "6...Bc5 黑方出象到c5",
+                    "7.Be2 白方出象到e2",
+                    "7...Bf5 黑方出象到f5"
+                ]
+            },
+            
+            classical_declined: {
+                title: "经典拒绝（Classical Declined, 2...Bc5）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "黑方拒绝弃兵，直接出象到强势位置。避开了接受弃兵后的复杂战术，选择更稳健的阵地战路线。",
+                moves: [
+                    "e4", "e5", "f4", "Bc5", "Nf3", "d6", "c3", "Nf6", "fxe5", "dxe5", "d4", "exd4", "cxd4", "Bb6"
+                ],
+                steps: [
+                    "1.e4 白方推进中心兵",
+                    "1...e5 黑方应对中心兵",
+                    "2.f4 白方f4牺牲兵",
+                    "2...Bc5 黑方Bc5拒绝弃兵，出象到强势位置",
+                    "3.Nf3 白方出马到f3",
+                    "3...d6 黑方d6支持e5",
+                    "4.c3 白方c3准备d4",
+                    "4...Nf6 黑方出马到f6",
+                    "5.fxe5 白方吃e5兵",
+                    "5...dxe5 黑方吃回",
+                    "6.d4 白方d4占据中心",
+                    "6...exd4 黑方吃d4兵",
+                    "7.cxd4 白方c兵吃回",
+                    "7...Bb6 黑方象退到b6"
+                ]
+            }
+        };
+        
+        // selectVariation 函数 - 被按钮 onclick 调用
+        function selectVariation(variationKey) {
+            if (!VARIATIONS[variationKey]) {
+                console.error('Variation not found: ' + variationKey);
+                return;
+            }
+            if (typeof ChessApp === 'undefined') {
+                console.error('ChessApp not initialized');
+                return;
+            }
+            ChessApp.loadVariation(VARIATIONS[variationKey]);
+        }
+        
+        // 初始化 - 页面加载完成后
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化棋盘 - 关键！必须等待 Chess.js 和 Chessboard.js 加载完毕
+            if (typeof ChessApp !== 'undefined') {
+                ChessApp.init('myBoard', 'start');
+            } else {
+                console.error('ChessApp not available');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
