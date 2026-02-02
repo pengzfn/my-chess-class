@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王的出击：残局中的分阶段激活 - King Activity Masterclass</title>
+    
+    <!-- 外部库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    
+    <!-- 本地资源 -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧边栏: 变例列表 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>课程变例</h3>
+                <a href="../index.html" style="color: #8b9bb4; text-decoration: none; font-size: 0.9em;">&larr; 返回首页</a>
+            </div>
+            <div class="sidebar-content">
+                <div class="category-header" onclick="toggleSidebarCategory(this)">
+                    <span>核心课程</span>
+                    <span class="arrow arrow-open">▶</span>
+                </div>
+                <div class="variation-list">
+                    <button class="variation-btn" onclick="selectVariation('q1')">1. 关键格：国王绕路取胜 (King Activity 1)</button>
+                    <button class="variation-btn" onclick="selectVariation('q2')">2. 用国王制造通路兵 (Activity 2)</button>
+                    <button class="variation-btn" onclick="selectVariation('q3')">3. 轻格进军：国王去后翼 (Activity 3)</button>
+                    <button class="variation-btn" onclick="selectVariation('q4')">4. 活跃国王带来的战术 (Activity 4)</button>
+                    <button class="variation-btn" onclick="selectVariation('q5')">5. 国王过载：赢子路线 (Activity 5)</button>
+                </div>
+                
+                <div class="category-header" onclick="toggleSidebarCategory(this)">
+                    <span>提示</span>
+                    <span class="arrow arrow-open">▶</span>
+                </div>
+                <div class="variation-list">
+                    <div style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">
+                        <p><strong>本页来源：</strong>Chess.com Lessons「The Active King in the Endgame」（Anna Rudolf）。</p>
+                        <p>每个变例都从 Chess.com 题目中的 <code>FEN</code> 起始位置开始，走法为题目主线（可用 chess.js 验证）。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 中间: 棋盘区 -->
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">↺ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">▶ 下一步</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">⇅ 翻转</button>
+            </div>
+            <div style="margin-top: 15px; text-align: center; color: #666;">
+                <small>源自 Anna Rudolf 的 Chess.com Lessons：The Active King in the Endgame</small>
+            </div>
+        </div>
+        
+        <!-- 右侧: 提示信息 -->
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>课程介绍</h3>
+                <p>本课讲解在残局中如何激活国王 (King Activity)。</p>
+                <p>本页的每个“课程变例”对应 Chess.com 课程里的一个互动题目：从题目给定的 FEN 开始，按主线走法推进。</p>
+                <div class="alert alert-info">
+                    <strong>核心概念：</strong> 王的激活不是一步到位的，每一步都要兼顾防守（限制对方）和进攻。
+                </div>
+                <p>点击左侧 <strong>"完整主线"</strong> 开始学习！</p>
+            </div>
+        </div>
+    </div>
+
+     <script>
+     // 说明：本页变例来自 Chess.com Lessons「The Active King in the Endgame」（Anna Rudolf）中嵌入的题目 PGN。
+     // 每个变例从对应题目的 FEN 开始，走法为题目主线（可被 chess.js 验证）。
+     const START_FEN = "3k4/8/8/8/6P1/8/5K2/8 w - - 0 1";
+
+     const VARIATIONS = {
+         "q1": {
+             title: "关键格：国王绕路取胜",
+             fen: "3k4/8/8/8/6P1/8/5K2/8 w - - 0 1",
+             description: "如何让国王到达兵前两格的关键格（critical squares）？",
+             moves: [
+                 "Kg3",
+                 "Ke7",
+                 "Kh4",
+                 "Kf6",
+                 "Kh5",
+                 "Kg7",
+                 "Kg5",
+                 "Kh7",
+                 "Kf6"
+             ],
+             steps: [
+                 "把国王先走到兵的一侧（远离黑王的一侧），避免被拦住。",
+                 "黑王跟上来，准备阻挡白王前进。",
+                 "继续前进，但要尽量与黑王保持距离，绕开对抗。",
+                 "黑王占据关键线路，形成阻挡。",
+                 "继续向前逼近，争取穿越阻挡。",
+                 "黑王封锁住关键格，试图不让白王到达兵前两格。",
+                 "关键：争夺对峙（opposition），为下一步突破创造条件。",
+                 "黑王让出/调整站位，但仍试图控制关键格。",
+                 "到达兵前两格的关键格：白方胜势确立。"
+             ]
+         },
+         "q2": {
+             title: "用国王制造通路兵",
+             fen: "3k4/pp6/2pr1p1p/3n1B2/P4P1P/2P2KP1/8/4R3 w - - 0 34",
+             description: "如何用国王主动出击，去吃掉 h6 兵，从而制造通路兵？",
+             moves: [
+                 "Kg4",
+                 "Nxc3",
+                 "Kh5"
+             ],
+             steps: [
+                 "国王向 h 兵方向靠近，目标是去吃掉 h6 并制造通路兵。",
+                 "黑方先吃掉 c3（削弱白方），但无法阻止白王继续渗透。",
+                 "继续追击 h6：下一步白王将吃 h6，黑王又被切断，白方胜势。"
+             ]
+         },
+         "q3": {
+             title: "轻格进军：国王去后翼",
+             fen: "5b2/7p/1pk3p1/3p1p2/1PpPpP2/n1P1P1P1/1R1K3P/r2NB3 b - - 0 41",
+             description: "Fischer 如何把国王带到后翼支援攻势？",
+             moves: [
+                 "Kb5",
+                 "Bf2",
+                 "Ka4"
+             ],
+             steps: [
+                 "国王走轻格路线去后翼，比去中心更有效。",
+                 "白方发展/调整以应对，但黑王进军计划不变。",
+                 "继续沿轻格深入后翼，黑方位置优势明显。"
+             ]
+         },
+         "q4": {
+             title: "活跃国王带来的战术",
+             fen: "8/4b2p/1p4p1/1n1p1p2/1PpPpP2/k1P1P1P1/rRK2B1P/3N4 b - - 0 47",
+             description: "当国王足够活跃时，往往可以配合战术手段赢子。",
+             moves: [
+                 "Nxc3",
+                 "Rxa2+",
+                 "Nxa2"
+             ],
+             steps: [
+                 "先手吃掉关键子（利用白方防守过载）。",
+                 "白方通过吃车并将军尝试缓解局面。",
+                 "回吃并确保不丢马：黑方多子，胜势。"
+             ]
+         },
+         "q5": {
+             title: "国王过载：赢子路线",
+             fen: "8/4b2p/1p4p1/3p1p2/1PpPpP2/k3P1P1/1RK2B1P/r2N4 b - - 0 49",
+             description: "如果对局继续，黑方如何利用白王防守过载赢得更多子力/兵？",
+             moves: [
+                 "Rxd1"
+             ],
+             steps: [
+                 "关键：先吃掉 d1 的马/要子，之后简化并赢得 b4 兵，黑方两兵优势。"
+             ]
+         }
+     };
+
+    // 初始化
+    window.addEventListener('DOMContentLoaded', function() {
+        ChessApp.init('myBoard', 'start');
+         ChessApp.loadVariation(VARIATIONS['q1']);
+     });
+
+    // 绑定侧边栏选择
+    window.selectVariation = function(key) {
+        if (VARIATIONS[key]) {
+            ChessApp.loadVariation(VARIATIONS[key]);
+            
+            // 更新按钮状态
+            $('.variation-btn').removeClass('active');
+            $(`button[onclick*="${key}"]`).addClass('active');
+        }
+    };
+    
+    // 全局切换折叠
+    window.toggleSidebarCategory = function(element) {
+        const content = element.nextElementSibling;
+        const arrow = element.querySelector('.arrow');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            arrow.classList.remove('arrow-closed');
+            arrow.classList.add('arrow-open');
+        } else {
+            content.style.display = 'none';
+            arrow.classList.remove('arrow-open');
+            arrow.classList.add('arrow-closed');
+        }
+    };
+    </script>
+</body>
+</html>

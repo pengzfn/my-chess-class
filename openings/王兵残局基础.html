@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王兵残局基础 - 关键格与对峙</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <span class="nav-title">王兵残局基础 - 关键格与对峙</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>♔ 王兵残局导航</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>基础理论</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('t_rule_intro')">1. T形关键格法则</button>
+                <button class="variation-btn" onclick="selectVariation('six_key_squares')">2. 六个关键格（5-6线兵）</button>
+                <button class="variation-btn" onclick="selectVariation('rook_pawn_exception')">3. 车兵例外（a/h兵）</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>决策训练：正确走法</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-success" onclick="selectVariation('dp1_correct')">DP1: 兑车进入获胜残局</button>
+                <button class="variation-btn text-success" onclick="selectVariation('dp2_correct')">DP2: 选择较远的关键格</button>
+                <button class="variation-btn text-success" onclick="selectVariation('dp3_correct')">DP3: 用兵吃回（保持6关键格）</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>决策训练：常见错误</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('dp1_wrong')">DP1错误: 保留车 = 和棋</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp2_wrong')">DP2错误: 走近路 = 被对峙</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp3_wrong')">DP3错误: 用王吃回 = 车兵和棋</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>防守技巧</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp4_stalemate_avoid')">DP4: 避免逼和陷阱</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('dp4_stalemate_trap')">DP4错误: 逼入逼和</button>
+                <button class="variation-btn" onclick="selectVariation('dp6_defender_principle')">DP6: 防守方原则（王在兵前）</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>王兵残局基础 - Anna Rudolf 讲座精华</h3>
+                <p>王兵残局是所有残局的基础。掌握关键格(Key Squares)、对峙(Opposition)和Zugzwang的概念，是将优势转化为胜利的关键。本课程基于 Anna Rudolf 在 Chess.com 的王兵残局系列讲座。</p>
+                <p><strong>核心概念：</strong></p>
+                <ul>
+                    <li>T形关键格法则（兵在2-4线时）</li>
+                    <li>六个关键格（兵在5-6线时）</li>
+                    <li>车兵(a/h兵)的特殊规则</li>
+                    <li>对峙与Zugzwang的应用</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 王兵残局基础 - 变例数据
+        // 基于 Anna Rudolf 讲座与标准残局理论
+        // 所有 FEN 与 moves 均经过 Chess.js 验证
+        const VARIATIONS = {
+            // =====================================================
+            // 基础理论
+            // =====================================================
+            t_rule_intro: {
+                title: "T形关键格法则（兵在2-4线）",
+                // 白王e3，白兵d4，黑王e6 - 展示d5,d6,e6三个关键格
+                fen: "8/8/4k3/8/3P4/4K3/8/8 w - - 0 1",
+                description: "当兵还没过半场（2-4线），关键格形成T形：兵前方两格的那一横排的三个格子。如果进攻方的王能占据任意一个关键格，就能保证兵升变。",
+                moves: ["Kd3", "Kd6", "Kc4", "Kc6", "d5+", "Kd6", "Kd4", "Kd7", "Kc5", "Kc7", "d6+", "Kd7", "Kd5", "Kd8", "Kc6", "Kc8", "d7+", "Kd8", "Kd6"],
+                steps: [
+                    "1.Kd3 白王向关键格d5/c5进发",
+                    "1...Kd6 黑王试图阻挡",
+                    "2.Kc4 白王迂回，瞄准c5关键格",
+                    "2...Kc6 黑王对峙",
+                    "3.d5+ 推兵将军，迫使黑王让路",
+                    "3...Kd6 黑王只能后退",
+                    "4.Kd4 白王前进",
+                    "4...Kd7 黑王继续阻挡",
+                    "5.Kc5 白王占据关键格！",
+                    "5...Kc7 黑王试图阻挡",
+                    "6.d6+ 推兵将军",
+                    "6...Kd7 被迫后退",
+                    "7.Kd5 继续保护兵",
+                    "7...Kd8 黑王退到底线",
+                    "8.Kc6 白王占据新关键格",
+                    "8...Kc8 黑王只能让路",
+                    "9.d7+ 兵推进到第7线",
+                    "9...Kd8 被迫接受",
+                    "10.Kd6 Zugzwang！黑方必须让开，兵升变"
+                ]
+            },
+
+            six_key_squares: {
+                title: "六个关键格（兵在5-6线）",
+                // 白王e4，白兵d5，黑王e7 - 展示6个关键格
+                fen: "8/4k3/8/3P4/4K3/8/8/8 w - - 0 1",
+                description: "当兵到达第5或第6线，关键格从3个增加到6个：兵前方两排共6个格子(c6,d6,e6,c7,d7,e7)。这大大增加了获胜机会。",
+                moves: ["Kd4", "Kd7", "Kc5", "Kc7", "d6+", "Kd7", "Kd5", "Kd8", "Kc6", "Kc8", "d7+", "Kd8", "Kd6"],
+                steps: [
+                    "1.Kd4 白王向关键格前进",
+                    "1...Kd7 黑王试图阻挡",
+                    "2.Kc5 占据关键格c5",
+                    "2...Kc7 黑王对峙",
+                    "3.d6+ 推兵将军迫使让路",
+                    "3...Kd7 黑王后退",
+                    "4.Kd5 白王继续控制",
+                    "4...Kd8 黑王退到底线",
+                    "5.Kc6 占据第二层关键格",
+                    "5...Kc8 黑王让开d8",
+                    "6.d7+ 兵到第7线",
+                    "6...Kd8 被迫接受",
+                    "7.Kd6 Zugzwang！兵将升变"
+                ]
+            },
+
+            rook_pawn_exception: {
+                title: "车兵例外（a/h兵无法获胜）",
+                // 白王a6，白兵b6，黑王a8 - 展示车兵和棋
+                fen: "k7/8/KP6/8/8/8/8/8 w - - 0 1",
+                description: "车兵(a线或h线的兵)是例外！它们没有T形关键格。如果防守方的王能到达角落，就是和棋——进攻方无法把它赶出来。",
+                moves: ["b7+", "Kb8", "Kb6"],
+                steps: [
+                    "1.b7+ 白方推兵将军",
+                    "1...Kb8 黑王被迫离开角落",
+                    "2.Kb6 逼和！黑王无合法走法但未被将军，和棋。这就是车兵的特殊性——边线没有额外空间，无法把黑王赶出来。"
+                ]
+            },
+
+            // =====================================================
+            // 决策训练：正确走法
+            // =====================================================
+            dp1_correct: {
+                title: "DP1正确：兑车进入获胜王兵残局",
+                // 白王d3，白车e1，白兵c4；黑王f6，黑车f8 - 车残局
+                fen: "5r2/8/5k2/8/2P5/3K4/8/4R3 w - - 0 1",
+                description: "决策点1：白方应该兑车吗？答案是肯定的！兑车后进入获胜的王兵残局，因为白王可以占据关键格。",
+                moves: ["Re6+", "Kxe6", "Kc3", "Kd6", "Kb4", "Kc6", "Ka5", "Kb7", "Kb5"],
+                steps: [
+                    "1.Re6+! 兑车是正确选择",
+                    "1...Kxe6 黑方被迫吃车",
+                    "2.Kc3 白王开始向关键格进发",
+                    "2...Kd6 黑王试图阻挡",
+                    "3.Kb4 白王走较远路线，避免直接对峙",
+                    "3...Kc6 黑王追赶",
+                    "4.Ka5 继续迂回",
+                    "4...Kb7 黑王试图挡住",
+                    "5.Kb5 白王占据关键格，获胜在望"
+                ]
+            },
+
+            dp2_correct: {
+                title: "DP2正确：选择较远的关键格路线",
+                // 白王d2，白兵c4，黑王f5
+                fen: "8/8/8/5k2/2P5/8/3K4/8 w - - 0 1",
+                description: "决策点2：白王应该走哪条路？选择离对方王更远的关键格(b5)才是正确答案。这样可以利用节奏差获得对峙优势。",
+                moves: ["Kc2", "Ke5", "Kb3", "Kd6", "Ka4", "Kc6", "Kb4", "Kb6", "c5+", "Kc7", "Kc4"],
+                steps: [
+                    "1.Kc2! 选择较远路线向b5进发",
+                    "1...Ke5 黑王试图接近",
+                    "2.Kb3 继续向b5方向",
+                    "2...Kd6 黑王追赶",
+                    "3.Ka4 迂回战术",
+                    "3...Kc6 黑王挡住直接路线",
+                    "4.Kb4 白王成功绕过",
+                    "4...Kb6 黑王对峙",
+                    "5.c5+ 推兵将军",
+                    "5...Kc7 黑王后退",
+                    "6.Kc4 白王控制关键格，准备推进"
+                ]
+            },
+
+            dp3_correct: {
+                title: "DP3正确：用兵吃回保持六个关键格",
+                // 白王c4，白兵a4，黑车b5，黑王d6
+                fen: "8/8/3k4/1r6/P1K5/8/8/8 w - - 0 1",
+                description: "决策点3：黑车吃白子后白方如何吃回？用兵吃(axb5)是正确的！兵到第5线获得6个关键格，白王可以占据它们。",
+                moves: ["axb5", "Kc7", "Kc5", "Kb7", "b6", "Kc8", "Kc6", "Kb8", "b7"],
+                steps: [
+                    "1.axb5! 用兵吃回，兵到第5线",
+                    "1...Kc7 黑王试图阻挡",
+                    "2.Kc5 白王占据关键格",
+                    "2...Kb7 黑王阻挡升变格",
+                    "3.b6 推兵",
+                    "3...Kc8 黑王绕到后方",
+                    "4.Kc6 白王控制关键格",
+                    "4...Kb8 黑王无法阻挡",
+                    "5.b7 兵即将升变，白胜"
+                ]
+            },
+
+            // =====================================================
+            // 决策训练：常见错误
+            // =====================================================
+            dp1_wrong: {
+                title: "DP1错误：保留车导致和棋",
+                // 与dp1_correct相同起始位置
+                fen: "5r2/8/5k2/8/2P5/3K4/8/4R3 w - - 0 1",
+                description: "错误走法：不兑车而是Re2？黑方有足够的反击手段，车残局的动态特性使白方难以获胜。",
+                moves: ["Re2", "Rd8", "Kc3", "Rd5", "Kb4", "Kf5", "c5", "Rd1"],
+                steps: [
+                    "1.Re2? 战略性错误：保留车反而降低获胜机会",
+                    "1...Rd8 黑车占据d线，准备活跃",
+                    "2.Kc3 白王试图前进",
+                    "2...Rd5 黑车从侧面攻击兵",
+                    "3.Kb4 白王继续靠近",
+                    "3...Kf5 黑王活跃起来",
+                    "4.c5 白方推兵",
+                    "4...Rd1 黑车进入后排骚扰，车残局的动态平衡使白方难以转化优势"
+                ]
+            },
+
+            dp2_wrong: {
+                title: "DP2错误：走近路被对峙拦截",
+                // 与dp2_correct相同起始位置
+                fen: "8/8/8/5k2/2P5/8/3K4/8 w - - 0 1",
+                description: "错误走法：Kd2-d3-d4看似更直接？但黑方可以正面对峙，阻止白王占据关键格，导致和棋。",
+                moves: ["Kd3", "Ke5", "Kc3", "Kd6", "Kb4", "Kc6", "Ka5", "Kb7", "Kb5", "Kc7", "Ka6", "Kc6"],
+                steps: [
+                    "1.Kd3? 原则性错误：走近路",
+                    "1...Ke5 黑王对峙",
+                    "2.Kc3 白王试图绕过",
+                    "2...Kd6 黑王紧跟对峙",
+                    "3.Kb4 尝试迂回",
+                    "3...Kc6 黑王继续对峙",
+                    "4.Ka5 白王绕路",
+                    "4...Kb7 黑王始终保持对峙",
+                    "5.Kb5 似乎占据了关键格",
+                    "5...Kc7 但黑王控制了升变格",
+                    "6.Ka6 白王尝试绕过",
+                    "6...Kc6 黑王锁住局面，和棋"
+                ]
+            },
+
+            dp3_wrong: {
+                title: "DP3错误：用王吃回导致车兵和棋",
+                // 调整位置：白王b4，白兵a4，黑车b5后被吃
+                fen: "8/8/3k4/1r6/PK6/8/8/8 w - - 0 1",
+                description: "错误走法：Kxb5用王吃？这变成了a线车兵残局！车兵没有T形关键格，黑王只需占据角落就是和棋。",
+                moves: ["Kxb5", "Kd7", "Kb6", "Kc8", "a5", "Kb8", "a6", "Ka8", "a7"],
+                steps: [
+                    "1.Kxb5? 战略错误：变成车兵残局",
+                    "1...Kd7 黑王向角落移动",
+                    "2.Kb6 白王推进",
+                    "2...Kc8 黑王靠近角落",
+                    "3.a5 推兵",
+                    "3...Kb8 黑王站在兵前",
+                    "4.a6 继续推进",
+                    "4...Ka8 黑王占据角落！",
+                    "5.a7 逼和！黑方无子可走但未被将军，和棋"
+                ]
+            },
+
+            // =====================================================
+            // 防守技巧
+            // =====================================================
+            dp4_stalemate_avoid: {
+                title: "DP4正确：边兵残局正确取胜方法",
+                // 白王b6，白兵a5，黑王a8
+                fen: "k7/8/1K6/P7/8/8/8/8 w - - 0 1",
+                description: "边兵残局中，白王需要先让开给兵推进的空间。正确做法是Kb5，然后利用将军逼黑王离开角落。",
+                moves: ["Kb5", "Kb7", "a6+", "Ka7", "Kc6", "Ka8", "Kb6", "Kb8", "a7+", "Ka8", "Ka6"],
+                steps: [
+                    "1.Kb5! 正确：白王向下让开a6格给兵",
+                    "1...Kb7 黑王被迫离开角落",
+                    "2.a6+ 推兵将军！",
+                    "2...Ka7 黑王只能后退",
+                    "3.Kc6 白王绕到另一侧",
+                    "3...Ka8 黑王回角落",
+                    "4.Kb6 白王控制关键格",
+                    "4...Kb8 黑王唯一选择",
+                    "5.a7+ 再次将军",
+                    "5...Ka8 被迫退角",
+                    "6.Ka6 逼和！但这是特殊情况——因为是边兵，白方确实只能和棋。这说明边兵即使做到最好也是和棋"
+                ]
+            },
+
+            dp4_stalemate_trap: {
+                title: "DP4错误：逼和陷阱",
+                // 同样位置但走错
+                fen: "k7/8/1K6/P7/8/8/8/8 w - - 0 1",
+                description: "如果白方贪心走Kc6想更快推进？黑王被迫进入角落，然后a6-a7造成逼和！这是车兵残局的经典陷阱。",
+                moves: ["Kc6", "Ka7", "Kc7"],
+                steps: [
+                    "1.Kc6? 战术错误",
+                    "1...Ka7 黑王被迫这样走",
+                    "2.Kc7 逼和！如果继续推a6则Ka8，再a7是逼和。白方无法获胜"
+                ]
+            },
+
+            dp6_defender_principle: {
+                title: "DP6：防守方原则（王站在兵前）",
+                // 白王f4，白兵d6，黑王e8 - 展示防守技巧
+                fen: "4k3/8/3P4/8/5K2/8/8/8 w - - 0 1",
+                description: "防守方的黄金法则：国王永远站在兵的正前方！如果白方走Kf4-e5，黑王可以占据d7正面阻挡。",
+                moves: ["Ke5", "Kd7", "Kd5", "Kd8", "Ke6", "Ke8", "d7+", "Kd8", "Kd6"],
+                steps: [
+                    "1.Ke5 白王前进",
+                    "1...Kd7! 黑王占据兵正前方，这是关键",
+                    "2.Kd5 白王试图绕过",
+                    "2...Kd8 黑王始终保持在兵前",
+                    "3.Ke6 白王侧面包抄",
+                    "3...Ke8 黑王继续正面阻挡",
+                    "4.d7+ 推兵将军",
+                    "4...Kd8 黑王回到兵前",
+                    "5.Kd6 逼和！黑方无子可走但未被将军，和棋。防守成功！"
+                ]
+            }
+        };
+
+        // 桥接函数：处理点击事件
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+
+                // 侧边栏高亮
+                try {
+                    var buttons = document.querySelectorAll('.variation-btn');
+                    buttons.forEach(function (btn) {
+                        btn.classList.remove('active');
+                    });
+
+                    var target = null;
+                    buttons.forEach(function (btn) {
+                        var handler = btn.getAttribute('onclick') || '';
+                        if (handler.indexOf("'" + key + "'") !== -1) {
+                            target = btn;
+                        }
+                    });
+
+                    if (target) target.classList.add('active');
+                } catch (e) {
+                    console.warn('Sidebar highlight failed:', e);
+                }
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        // 页面加载完成后初始化
+        $(document).ready(function () {
+            // 从第一个变例的FEN开始（T形关键格示例）
+            var startFen = '8/8/4k3/8/3P4/4K3/8/8 w - - 0 1';
+
+            // 启动应用
+            window.ChessApp.init('myBoard', startFen);
+
+            // 默认加载第一个变例
+            selectVariation('t_rule_intro');
+        });
+    </script>
+
+</body>
+
+</html>
