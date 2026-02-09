@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王兵残局：远方通路兵技巧 (Outside Passed Pawn)</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <a href="king-and-pawn-endgames.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回王兵残局目录
+            </a>
+            <span class="nav-title">王兵残局：远方通路兵技巧</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>远方通路兵教学</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>核心概念</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('intro')">概念介绍：磁铁效应</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>经典教学示例</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('basic_technique')">基础技巧：双向威胁</button>
+                <button class="variation-btn" onclick="selectVariation('fischer_larsen')">Fischer vs Larsen (1971)</button>
+                <button class="variation-btn" onclick="selectVariation('reshevsky_evans')">Reshevsky vs Evans (1969)</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>训练问题</span>
+                <span class="arrow arrow-open">▶</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('training_question')">实战应用练习</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">⟲ 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">◀ 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 ▶</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">🔄 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>王兵残局：远方通路兵</h3>
+                <p><strong>教学来源</strong>: IM Anna Rudolf "Essential Chess Endgames" 系列</p>
+                <p><strong>核心概念</strong>: 远方通路兵就像一块"磁铁"，它会把对方的国王吸引到远处，从而让你的国王在另一边吃掉所有兵。</p>
+                <p><strong>关键机制</strong>:</p>
+                <ul>
+                    <li>制造对方国王必须应对的威胁</li>
+                    <li>拉开双方国王的距离</li>
+                    <li>通过牺牲通路兵换取时间与位置优势</li>
+                </ul>
+                <p><strong>儿童友好解释</strong>: 想象你在和朋友玩追逐游戏。如果你把一个玩具扔到很远的地方，朋友就会跑过去拿。这时候，你就可以趁机去拿另一边的所有玩具！远方通路兵就是这样工作的。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VARIATIONS = {
+            intro: {
+                title: "概念介绍：磁铁效应",
+                fen: "8/8/8/8/p7/8/4PPP1/4K1k1 b - - 0 1",
+                description: "远方通路兵就像一块磁铁，它会把对方的国王吸引到远处，从而让你的国王在另一边吃掉所有兵。",
+                moves: ["a3", "Kd1", "a2", "Kc2", "a1=Q", "Kb3", "Qb1+"],
+                steps: [
+                    "1...a3 黑方推进远方通路兵，这是磁铁的起点",
+                    "2.Kd1 白王被迫靠近a线处理威胁",
+                    "2...a2 继续推进，白王必须阻止升变",
+                    "3.Kc2 白王继续追赶",
+                    "3...a1=Q 升变成功！黑方获得后",
+                    "4.Kb3 白王现在回防已经太晚",
+                    "4...Qb1+ 黑方轻松获胜"
+                ]
+            },
+            
+            basic_technique: {
+                title: "基础技巧：双向威胁",
+                fen: "8/8/8/8/p4P2/8/2K1P1P1/6k1 w - - 0 1",
+                description: "这个基础局面展示了远方通路兵的磁铁效应：黑方的a4兵吸引白王，白方无法同时防守两侧。",
+                moves: ["Kc3", "Kf2", "Kb4", "Ke3", "Kxa4", "Kxf4", "Kb3", "Kg3", "Kc2", "Kxg2"],
+                steps: [
+                    "1.Kc3 白王去追a4兵（被磁铁吸引！）",
+                    "1...Kf2 黑王开始向王翼移动",
+                    "2.Kb4 白王继续追兵",
+                    "2...Ke3 黑王到达关键位置",
+                    "3.Kxa4 白王吃掉远方兵，但现在距离太远了",
+                    "3...Kxf4 黑王开始吃兵",
+                    "4.Kb3 白王尝试回防",
+                    "4...Kg3 黑王继续进攻",
+                    "5.Kc2 白王太慢了",
+                    "5...Kxg2 黑方吃掉所有兵，获胜"
+                ]
+            },
+
+            fischer_larsen: {
+                title: "Fischer vs Larsen (1971) - 教学示例",
+                fen: "8/8/4k3/8/P3K2P/8/5PP1/8 w - - 0 1",
+                description: "Fischer 在1971年候选人赛中展示了如何利用远方通路兵。这是简化的教学局面，说明核心思路：制造远方威胁，迫使对方国王做出选择。",
+                moves: ["h5", "Kd6", "h6", "Kc5", "h7", "Kb4", "h8=Q", "Kxa4", "Qa1+"],
+                steps: [
+                    "1.h5 白方推进远方通路兵（h兵是磁铁）",
+                    "1...Kd6 黑王试图靠近",
+                    "2.h6 继续推进，黑王必须做选择",
+                    "2...Kc5 黑王选择去吃a4兵（错误的选择！）",
+                    "3.h7 即将升变",
+                    "3...Kb4 黑王继续追a4兵",
+                    "4.h8=Q 白方升变成功！获得后",
+                    "4...Kxa4 黑王吃到兵，但已经输了",
+                    "5.Qa1+ 白方后轻松获胜"
+                ]
+            },
+            
+            reshevsky_evans: {
+                title: "Reshevsky vs Evans (1969) - 教学示例",
+                fen: "8/8/3k4/8/P3Kp2/8/5P2/8 w - - 0 1",
+                description: "Reshevsky 在1969年美国锦标赛中展示了隐藏的远方通路兵。即使当前没有明显通路兵，也可以通过突破制造。这个例子展示了如何创造远方通路兵。",
+                moves: ["Kxf4", "Kd5", "f3", "Kc4", "Kg3", "Kb4", "f4", "Kxa4", "f5", "Kb4", "f6"],
+                steps: [
+                    "1.Kxf4 吃掉对方兵，准备推进",
+                    "1...Kd5 黑王试图阻止",
+                    "2.f3 开始制造通路兵",
+                    "2...Kc4 黑王去吃a4兵（又被磁铁吸引了！）",
+                    "3.Kg3 白王支持f兵推进",
+                    "3...Kb4 黑王继续追兵",
+                    "4.f4 通路兵形成！现在f兵是远方通路兵",
+                    "4...Kxa4 黑王吃到兵，但距离太远了",
+                    "5.f5 加速推进",
+                    "5...Kb4 黑王回不来了",
+                    "6.f6 白方获胜优势，兵即将升变"
+                ]
+            },
+
+            training_question: {
+                title: "训练问题：找到制胜方案",
+                fen: "8/8/3k4/P7/4K3/8/5PPP/8 w - - 0 1",
+                description: "实战训练：白方如何利用远方通路兵的原理获胜？思考：哪个兵应该成为磁铁？",
+                moves: ["f4", "Kc6", "f5", "Kb5", "f6", "Kxa5", "f7", "Kb4", "f8=Q"],
+                steps: [
+                    "1.f4 白方推进f兵（这是关键！）",
+                    "1...Kc6 黑王试图靠近",
+                    "2.f5 继续推进",
+                    "2...Kb5 黑王去追a5兵",
+                    "3.f6 f兵成为远方通路兵的磁铁",
+                    "3...Kxa5 黑王吃掉a5兵，但太远了",
+                    "4.f7 即将升变",
+                    "4...Kb4 黑王回防",
+                    "5.f8=Q 白方升变获胜！"
+                ]
+            }
+        };
+
+        function selectVariation(key) {
+            if (VARIATIONS && VARIATIONS[key]) {
+                window.ChessApp.loadVariation(VARIATIONS[key]);
+            } else {
+                console.error('变例不存在:', key);
+            }
+        }
+
+        $(document).ready(function () {
+            var startFen = '8/8/8/8/p7/8/4PPP1/4K1k1 b - - 0 1';
+            window.ChessApp.init('myBoard', startFen);
+            
+            if (VARIATIONS['intro']) {
+                setTimeout(function() {
+                    selectVariation('intro');
+                }, 500);
+            }
+        });
+
+        function toggleSidebarCategory(headerElement) {
+            var categoryList = headerElement.nextElementSibling;
+            var arrow = headerElement.querySelector('.arrow');
+            
+            if (categoryList.style.display === 'none' || categoryList.style.display === '') {
+                categoryList.style.display = 'block';
+                arrow.classList.add('arrow-open');
+            } else {
+                categoryList.style.display = 'none';
+                arrow.classList.remove('arrow-open');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

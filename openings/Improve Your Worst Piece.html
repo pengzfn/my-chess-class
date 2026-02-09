@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improve Your Worst Piece - Candidate Moves</title>
+
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <!-- Local CSS & JS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回首页
+            </a>
+            <span class="nav-title">Improve Your Worst Piece</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>改善最差子力</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>核心变例</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('knight_maneuver')">马的改造：Nc2-a1-b3-c5</button>
+                <button class="variation-btn" onclick="selectVariation('bishop_maneuver')">象的改造：Be2-d1-c2-b1-a2</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('final_attack')">最终攻击：g4 + e5 突破</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>完整对局</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('opening_phase')">开局阶段（第1-13步）</button>
+                <button class="variation-btn" onclick="selectVariation('full_game')">完整对局（71步）</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">&#10226; 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">&#9664; 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 &#9654;</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">&#128260; 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>Improve Your Worst Piece</h3>
+                <p><strong>对局：</strong>Kovalenko vs Bilguun Sumiya, 2015 Najdorf Memorial</p>
+                <p><strong>核心思路：</strong>当你的局面看起来不错但找不到突破口时，问自己一个关键问题："我最差的子力是哪个？" 然后用候选走法（Candidate Moves）的思路去改善它。</p>
+                <p><strong>经典案例：</strong>白方的马被困在c2，既不能攻击也挡住了自己的c线。通过三步走法 Na1-Nb3-Nc5，这匹"丑陋的马"变成了一匹"怪兽"。紧接着，象也通过 Bd1-Bc2-Bb1-Ba2 到达了理想位置。当所有子力都在最佳位置时，最终的突破迅速而致命。</p>
+                <p><strong>来源：</strong>chess.com - IM Kostya Kavutskiy "Candidate Moves: Improve Your Worst Piece"</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 棋谱数据 - Kovalenko vs Bilguun Sumiya, 2015 Najdorf Memorial
+        // 经过 Chess.js 逻辑校验（全部通过）
+        const VARIATIONS = {
+            knight_maneuver: {
+                title: "马的改造：Nc2-a1-b3-c5（3步变废为宝）",
+                fen: "r2q1rk1/1b2npbp/p1n1p1p1/1p6/3pPP2/3P1N2/PPNBB1PP/2R1QRK1 w - - 2 14",
+                description: "这是本局最精彩的教学片段。白方的马困在c2，既不能进攻也挡住了c线。通过三步走法 Na1-Nb3-Nc5，这匹'最差子力'变成了棋盘上的'怪兽'。这就是 Improve Your Worst Piece 的核心思想。",
+                moves: [
+                    "Na1", "a5", "Nb3", "Qb6", "Nc5"
+                ],
+                steps: [
+                    "14.Na1 马退到角落！看起来很奇怪，但这是计划的一部分。Nc2无法跳到好格子，所以先退到a1，经过b3，最终到达c5的理想前哨站。",
+                    "14...a5 黑方推进a兵，试图在后翼制造反击。",
+                    "15.Nb3 马从a1跳到b3，已经可以看到目标了——c5！这匹马正在从'最差子力'变成'最佳子力'。",
+                    "15...Qb6 黑方出后到b6，试图施压b线。",
+                    "16.Nc5 马到达理想前哨站c5！仅仅三步，白方就把一匹被困的马变成了一匹强大的怪兽。Nc5控制着关键格子，无法被黑兵驱赶。这就是'改善最差子力'的完美示范。"
+                ]
+            },
+
+            bishop_maneuver: {
+                title: "象的改造：Be2-d1-c2-b1-a2（第二次改善）",
+                fen: "r1br2k1/4npbp/1qn1p1p1/ppN5/3pPP1Q/3P1N2/PP1BB1PP/2R2RK1 w - - 6 18",
+                description: "马已经到达了理想位置c5，现在轮到改善下一个'最差子力'——被困在e2的象。白方通过 Bd1-Bc2-Bb1-Ba2 的精妙路线，把象转移到a2-g8对角线上，瞄准黑王。",
+                moves: [
+                    "Bd1", "a4", "b4", "f6", "a3", "Rf8", "Bc2", "Qd8", "Bb1", "Qd6", "Ba2"
+                ],
+                steps: [
+                    "18.Bd1 象从e2退到d1，开始了第二次'改善最差子力'的旅程。目标：到达a2，控制a2-g8对角线。",
+                    "18...a4 黑方推进a兵到a4，试图在后翼制造麻烦。",
+                    "19.b4 白方b4！固定黑方后翼兵型，同时为象的行军路线做准备。",
+                    "19...f6 黑方f6巩固中心，试图限制白方的e5突破。",
+                    "20.a3 白方a3稳固后翼兵链，确保b4兵安全。",
+                    "20...Rf8 黑方把车调到f线。",
+                    "21.Bc2 象从d1到c2，继续向目标前进。",
+                    "21...Qd8 黑方后退回d8。",
+                    "22.Bb1 象继续转移到b1。",
+                    "22...Qd6 黑方后到d6。",
+                    "23.Ba2 象到达理想位置a2！现在控制着a2-g8对角线，直指黑王方向。白方的两次'改善最差子力'都已完成——马在c5，象在a2，所有子力都在最佳位置。是时候发动最终攻击了！"
+                ]
+            },
+
+            final_attack: {
+                title: "最终攻击：g4 + e5 突破（致命一击）",
+                fen: "2b2rk1/r3n1bp/2nqppp1/1pN5/pP1pPP1Q/P2P1N2/B2B2PP/2R2RK1 w - - 7 24",
+                description: "当所有白方子力都在理想位置时（马c5、象a2、后h4），最终的攻击迅速而致命。白方通过 g4 和 e5 的兵突破，打开局面，发动毁灭性进攻。正如Serper大师所说：'当所有子力都在最佳格子上时，最终的攻击势如破竹。'",
+                moves: [
+                    "g4", "Kh8", "e5", "fxe5", "Ne4", "Qd8", "fxe5", "Nxe5",
+                    "Neg5", "Nxf3+", "Rxf3", "h6", "Nf7+", "Rxf7", "Rxf7",
+                    "Qe8", "Rxe7", "Rxe7", "Rxc8", "Qxc8", "Qxe7", "Qc2",
+                    "Qxe6", "Qd1+", "Be1"
+                ],
+                steps: [
+                    "24.g4 白方推进g兵！开始王翼攻势。子力都在理想位置，现在是突破的时刻。",
+                    "24...Kh8 黑王躲到角落。",
+                    "25.e5 关键突破！白方打开中心线路，所有子力都将参与进攻。",
+                    "25...fxe5 黑方被迫吃兵，打开了f线。",
+                    "26.Ne4 白方马从c5跳到e4，准备参与王翼攻击。",
+                    "26...Qd8 黑方后退到d8防守。",
+                    "27.fxe5 白方f兵吃回e5，打开f线。",
+                    "27...Nxe5 黑方马吃e5兵。",
+                    "28.Neg5 白方马跳到g5，威胁f7和h7，攻势凶猛。",
+                    "28...Nxf3+ 黑方马吃f3将军，试图反击。",
+                    "29.Rxf3 白方车吃回，控制f线。",
+                    "29...h6 黑方试图驱赶g5马。",
+                    "30.Nf7+ 白方马跳到f7将军！利用f线的力量。",
+                    "30...Rxf7 黑方车被迫吃马。",
+                    "31.Rxf7 白方车吃回f7，控制第7横线。",
+                    "31...Qe8 黑方后到e8防守。",
+                    "32.Rxe7 白方车吃e7马，毁灭性打击！",
+                    "32...Rxe7 黑方车吃回。",
+                    "33.Rxc8 白方车吃c8象！连续吃子。",
+                    "33...Qxc8 黑方后吃回。",
+                    "34.Qxe7 白方后吃e7车！白方已经取得决定性优势。",
+                    "34...Qc2 黑方后试图反击。",
+                    "35.Qxe6 白方后吃e6兵，局面完全获胜。",
+                    "35...Qd1+ 黑方后将军做最后挣扎。",
+                    "36.Be1 白方象挡住将军，黑方认输。1-0。白方的胜利完美诠释了'改善最差子力'的战略思想。"
+                ]
+            },
+
+            opening_phase: {
+                title: "开局阶段：如何走到这个局面（第1-13步）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "了解这盘棋的开局阶段：白方采用了一种不常见的反西西里体系（2.Be2 + f4），形成了封闭性的中局。双方各自发展子力，但白方的马在Na3-c2的调动中走到了一个尴尬的位置。",
+                moves: [
+                    "e4", "c5", "Be2", "e6", "f4", "Nc6", "Nf3", "d5",
+                    "d3", "g6", "O-O", "Bg7", "Qe1", "Nge7", "c3", "O-O",
+                    "Na3", "a6", "Nc2", "d4", "Bd2", "b5", "cxd4", "cxd4",
+                    "Rc1", "Bb7"
+                ],
+                steps: [
+                    "1.e4 白方推进中心兵。",
+                    "1...c5 黑方西西里防御。",
+                    "2.Be2 白方选择了一种安静的反西西里系统，不走开放西西里的d4。",
+                    "2...e6 黑方巩固中心。",
+                    "3.f4 白方推f兵，准备建立强大的兵中心。",
+                    "3...Nc6 黑方出马发展子力。",
+                    "4.Nf3 白方出马。",
+                    "4...d5 黑方d5反击中心。",
+                    "5.d3 白方d3支持e4兵。",
+                    "5...g6 黑方准备将象放在g7的长对角线。",
+                    "6.O-O 白方王翼易位。",
+                    "6...Bg7 黑方象到g7，控制长对角线。",
+                    "7.Qe1 白方后到e1，准备调到h4发动王翼攻势。",
+                    "7...Nge7 黑方马到e7，不挡住g7象的对角线。",
+                    "8.c3 白方c3准备后续的d4推进或支撑中心。",
+                    "8...O-O 黑方王翼易位。",
+                    "9.Na3 白方马到a3，准备跳到c2或c4。",
+                    "9...a6 黑方a6防止白马跳到b5。",
+                    "10.Nc2 白方马到c2——这就是'最差子力'！马在c2位置尴尬：既不能进攻，又挡住了c线。问题是：如何改善它？",
+                    "10...d4 黑方d4封锁中心，试图限制白方的空间。",
+                    "11.Bd2 白方出象到d2，完成发展。",
+                    "11...b5 黑方在后翼扩展空间。",
+                    "12.cxd4 白方吃d4兵，打开c线。",
+                    "12...cxd4 黑方c兵吃回，但注意：白方的马仍然挡在c2！",
+                    "13.Rc1 白方车到c1，占据半开放的c线。",
+                    "13...Bb7 黑方象到b7，控制长对角线。现在局面已经成型——白方的马困在c2，是时候开始'改善最差子力'了！请切换到'马的改造'变例，看白方如何用三步走法解决这个问题。"
+                ]
+            },
+
+            full_game: {
+                title: "完整对局：Kovalenko vs Bilguun Sumiya（71步）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "Kovalenko vs Bilguun Sumiya, 2015 Najdorf Memorial, Round 1。完整的71步对局，展示了白方如何通过系统性地改善子力位置来赢得胜利。这盘棋被 IM Kostya Kavutskiy 在chess.com的'Candidate Moves'系列视频中用作教学案例，也被 GM Gregory Serper 在'The Biggest Secret Of Positional Chess'文章中引用。",
+                moves: [
+                    "e4", "c5", "Be2", "e6", "f4", "Nc6", "Nf3", "d5",
+                    "d3", "g6", "O-O", "Bg7", "Qe1", "Nge7", "c3", "O-O",
+                    "Na3", "a6", "Nc2", "d4", "Bd2", "b5", "cxd4", "cxd4",
+                    "Rc1", "Bb7", "Na1", "a5", "Nb3", "Qb6", "Nc5", "Rfd8",
+                    "Qh4", "Bc8", "Bd1", "a4", "b4", "f6", "a3", "Rf8",
+                    "Bc2", "Qd8", "Bb1", "Qd6", "Ba2", "Ra7", "g4", "Kh8",
+                    "e5", "fxe5", "Ne4", "Qd8", "fxe5", "Nxe5", "Neg5", "Nxf3+",
+                    "Rxf3", "h6", "Nf7+", "Rxf7", "Rxf7", "Qe8", "Rxe7", "Rxe7",
+                    "Rxc8", "Qxc8", "Qxe7", "Qc2", "Qxe6", "Qd1+", "Be1"
+                ],
+                steps: [
+                    "1.e4 白方推进中心兵。",
+                    "1...c5 黑方西西里防御。",
+                    "2.Be2 安静的反西西里系统。",
+                    "2...e6 黑方巩固中心。",
+                    "3.f4 白方推f兵，建立兵中心。",
+                    "3...Nc6 黑方出马。",
+                    "4.Nf3 白方出马。",
+                    "4...d5 黑方d5反击中心。",
+                    "5.d3 白方支持e4。",
+                    "5...g6 黑方准备Bg7。",
+                    "6.O-O 白方易位。",
+                    "6...Bg7 黑方象到长对角线。",
+                    "7.Qe1 白方后到e1，准备Qh4。",
+                    "7...Nge7 黑方马到e7。",
+                    "8.c3 白方c3。",
+                    "8...O-O 黑方易位。",
+                    "9.Na3 白方马到a3。",
+                    "9...a6 黑方a6。",
+                    "10.Nc2 马到c2——'最差子力'诞生！位置尴尬，挡住c线。",
+                    "10...d4 黑方封锁中心。",
+                    "11.Bd2 白方出象。",
+                    "11...b5 黑方后翼扩展。",
+                    "12.cxd4 白方吃d4。",
+                    "12...cxd4 黑方吃回。马仍困在c2。",
+                    "13.Rc1 白方车到c1。",
+                    "13...Bb7 黑方象到b7。",
+                    "14.Na1 马退到角落！开始'改善最差子力'的三步计划。",
+                    "14...a5 黑方后翼扩展。",
+                    "15.Nb3 马到b3，接近目标。",
+                    "15...Qb6 黑方后到b6。",
+                    "16.Nc5 马到达c5前哨站！三步完成改造，'最差子力'变'最强子力'。",
+                    "16...Rfd8 黑方车到d线。",
+                    "17.Qh4 白方后到h4，准备王翼攻势。",
+                    "17...Bc8 黑方象退回c8。",
+                    "18.Bd1 象开始第二次'改善最差子力'之旅。",
+                    "18...a4 黑方推a兵。",
+                    "19.b4 白方固定后翼。",
+                    "19...f6 黑方巩固中心。",
+                    "20.a3 白方稳固后翼兵链。",
+                    "20...Rf8 黑方车到f线。",
+                    "21.Bc2 象转移到c2。",
+                    "21...Qd8 黑方后退回d8。",
+                    "22.Bb1 象继续前进。",
+                    "22...Qd6 黑方后到d6。",
+                    "23.Ba2 象到达a2理想位置！控制a2-g8对角线。两次'改善最差子力'全部完成。",
+                    "23...Ra7 黑方车到a7防守。",
+                    "24.g4 白方g4！子力都在位，开始突破。",
+                    "24...Kh8 黑王躲到角落。",
+                    "25.e5 关键突破！打开局面。",
+                    "25...fxe5 被迫吃兵。",
+                    "26.Ne4 马从c5到e4参与攻击。",
+                    "26...Qd8 黑方后退守。",
+                    "27.fxe5 f兵吃回，打开f线。",
+                    "27...Nxe5 黑方马吃e5。",
+                    "28.Neg5 马到g5，威胁f7和h7。",
+                    "28...Nxf3+ 黑方吃f3将军。",
+                    "29.Rxf3 车吃回，控制f线。",
+                    "29...h6 黑方试图驱赶马。",
+                    "30.Nf7+ 马到f7将军！",
+                    "30...Rxf7 被迫吃马。",
+                    "31.Rxf7 车吃回f7。",
+                    "31...Qe8 黑方后防守。",
+                    "32.Rxe7 车吃e7马！",
+                    "32...Rxe7 黑方车吃回。",
+                    "33.Rxc8 车吃c8象！",
+                    "33...Qxc8 黑方后吃回。",
+                    "34.Qxe7 后吃e7车！决定性优势。",
+                    "34...Qc2 黑方后反击。",
+                    "35.Qxe6 白方后吃e6，获胜局面。",
+                    "35...Qd1+ 黑方最后挣扎。",
+                    "36.Be1 白方挡住将军，黑方认输。1-0。'改善最差子力'的战略思想取得完美胜利！"
+                ]
+            }
+        };
+
+        // selectVariation 函数 - 被按钮 onclick 调用
+        function selectVariation(variationKey) {
+            if (!VARIATIONS[variationKey]) {
+                console.error('Variation not found: ' + variationKey);
+                return;
+            }
+            if (typeof ChessApp === 'undefined') {
+                console.error('ChessApp not initialized');
+                return;
+            }
+            ChessApp.loadVariation(VARIATIONS[variationKey]);
+        }
+
+        // 初始化 - 页面加载完成后
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化棋盘 - 关键！必须等待 Chess.js 和 Chessboard.js 加载完毕
+            if (typeof ChessApp !== 'undefined') {
+                ChessApp.init('myBoard', 'start');
+            } else {
+                console.error('ChessApp not available');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

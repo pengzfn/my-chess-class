@@ -1,1 +1,28 @@
 AGENTS.md
+
+# Local agent/runtime folders
+.sisyphus/
+.tmp/
+
+# Dependencies
+node_modules/
+
+# OS/editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local generated reports/screenshots
+BUG_REPORT_SUMMARY.md
+DETAILED_MOVE_ANALYSIS.md
+*-screenshot.png
+validation-screenshot.png
+
+# Test reports and verification artifacts
+TEST_REPORT*.md
+openings/test-verification.md
+openings/validate-chess.html
