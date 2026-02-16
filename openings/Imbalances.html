@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Moves: Imbalances</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="candidate-moves-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回专题
+            </a>
+            <span class="nav-title">Candidate Moves: Imbalances</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>不平衡训练</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>核心案例</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('dp1_outpost_plan')">DP1: 争夺关键据点</button>
+                <button class="variation-btn" onclick="selectVariation('dp2_plan_shift')">DP2: 计划转向</button>
+                <button class="variation-btn" onclick="selectVariation('dp3_space_counterplay')">DP3: 空间与反击</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>错例提醒</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('mistake_compare')">原则错 vs 计划对</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">&#10226; 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">&#9664; 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 &#9654;</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">&#128260; 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>候选走法中的战略决策：不平衡</h3>
+                <p><strong>来源：</strong>chess.com Candidate Moves 系列（IM Kostya Kavutskiy）。</p>
+                <p><strong>本课目标：</strong>当没有直接战术时，用不平衡来选计划：兵形、空间、王安全、子力活跃度、关键格控制。</p>
+                <p><strong>学习方法：</strong>每到决策点，先列候选走法，再比较“哪种不平衡是长期可利用的”。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VARIATIONS = {
+            dp1_outpost_plan: {
+                title: "DP1: 争夺关键据点（Sicilian 结构）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "教学重点：先制造可持续不平衡，再围绕关键格制定计划。这里白方通过发展与兵形配置，目标是后续争夺 d5 等关键格。",
+                moves: ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "a6", "Bg5", "e6", "f4", "Be7", "Qf3", "Qc7"],
+                steps: [
+                    "1.e4 先占中心，为后续空间与子力活动打基础。",
+                    "1...c5 黑方采用西西里，立刻制造结构不平衡。",
+                    "2.Nf3 正常发展，同时准备 d4。",
+                    "2...d6 黑方稳固中心，保留 ...Nf6 与 ...e6 的灵活性。",
+                    "3.d4 白方主动打开中心，争取更高子力活跃度。",
+                    "3...cxd4 黑方接受结构交换，局面进入开放型。",
+                    "4.Nxd4 白马跃居中心，后续可向关键格转移。",
+                    "4...Nf6 黑方攻击 e4，迫使白方继续精确发展。",
+                    "5.Nc3 加强中心并支撑未来王翼计划。",
+                    "5...a6 预防 Nb5，也为后翼扩张做准备。",
+                    "6.Bg5 白方瞄准 e7 子力，增加黑方协调难度。",
+                    "6...e6 黑方巩固暗格，准备正常发展。",
+                    "7.f4 白方扩大空间，形成长期进攻潜力。",
+                    "7...Be7 黑方解除钉住，完成王翼安全准备。",
+                    "8.Qf3 白后连接王翼与中心，保持多计划选择。",
+                    "8...Qc7 双方完成首轮部署，进入真正的候选走法比较阶段。"
+                ]
+            },
+
+            dp2_plan_shift: {
+                title: "DP2: 当机会变化时及时转向计划",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "教学重点：计划不是一次性决定。局面变化后，要从原计划切到更可持续的不平衡目标（例如弱兵、弱格、半开放线）。",
+                moves: ["e4", "e6", "d4", "d5", "e5", "c5", "c3", "Nc6", "Nf3", "Qb6", "Bd3", "cxd4", "cxd4", "Bd7", "O-O", "Nxd4"],
+                steps: [
+                    "1.e4 先手建立中心。",
+                    "1...e6 法兰西结构，准备 ...d5 反击。",
+                    "2.d4 白方扩大空间。",
+                    "2...d5 黑方立即挑战中心。",
+                    "3.e5 获得空间，但也固定了兵形。",
+                    "3...c5 黑方对 d4 施压，争取结构反击。",
+                    "4.c3 白方巩固 d4，为后续子力机动做准备。",
+                    "4...Nc6 黑方加压中心并自然发展。",
+                    "5.Nf3 白方完成王翼发展。",
+                    "5...Qb6 对 d4 和 b2 形成双重压力。",
+                    "6.Bd3 白方意图王翼行动，但也要注意中心被反击。",
+                    "6...cxd4 黑方先在中心兑现压力。",
+                    "7.cxd4 白方回吃，维持兵链完整。",
+                    "7...Bd7 黑方继续发展，等待更好时机。",
+                    "8.O-O 白王先安全，再决定进攻或转向结构战。",
+                    "8...Nxd4 黑方战术化打击中心，提醒白方：必须及时调整计划。"
+                ]
+            },
+
+            dp3_space_counterplay: {
+                title: "DP3: 空间优势伴随弱点（Alekhine 思路）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "教学重点：空间越大，潜在弱点也越多。防守方应寻找动态反击点，而不是被动挨打。",
+                moves: ["e4", "Nf6", "e5", "Nd5", "d4", "d6", "Nf3", "g6", "Bc4", "Nb6", "Bb3", "Bg7", "O-O", "O-O", "Re1", "Nc6"],
+                steps: [
+                    "1.e4 白方占据中心空间。",
+                    "1...Nf6 阿廖欣防御，先诱导再反击中心。",
+                    "2.e5 白方进一步推进，获得更大空间。",
+                    "2...Nd5 黑马回稳，等待对白中心的后续打击。",
+                    "3.d4 白方形成强中心，但也留下可攻击目标。",
+                    "3...d6 黑方明确反击核心：e5 与 d4。",
+                    "4.Nf3 白方发展并保护中心。",
+                    "4...g6 黑方准备王翼象压制长对角线。",
+                    "5.Bc4 白方积极出子，保持先手压力。",
+                    "5...Nb6 黑马继续重组，瞄准 c4 与 d5 周边。",
+                    "6.Bb3 白象回撤，保留活动范围。",
+                    "6...Bg7 黑方完成关键子力部署。",
+                    "7.O-O 白王先确保安全。",
+                    "7...O-O 黑方也完成王翼安全。",
+                    "8.Re1 白方支持 e5 与中心推进计划。",
+                    "8...Nc6 黑方完成发展并准备多点反击。"
+                ]
+            },
+
+            mistake_compare: {
+                title: "错例对比：只看一侧计划 vs 综合评估不平衡",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "教学重点：只盯着单一进攻方向，常常忽视对手在中心或结构上的反击资源。",
+                moves: ["d4", "Nf6", "c4", "e6", "Nc3", "Bb4", "e3", "O-O", "Bd3", "d5", "Nf3", "c5", "O-O", "Nc6", "a3", "Bxc3", "bxc3", "dxc4", "Bxc4", "Qc7"],
+                steps: [
+                    "1.d4 白方占中心。",
+                    "1...Nf6 黑方灵活应对。",
+                    "2.c4 扩大空间并支持 d5 控制。",
+                    "2...e6 黑方准备后续 ...d5 或 ...c5。",
+                    "3.Nc3 白方发展并施压中心。",
+                    "3...Bb4 以子力牵制制造不平衡。",
+                    "4.e3 白方稳固中心，准备出象。",
+                    "4...O-O 黑王先安全。",
+                    "5.Bd3 白象指向王翼。",
+                    "5...d5 黑方稳定中心结构。",
+                    "6.Nf3 白方正常发展。",
+                    "6...c5 黑方立即挑战白方空间优势。",
+                    "7.O-O 白王安全，但局面重心已转向中心。",
+                    "7...Nc6 黑方完成发展并增强压力。",
+                    "8.a3 先问黑象去向，是常见计划。",
+                    "8...Bxc3 黑方主动换子，改变兵形。",
+                    "9.bxc3 白方得到双兵结构负担，也得到半开放 b 线。",
+                    "9...dxc4 黑方继续简化并打击中心。",
+                    "10.Bxc4 白方回吃完成发展。",
+                    "10...Qc7 黑方协调完成，下一步进入中局计划博弈。"
+                ]
+            }
+        };
+
+        function selectVariation(variationKey) {
+            if (!VARIATIONS[variationKey]) {
+                console.error('Variation not found: ' + variationKey);
+                return;
+            }
+            if (typeof ChessApp === 'undefined') {
+                console.error('ChessApp not initialized');
+                return;
+            }
+            ChessApp.loadVariation(VARIATIONS[variationKey]);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof ChessApp !== 'undefined') {
+                ChessApp.init('myBoard', 'start');
+            } else {
+                console.error('ChessApp not available');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

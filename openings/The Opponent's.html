@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Moves: The Opponent's Ideas</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="candidate-moves-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回专题
+            </a>
+            <span class="nav-title">Candidate Moves: The Opponent's Ideas</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>预判对手思路</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>案例 1：别贪快</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('ex1_main')">主线：先保王再行动</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('ex1_mistake')">错例：只看自己计划</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>案例 2：先断防守</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('ex2_main')">主线：先限制再突破</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('ex2_mistake')">错例：仓促出击</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>案例 3：安静步预防</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('ex3_main')">主线：Kh1 的预防价值</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('ex3_mistake')">错例：急于表面活跃</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">&#10226; 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">&#9664; 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 &#9654;</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">&#128260; 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>The Opponent's Ideas</h3>
+                <p><strong>主题：</strong>每步先问“对手最强回应是什么”。</p>
+                <p><strong>输入来源：</strong>你提供的 3 组训练样本（含主线、错线与问答）。</p>
+                <p><strong>训练目标：</strong>把“预判对手资源”变成固定思维流程：识别威胁、排除唯一防守、再执行计划。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VARIATIONS = {
+            ex1_main: {
+                title: "案例1主线：先保王再行动",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "对应你给的“物质领先但王未安全”主题。核心是先解除对手后续战术可能，再考虑吃兵或扩张。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "d3", "Bc5", "O-O", "d6", "c3", "a6"],
+                steps: [
+                    "1.e4 先手抢中心。",
+                    "1...e5 黑方对称争中心。",
+                    "2.Nf3 正常发展并压 e5。",
+                    "2...Nc6 黑方守住中心并发展。",
+                    "3.Bc4 白象进入活跃位。",
+                    "3...Nf6 黑方加速发展并准备反击。",
+                    "4.d3 先稳结构，避免中心被反打后王位受压。",
+                    "4...Bc5 黑方完成对子力布局。",
+                    "5.O-O 先保证王安全，贯彻“预判优先”。",
+                    "5...d6 黑方稳固 e5，准备中局计划。",
+                    "6.c3 白方再补中心控制，避免战术突袭。",
+                    "6...a6 黑方限制白象/白马跳点，进入计划博弈。"
+                ]
+            },
+
+            ex1_mistake: {
+                title: "案例1错例：只顾自己节奏",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "强调“忽视对手非强制应手”的代价：你在追求战术时，对手可能有更强反击手段。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nf6", "Ng5", "d5", "exd5", "Nxd5", "Nxf7", "Kxf7"],
+                steps: [
+                    "1.e4 正常起手。",
+                    "1...e5 黑方争中心。",
+                    "2.Nf3 攻击 e5。",
+                    "2...Nc6 黑方守兵并发展。",
+                    "3.Bc4 白方形成王翼压力。",
+                    "3...Nf6 黑方同时发展并反击中心。",
+                    "4.Ng5 白方急于制造战术威胁。",
+                    "4...d5 黑方用中心反击争先手。",
+                    "5.exd5 白方继续执行自己的想法。",
+                    "5...Nxd5 黑方快速回收并完成出子。",
+                    "6.Nxf7 白方继续“看上去很强”的抢子路线。",
+                    "6...Kxf7 黑方吃回后局面可守且白方先手耗尽。"
+                ]
+            },
+
+            ex2_main: {
+                title: "案例2主线：先断防守再发力",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "对应“组合前必须排除对手唯一防守”。先做限制手，再进入战术阶段，成功率更高。",
+                moves: ["d4", "Nf6", "c4", "e6", "Nc3", "Bb4", "e3", "O-O", "Bd3", "d5", "Nf3", "c5"],
+                steps: [
+                    "1.d4 建立空间和中心。",
+                    "1...Nf6 黑方灵活发展。",
+                    "2.c4 扩展中心，争主动权。",
+                    "2...e6 黑方稳固并准备 ...d5 或 ...c5。",
+                    "3.Nc3 白方完成核心发展。",
+                    "3...Bb4 黑方制造牵制，准备对中心施压。",
+                    "4.e3 白方先稳中心，避免过早战术化。",
+                    "4...O-O 黑王先安全，保留反击空间。",
+                    "5.Bd3 白方完成出子并观察黑方资源。",
+                    "5...d5 黑方确认中心结构，形成关键防守框架。",
+                    "6.Nf3 白方补发展，等待更好时机。",
+                    "6...c5 黑方反击中心，提醒白方必须先排除防守再突破。"
+                ]
+            },
+
+            ex2_mistake: {
+                title: "案例2错例：没排除防守就组合",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "对应“看似强制的组合”可能被对手唯一防守化解。",
+                moves: ["d4", "d5", "c4", "e6", "Nc3", "Nf6", "Bg5", "Be7", "e3", "O-O", "Nf3", "h6"],
+                steps: [
+                    "1.d4 白方抢中心。",
+                    "1...d5 黑方稳固占位。",
+                    "2.c4 白方挑战 d5。",
+                    "2...e6 黑方准备完成发展。",
+                    "3.Nc3 白方加强中心控制。",
+                    "3...Nf6 黑方正常出子。",
+                    "4.Bg5 白方施加牵制并考虑战术。",
+                    "4...Be7 黑方先解牵制，降低战术风险。",
+                    "5.e3 白方补强中心。",
+                    "5...O-O 黑方王安全后防守更稳。",
+                    "6.Nf3 白方发展完成但攻击窗口变小。",
+                    "6...h6 黑方继续问白象去向，说明防守资源仍在。"
+                ]
+            },
+
+            ex3_main: {
+                title: "案例3主线：安静步 Kh1 作为战术前提",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "对应你给的“提前预防对手资源”。Kh1 这类安静步常用于预先排除将军、钉住或对角线战术。",
+                moves: ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "d6", "c3", "O-O", "h3", "Bb7", "d4", "Re8", "Nbd2", "Bf8", "Kh1"],
+                steps: [
+                    "1.e4 白方占中心。",
+                    "1...e5 黑方对称回应。",
+                    "2.Nf3 攻击 e5 并发展。",
+                    "2...Nc6 守兵并扩展控制。",
+                    "3.Bb5 进入西班牙结构。",
+                    "3...a6 赶象并争空间。",
+                    "4.Ba4 白象保持压力。",
+                    "4...Nf6 黑方发展并威胁中心。",
+                    "5.O-O 白王先安全。",
+                    "5...Be7 黑方准备易位。",
+                    "6.Re1 白方支撑 e4。",
+                    "6...b5 黑方继续扩张。",
+                    "7.Bb3 白象回撤保持对角线。",
+                    "7...d6 黑方稳固中心。",
+                    "8.c3 白方准备 d4。",
+                    "8...O-O 黑王完成安全。",
+                    "9.h3 先给王“透气”，防未来战术。",
+                    "9...Bb7 黑方象出长对角线。",
+                    "10.d4 白方争中心主动。",
+                    "10...Re8 黑方准备中心反击。",
+                    "11.Nbd2 白方补发展并观察黑方资源。",
+                    "11...Bf8 黑方重组子力。",
+                    "12.Kh1 关键安静步：先排除潜在将军/钉住，再准备后续战术。"
+                ]
+            },
+
+            ex3_mistake: {
+                title: "案例3错例：忽略预防手",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "当局面进入中局前夜，若不先做预防手，后续计划常被对手简单反制。",
+                moves: ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "a6", "Be3", "e6"],
+                steps: [
+                    "1.e4 白方占中心。",
+                    "1...c5 黑方西西里，制造不平衡。",
+                    "2.Nf3 白方发展并准备 d4。",
+                    "2...d6 黑方稳住中心。",
+                    "3.d4 白方打开中心争主动。",
+                    "3...cxd4 黑方交换进入开放结构。",
+                    "4.Nxd4 白马占据中心。",
+                    "4...Nf6 黑方立刻问 e4。",
+                    "5.Nc3 白方补守中心。",
+                    "5...a6 黑方限制白方轻子跳点。",
+                    "6.Be3 白方按自己节奏发展。",
+                    "6...e6 黑方完成稳固，白方若无预防思维易被对手抢先执行计划。"
+                ]
+            }
+        };
+
+        function selectVariation(variationKey) {
+            if (!VARIATIONS[variationKey]) {
+                console.error('Variation not found: ' + variationKey);
+                return;
+            }
+            if (typeof ChessApp === 'undefined') {
+                console.error('ChessApp not initialized');
+                return;
+            }
+            ChessApp.loadVariation(VARIATIONS[variationKey]);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof ChessApp !== 'undefined') {
+                ChessApp.init('myBoard', 'start');
+            } else {
+                console.error('ChessApp not available');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
