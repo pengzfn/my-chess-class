@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forcing Moves - Tarrasch Trap</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="candidate-moves-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回专题
+            </a>
+            <span class="nav-title">Forcing Moves</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>⚡ Forcing Moves</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>完整案例</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('main_line')">主线：Tarrasch Trap 全程</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>关键候选手</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('candidate_capture')">15.Qxc7! 先找强制吃子</button>
+                <button class="variation-btn" onclick="selectVariation('candidate_exchange')">16.Rxf6! 不让对手喘气</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>⚠️ 常见慢手</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn text-danger" onclick="selectVariation('slow_be3')">15.Be3? 看似自然却太慢</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">&#10226; 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">&#9664; 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 &#9654;</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">&#128260; 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>Forcing Moves</h3>
+                <p><strong>主题：</strong>先看将军，再看吃子，再看直接威胁（Checks &gt; Captures &gt; Threats）。</p>
+                <p><strong>为什么换棋谱：</strong>你原始转录里有同一枚 d 兵连续两次吃子的冲突，无法形成合法局面，所以这里改成可完整回放的经典 Tarrasch Trap，主题仍然完全贴合“强制手”。</p>
+                <p><strong>训练目标：</strong>轮到你走时，先报出 2 到 3 个候选着，再判断哪个最强制、最迫使对手只剩有限选择。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VARIATIONS = {
+            main_line: {
+                title: "主线：Tarrasch Trap（连续强制手段）",
+                fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                description: "经典 Tarrasch Trap 的重点，不是一次妙手，而是连续 forcing moves：每一步都在制造对手必须处理的新问题。",
+                moves: [
+                    "e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6", "O-O", "Nxe4",
+                    "Nc3", "Nxc3", "dxc3", "f6", "Nh4", "g6", "f4", "Qe7",
+                    "f5", "Qg7", "Bd3", "Ne7", "fxg6", "hxg6", "Qg4", "d5",
+                    "Qg3", "e4", "Be2", "g5", "Qxc7", "gxh4", "Rxf6", "h3",
+                    "g3", "Bg4", "Bxg4", "Qxg4", "Qf4", "Qd1+", "Qf1", "Qxc2",
+                    "Bg5"
+                ],
+                steps: [
+                    "1.e4 抢占中心，给后续进攻打地基。",
+                    "1...e5 黑方同样占据中心。",
+                    "2.Nf3 先攻击 e5，迫使黑方正面回应。",
+                    "2...Nc6 自然防守与发展。",
+                    "3.Bb5 进入西班牙结构，对 c6 马施压。",
+                    "3...Nf6 黑方反击 e4。",
+                    "4.O-O 白方先确保王安全。",
+                    "4...Nxe4 黑方抢兵，但也把自己拉进战术区。",
+                    "5.Nc3 白方发展同时追问 e4 马。",
+                    "5...Nxc3 黑方交换，给白方 d 兵打开路线。",
+                    "6.dxc3 白方打开 d 线与象线。",
+                    "6...f6 黑方固守中心，但王翼格子变松。",
+                    "7.Nh4 白马转向王翼进攻点。",
+                    "7...g6 黑方封线，但弱点也更多。",
+                    "8.f4 白方开始第一波 forcing move，直接冲击中心和王翼。",
+                    "8...Qe7 黑后被迫承担防守任务。",
+                    "9.f5 继续冲兵，不给黑方整理时间。",
+                    "9...Qg7 黑后回防。",
+                    "10.Bd3 白象转入最强攻击斜线。",
+                    "10...Ne7 黑马回防，黑方被迫救火。",
+                    "11.fxg6 强制吃子，打开线路。",
+                    "11...hxg6 黑方必须回吃。",
+                    "12.Qg4 白后进入攻击位，盯住王翼和后排弱点。",
+                    "12...d5 黑方争取中心反击，是最像样的抵抗。",
+                    "13.Qg3 白后继续保持压力。",
+                    "13...e4 黑方再冲兵，希望换空间求生。",
+                    "14.Be2 白象回到安全格，保留协同。",
+                    "14...g5 黑方想赶马，但也暴露更多目标。",
+                    "15.Qxc7! 关键候选手。带节奏的吃子，比单纯发展强得多。",
+                    "15...gxh4 黑方也想抢节奏，但仍在被迫跟着白方线路走。",
+                    "16.Rxf6! 第二个强制吃子，直接拆掉黑方的防守支点。",
+                    "16...h3 黑方只能拼通路兵反扑。",
+                    "17.g3 白方冷静封线，先处理最紧急威胁。",
+                    "17...Bg4 黑方试图用子力最后反抗。",
+                    "18.Bxg4 白方继续交换最活跃的黑子。",
+                    "18...Qxg4 黑后回吃，但局面仍被白方控制。",
+                    "19.Qf4 白后带节奏回中路，继续施压。",
+                    "19...Qd1+ 黑方抓住唯一将军资源搅局。",
+                    "20.Qf1 白方准确回防，主动权没丢。",
+                    "20...Qxc2 黑后吃兵只是迟来的反扑。",
+                    "21.Bg5 白象补上最后一层压力，黑方仍在防守泥潭里。"
+                ]
+            },
+            candidate_capture: {
+                title: "关键候选手：15.Qxc7! 先找强制吃子",
+                fen: "r1b1kb1r/ppp1n1q1/5p2/3p2p1/4p2N/2P3Q1/PPP1B1PP/R1B2RK1 w kq - 0 15",
+                description: "很多人会先想着补救王翼，但真正的第一候选，是带节奏的吃子。Qxc7 同时得子、压后排，还为后续 Rxf6 创造条件。",
+                moves: ["Qxc7", "gxh4", "Rxf6"],
+                steps: [
+                    "15.Qxc7! 先吃 c7 兵。这一步本身就带威胁，不是普通贪兵。",
+                    "15...gxh4 黑方只能继续抢王翼节奏。",
+                    "16.Rxf6 白方马上切到第二波强制吃子，继续加压。"
+                ]
+            },
+            candidate_exchange: {
+                title: "关键候选手：16.Rxf6! 强制继续施压",
+                fen: "r1b1kb1r/ppQ1n1q1/5p2/3p4/4p2p/2P5/PPP1B1PP/R1B2RK1 w kq - 0 16",
+                description: "如果这里只想着回防 h 线，就会把主动权交回去。Rxf6 的价值在于让对手继续先回答你的问题。",
+                moves: ["Rxf6", "h3", "g3", "Bg4", "Bxg4", "Qxg4"],
+                steps: [
+                    "16.Rxf6! 先拆掉 f6 支点，继续强制黑方应手。",
+                    "16...h3 黑方唯一像样的反扑是硬推通路兵。",
+                    "17.g3 白方先封住最危险的兵线。",
+                    "17...Bg4 黑方最后尝试调子反抗。",
+                    "18.Bxg4 白方继续交换最活跃的黑子。",
+                    "18...Qxg4 黑后回吃，但白方仍掌控节奏。"
+                ]
+            },
+            slow_be3: {
+                title: "慢手示范：15.Be3? 看似自然却太慢",
+                fen: "r1b1kb1r/ppp1n1q1/5p2/3p2p1/4p2N/2P3Q1/PPP1B1PP/R1B2RK1 w kq - 0 15",
+                description: "看起来很“正常”的发展手，常常正是丢掉主动权的原因。这里如果不先计算强制手，对手就能抢回节奏。",
+                moves: ["Be3", "gxh4", "Qe1", "h3"],
+                steps: [
+                    "15.Be3? 发展是自然，但没有制造任何必须回应的威胁。",
+                    "15...gxh4 黑方立刻打开 h 线，反而先手。",
+                    "16.Qe1 白后被迫回防，节奏已经从进攻变成补漏洞。",
+                    "16...h3 黑方通路兵继续推进，白方开始被动。"
+                ]
+            }
+        };
+
+        function selectVariation(variationKey) {
+            if (!VARIATIONS[variationKey]) {
+                console.error('Variation not found: ' + variationKey);
+                return;
+            }
+            if (typeof ChessApp === 'undefined') {
+                console.error('ChessApp not initialized');
+                return;
+            }
+            ChessApp.loadVariation(VARIATIONS[variationKey]);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof ChessApp !== 'undefined') {
+                ChessApp.init('myBoard', 'start');
+                selectVariation('main_line');
+            } else {
+                console.error('ChessApp not available');
+            }
+
+            Object.keys(VARIATIONS).forEach(function (key) {
+                var variation = VARIATIONS[key];
+                var game = new Chess(variation.fen);
+                var valid = variation.moves.length === variation.steps.length;
+
+                if (valid) {
+                    for (var i = 0; i < variation.moves.length; i++) {
+                        if (!game.move(variation.moves[i])) {
+                            valid = false;
+                            console.error('[' + key + '] 第 ' + (i + 1) + ' 步无效: ' + variation.moves[i]);
+                            break;
+                        }
+                    }
+                } else {
+                    console.error('[' + key + '] moves 和 steps 数量不匹配');
+                }
+
+                if (valid) {
+                    console.log('[' + key + '] 验证通过 (' + variation.moves.length + ' 步)');
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

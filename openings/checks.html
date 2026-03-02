@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Moves: Checks</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="../assets/js/chess-logic.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="candidate-moves-intro.html" class="nav-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                返回专题
+            </a>
+            <span class="nav-title">Candidate Moves: Checks</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>Forcing Moves: Checks</h3>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>案例 1：唯一将军求生</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('ex1_perpetual')">主线：后车连将</button>
+                <button class="variation-btn text-danger" onclick="selectVariation('ex1_mistake')">错例：被动防守</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>案例 2：欠升变将军</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('ex2_underpromotion')">主线：c1=N+ 连续将</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>案例 3：连将转赢子</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('ex3_knight_tactic')">主线：将军后再吃子</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>案例 4：通路兵前的节奏</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('ex4_counter_checks')">主线：以将军抢先手</button>
+            </div>
+
+            <div class="category-header" onclick="toggleSidebarCategory(this)">
+                <span>案例 5：王翼强制攻击</span>
+                <span class="arrow arrow-open">&#9654;</span>
+            </div>
+            <div class="variation-list">
+                <button class="variation-btn" onclick="selectVariation('ex5_attack_finish')">主线：双将思路收网</button>
+            </div>
+        </div>
+
+        <div class="board-area">
+            <div id="statusInfo">准备就绪</div>
+            <div id="myBoard"></div>
+            <div class="controls">
+                <button class="btn" onclick="ChessApp.reset()">&#10226; 重置</button>
+                <button class="btn" onclick="ChessApp.prevMove()">&#9664; 上一步</button>
+                <button class="btn btn-primary" onclick="ChessApp.nextMove()">下一步 &#9654;</button>
+                <button class="btn" onclick="ChessApp.flipBoard()">&#128260; 翻转</button>
+            </div>
+            <div id="fenDebug"></div>
+        </div>
+
+        <div class="info-area">
+            <div id="hintText" class="hint-content">
+                <h3>Candidate Moves: Checks</h3>
+                <p><strong>主题：</strong>先找将军，再看吃子与威胁（Checks &gt; Captures &gt; Threats）。</p>
+                <p><strong>数据说明：</strong>你提供的原始转录含不完整局面信息；本页用可合法回放的训练局面重建“将军优先”主题。</p>
+                <p><strong>训练目标：</strong>在对攻局面中，用强制手减少分支，先保生存，再争主动，最后转化优势。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VARIATIONS = {
+            ex1_perpetual: {
+                title: "案例1主线：唯一将军求生（后车连将）",
+                fen: "2r3k1/8/8/8/8/q7/P1P5/1K6 b - - 0 1",
+                description: "当对手有致命威胁时，先找最强制手。这里黑方通过将军序列制造持续先手，争取和棋资源。",
+                moves: ["Qxa2+", "Kxa2", "Rxc2+", "Kb1", "Rc1+", "Kb2", "Rc2+"],
+                steps: [
+                    "1...Qxa2+ 先手将军，强迫白王应手。",
+                    "2.Kxa2 白王吃后，但也被拉到更暴露位置。",
+                    "2...Rxc2+ 黑车立即接力将军，保持节奏。",
+                    "3.Kb1 白王回撤到后排。",
+                    "3...Rc1+ 再次将军，继续压缩白方选择。",
+                    "4.Kb2 白王被迫来回移动。",
+                    "4...Rc2+ 连将形成循环，体现“先将军再谈别的”。"
+                ]
+            },
+
+            ex1_mistake: {
+                title: "案例1错例：被动防守丢主动",
+                fen: "r1b2rk1/ppp2ppp/2n1pn2/3p4/2PP4/2N2N2/PPQ2PPP/R1B2RK1 b - - 0 1",
+                description: "如果此类局面只顾补防而不找强制手，经常会把先手交回给对手，随后进入被动守势。",
+                moves: ["Rb8", "cxd5", "Nxd5", "a3", "e5", "Ne4"],
+                steps: [
+                    "1...Rb8 看似稳健，但并不强制。",
+                    "2.cxd5 白方先在中心兑现交换。",
+                    "2...Nxd5 黑方被动回吃，缺少主动威胁。",
+                    "3.a3 白方从容限制黑方轻子落点。",
+                    "3...e5 黑方转向中心推进，但依旧没有制造强制威胁。",
+                    "4.Ne4 白方抢占主动，黑方错过先手机会。"
+                ]
+            },
+
+            ex2_underpromotion: {
+                title: "案例2主线：欠升变制造连续将军",
+                fen: "8/7k/8/8/8/8/K1p5/8 b - - 0 1",
+                description: "并非永远升后。某些局面下，升马能立刻将军并保持强制节奏。",
+                moves: ["c1=N+", "Ka1", "Nb3+", "Ka2", "Nc1+"],
+                steps: [
+                    "1...c1=N+ 欠升变为马，立刻将军。",
+                    "2.Ka1 白王只能后退。",
+                    "2...Nb3+ 黑马继续将军，保持先手。",
+                    "3.Ka2 白王被迫来回。",
+                    "3...Nc1+ 再将军，构成重复将军框架。"
+                ]
+            },
+
+            ex3_knight_tactic: {
+                title: "案例3主线：连将后转赢子",
+                fen: "5r1k/8/8/R3p1n1/8/8/4K3/8 b - - 0 1",
+                description: "先用将军逼王位，再利用马的跳跃吃回关键子力，最后继续将军巩固收益。",
+                moves: ["Rf4", "Rxe5", "Nf3+", "Ke3", "Nxe5", "Kxf4", "Nd3+"],
+                steps: [
+                    "1...Rf4 先手压迫，准备战术转换。",
+                    "2.Rxe5 白方吃兵看似得子。",
+                    "2...Nf3+ 黑马将军，迫使白王改位。",
+                    "3.Ke3 白王被迫前进。",
+                    "3...Nxe5 黑马吃回白车，兑现战术。",
+                    "4.Kxf4 白王再吃黑车。",
+                    "4...Nd3+ 黑马再将军，保持主动并限制白王。"
+                ]
+            },
+
+            ex4_counter_checks: {
+                title: "案例4主线：连将压制通路兵节奏",
+                fen: "3r3k/3q4/7p/8/8/3Q4/8/6KR w - - 0 1",
+                description: "面对对手后排威胁时，连续将军是抢回节奏的直接方式。",
+                moves: ["Rxh6+", "Kg8", "Qc4+", "Qf7", "Rh8+", "Kxh8", "Qh4+", "Kg8", "Qxd8+"],
+                steps: [
+                    "1.Rxh6+ 先手将军，立刻把局面拉入强制序列。",
+                    "1...Kg8 黑王只能回到 g8。",
+                    "2.Qc4+ 再将军，持续抢节奏。",
+                    "2...Qf7 黑后回防。",
+                    "3.Rh8+ 白车再度将军，逼出王吃车。",
+                    "3...Kxh8 黑王吃车，白方进入后续强制段。",
+                    "4.Qh4+ 白后继续将军，不给对手喘息。",
+                    "4...Kg8 黑王再次被迫回位。",
+                    "5.Qxd8+ 借强制节奏反吃后排重子。"
+                ]
+            },
+
+            ex5_attack_finish: {
+                title: "案例5主线：王翼强制攻击收网",
+                fen: "6k1/5p2/6pB/7N/1b6/P7/8/3Q2KR w - - 0 1",
+                description: "围王阶段优先找将军，必要时用弃后换取强制攻击与子力协同。",
+                moves: ["Qc2", "Bxa3", "Qxg6+", "fxg6", "Nf6+", "Kh8", "Bg7+", "Kxg7", "Rh7+", "Kxf6", "Rf7#"],
+                steps: [
+                    "1.Qc2 先调整后位，瞄准王翼突破点。",
+                    "1...Bxa3 黑方吃兵，试图缓解压力。",
+                    "2.Qxg6+ 白后先手将军，强行打开黑王防线。",
+                    "2...fxg6 黑方被迫吃后。",
+                    "3.Nf6+ 白马跳将，继续保持强制节奏。",
+                    "3...Kh8 黑王退到底线。",
+                    "4.Bg7+ 白象加入，将军迫使黑王继续应手。",
+                    "4...Kxg7 黑王吃象，但王位进一步暴露。",
+                    "5.Rh7+ 白车切入第七线再将军。",
+                    "5...Kxf6 黑王吃马，试图解围。",
+                    "6.Rf7# 白车封锁完成将杀。"
+                ]
+            }
+        };
+
+        function selectVariation(variationKey) {
+            if (!VARIATIONS[variationKey]) {
+                console.error('Variation not found: ' + variationKey);
+                return;
+            }
+            if (typeof ChessApp === 'undefined') {
+                console.error('ChessApp not initialized');
+                return;
+            }
+            ChessApp.loadVariation(VARIATIONS[variationKey]);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof ChessApp !== 'undefined') {
+                ChessApp.init('myBoard', 'start');
+            } else {
+                console.error('ChessApp not available');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
